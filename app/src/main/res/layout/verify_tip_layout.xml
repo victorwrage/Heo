@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/banner01"
+
+        android:orientation="vertical"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="2.0dip"
+                android:layout_marginTop="20dip"
+                android:text="温馨提示"
+                android:textColor="@color/chocolate"
+                android:textSize="20sp" />
+
+            <RelativeLayout
+                android:id="@+id/verify_shut_lay"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/big_btn_backgroud2">
+
+                <ImageView
+                    android:id="@+id/verify_shut_iv"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/shut_icon" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/verify_tip_tv"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="您还没有进行实名认证"
+                android:textColor="@color/red" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/verify_do_btn"
+            android:layout_width="240dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="35dp"
+            android:background="@drawable/big_btn_backgroud"
+            android:layout_gravity="center"
+            android:text="立即认证"
+            android:textColor="#1296db" />
+
+
+    </LinearLayout>
+</RelativeLayout>

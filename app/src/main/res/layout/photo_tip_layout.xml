@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+
+        android:layout_alignParentTop="true"
+        android:background="@color/wheat"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="2.0dip"
+                android:layout_marginTop="20dip"
+                android:text=""
+                android:textColor="@color/chocolate"
+                android:textSize="20sp" />
+
+            <RelativeLayout
+                android:id="@+id/verify_shut_lay"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/big_btn_backgroud2">
+
+                <ImageView
+                    android:id="@+id/verify_shut_iv"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/shut_icon" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/photo_img_iv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minWidth="220dp"
+                android:minHeight="120dp"
+                android:src="@drawable/banner01" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="10dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/photo_cancel_btn"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:background="@drawable/big_btn_backgroud"
+                android:text="取消"
+                android:textColor="#FFFFFF" />
+            <Button
+                android:id="@+id/photo_do_btn"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/big_btn_backgroud"
+                android:text="重新上传"
+                android:layout_margin="5dp"
+                android:textColor="#1296db" />
+
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

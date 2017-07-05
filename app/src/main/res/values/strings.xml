@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">锄头信用</string>
+    <string name="msg_exit">退出锄头信用吗</string>
+    <string name="scan">正在扫码</string>
+    <string name="scan_orc">正在扫描</string>
+    <string name="scan_tip"></string>
+    <string name="push_title"> 您收到一条新消息</string>
+    <string name="push_content"> 请点击查看</string>
+
+</resources>
