@@ -65,9 +65,11 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
+
+        <meta-data android:value="default" android:name="BMOB_CHANNEL"/>
         <activity
-            android:name="com.umeng.socialize.editorpage.ShareActivity"
-            android:screenOrientation="portrait">
+            android:name="cn.bmob.v3.update.UpdateDialogActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
         </activity>
 
         <meta-data android:name="com.alibaba.apigateway.appKey" android:value="24523781" />

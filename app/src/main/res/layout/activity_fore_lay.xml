@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main_lay"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_lay"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,40 +9,68 @@
         android:id="@+id/main_content_body"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
+        android:orientation="vertical">
 
         <RelativeLayout
             android:id="@+id/main_header_lay"
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:layout_alignWithParentIfMissing="true"
-            android:background="#D2691E">
+            android:background="@color/chutou_main_bg">
 
             <LinearLayout
+                android:id="@+id/main_left_lay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
+                android:visibility="gone"
                 android:layout_marginLeft="3dp"
                 android:orientation="vertical">
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/main_home_iv"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/authority_gray"
-                    app:civ_border_color="#001296db"
-                    app:civ_border_overlay="false"
-                    app:civ_border_width="2dp"/>
-                <TextView
-                    android:id="@+id/main_user_login"
+
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/main_home_iv"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/verify_ico"
+                        app:civ_border_color="#001296db"
+                        app:civ_border_overlay="false"
+                        app:civ_border_width="2dp" />
+                    <TextView
+                        android:id="@+id/main_user_login"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="center"
+                        android:text="未登录"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+                <TextView
+                    android:id="@+id/main_user_level"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
                     android:layout_gravity="center_vertical"
-                    android:textSize="14sp"
-                    android:text="未登录"
-                    android:textColor="#1296db" />
+
+                    android:layout_toRightOf="@id/main_left_lay"
+                    android:background="@drawable/btn_background_blue"
+                    android:gravity="center"
+                    android:padding="1dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="一级用户"
+                    android:textColor="@color/possible_result_points"
+                    android:textSize="16sp"
+                    android:visibility="gone" />
+
+
             </LinearLayout>
 
             <LinearLayout
@@ -57,9 +85,9 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:text="@string/app_name"
-                    android:textStyle="bold"
-                    android:textColor="@color/gold"
-                    android:textSize="24sp"/>
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <RelativeLayout
@@ -68,22 +96,23 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:visibility="gone"
                 android:layout_marginRight="3dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/main_message_iv"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="32dp"
                     android:src="@drawable/message"
                     app:civ_border_color="@color/royalblue"
                     app:civ_border_overlay="false"
                     app:civ_border_width="2dp"
-                    app:civ_fill_color="@color/royalblue"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginStart="32dp" />
+                    app:civ_fill_color="@color/royalblue" />
+
                 <TextView
                     android:id="@+id/main_message_unread_iv"
                     android:layout_width="5dp"
@@ -98,10 +127,10 @@
             android:id="@+id/main_bottom_lay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="50dp"
-            android:layout_weight="4"
             android:layout_alignParentBottom="true"
-            android:background="#D2691E"
+            android:layout_weight="4"
+            android:background="@color/white"
+            android:minHeight="50dp"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -119,16 +148,15 @@
                     android:id="@+id/main_withdraw_cv"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/up_rank"
-                   />
+                    android:src="@drawable/up_rank" />
 
                 <TextView
                     android:id="@+id/main_withdraw_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="提额"
-                    android:textColor="@color/gold"
                     android:layout_marginTop="5dp"
+                    android:text="提额"
+                    android:textColor="@color/chutou_btn"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -136,36 +164,37 @@
                 android:id="@+id/main_loan_lay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center"
-                android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
+
                 <ImageView
                     android:id="@+id/main_loan_cv"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/loan"
-                    />
+                    android:src="@drawable/loan" />
 
                 <TextView
                     android:id="@+id/main_loan_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:textColor="@color/gold"
-                    android:textSize="14sp"
-                    android:text="贷款" />
+                    android:text="贷款"
+                    android:textColor="@color/chutou_btn"
+                    android:textSize="14sp" />
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/main_card_lay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_weight="1"
-                android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -173,52 +202,53 @@
                     android:id="@+id/main_card_cv"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/card_affaire"
-                    />
+                    android:src="@drawable/card_affaire" />
 
                 <TextView
                     android:id="@+id/main_card_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/gold"
                     android:layout_marginTop="5dp"
-                    android:textSize="14sp"
-                    android:text="办卡" />
+                    android:text="办卡"
+                    android:textColor="@color/chutou_btn"
+                    android:textSize="14sp" />
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/main_bank_lay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center"
-                android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
+
                 <ImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/main_bank_cv"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/checkin"
-                    />
+                    android:src="@drawable/checkin" />
 
                 <TextView
                     android:id="@+id/main_bank_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/gold"
                     android:layout_marginTop="5dp"
-                    android:textSize="14sp"
-                    android:text="商户入驻" />
+                    android:text="商户入驻"
+                    android:textColor="@color/chutou_btn"
+                    android:textSize="14sp" />
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/main_mine_lay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_weight="1"
-                android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -226,17 +256,16 @@
                     android:id="@+id/main_mine_cv"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/mine"
-                    />
+                    android:src="@drawable/mine" />
 
                 <TextView
                     android:id="@+id/main_mine_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:textColor="@color/gold"
-                    android:textSize="14sp"
-                    android:text="我的" />
+                    android:text="我的"
+                    android:textColor="@color/chutou_btn"
+                    android:textSize="14sp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -245,16 +274,17 @@
             android:id="@+id/main_line_view"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_alignWithParentIfMissing="true"
             android:layout_above="@id/main_bottom_lay"
-            android:background="#DDDDDD"/>
+            android:layout_alignWithParentIfMissing="true"
+            android:background="#DDDDDD" />
+
         <FrameLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_above="@id/main_bottom_lay"
             android:layout_alignWithParentIfMissing="true"
             android:layout_below="@id/main_header_lay"
-            android:layout_above="@id/main_bottom_lay"
 
             />
     </RelativeLayout>

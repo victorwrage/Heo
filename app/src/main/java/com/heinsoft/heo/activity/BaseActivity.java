@@ -10,6 +10,7 @@ import com.heinsoft.heo.R;
 import com.heinsoft.heo.RRSApplication;
 import com.heinsoft.heo.fragment.FragmentMain;
 import com.heinsoft.heo.fragment.FragmentPay;
+import com.heinsoft.heo.fragment.FragmentRecord;
 import com.heinsoft.heo.fragment.FragmentRegisterLogin;
 import com.heinsoft.heo.fragment.FragmentVerify;
 import com.heinsoft.heo.fragment.FragmentWebview;
@@ -47,7 +48,7 @@ public class BaseActivity extends SlidingFragmentActivity implements ListFragmen
     protected FragmentPay fragment5;
     protected FragmentVerify fragment6;
     protected FragmentWebview fragment7;
- //   protected FragmentCamera fragment8;
+    protected FragmentRecord fragment8;
     private DoubleConfirm double_c;
     ListFragmentMenuSliding mFrag;
     SlidingMenu slidingMenu;
@@ -117,7 +118,7 @@ public class BaseActivity extends SlidingFragmentActivity implements ListFragmen
     protected void toggleSliding() {
         if (slidingMenu != null && !slidingMenu.isMenuShowing()) {
             slidingMenu.toggle();
-            refreshSliding();
+
         }
     }
 
@@ -166,6 +167,9 @@ public class BaseActivity extends SlidingFragmentActivity implements ListFragmen
                     }
                     gotoMain();
                     return true;
+                case 8:
+                    fragment8.back();
+                    return true;
                 default:
                     this.double_c.onKeyPressed(paramKeyEvent, this);
                     return true;
@@ -197,8 +201,23 @@ public class BaseActivity extends SlidingFragmentActivity implements ListFragmen
     }
 
     @Override
+    public void orderRecord() {
+        slidingMenu.toggle();
+    }
+
+    @Override
     public void showVerify() {
 
+    }
+
+    @Override
+    public void withdraw() {
+        slidingMenu.toggle();
+    }
+
+    @Override
+    public void update() {
+        slidingMenu.toggle();
     }
 
     protected void gotoLogin() {

@@ -83,17 +83,17 @@ public class DoubleConfirm {
 	/**
 	 * 二次确认要执行的事件
 	 * */
-	static public interface DoubleConfirmEvent {
+	 public interface DoubleConfirmEvent {
 		/**
 		 * 获取第一次按键时要弹出的提示说明的StringValue id
 		 * 
 		 * @return
 		 */
-		public int getFirstConfirmTipsId();
+		 int getFirstConfirmTipsId();
 
 		/**
 		 * 二次确认后要执行的操作
 		 */
-		public void doSecondConfirmEvent();
+		 void doSecondConfirmEvent();
 	}
 }

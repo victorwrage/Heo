@@ -16,6 +16,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.heinsoft.heo.R;
@@ -36,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cn.bmob.v3.update.BmobUpdateAgent;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -50,7 +52,7 @@ import okhttp3.ResponseBody;
  * @date: 2013-07-20 下午6:38:07
  */
 public class FragmentRegisterLogin extends BaseFragment implements IUserView {
-    private ILoginListener callBack;
+    private IRegisterListener callBack;
     ProgressDialog progressDialog;
     private final int STEP_MERCHAT_ID = 0;
     private final int STEP_PHONE_NO = STEP_MERCHAT_ID + 1;
@@ -104,6 +106,11 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
     @Bind(R.id.login_forget_tv)
     TextView login_forget_tv;
 
+    @Bind(R.id.update_iv)
+    ImageView update_iv;
+    @Bind(R.id.update_tv)
+    TextView update_tv;
+
     @Bind(R.id.login_qcode_et)
     EditText login_qcode_et;
     @Bind(R.id.login_qcode_iv)
@@ -114,6 +121,11 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
     LinearLayout login_pw_lay;
     @Bind(R.id.login_header)
     LinearLayout login_header;
+
+    @Bind(R.id.login_auto_activity)
+    RelativeLayout login_auto_activity;
+    @Bind(R.id.login_login_activity)
+    RelativeLayout login_login_activity;
 
     @Bind(R.id.header_btn)
     ImageView header_btn;
@@ -126,6 +138,7 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
     SharedPreferences sp;
     QueryPresent present;
     Utils util;
+    String merchant_id;
     private Map<String, String> temp_info;
     public FragmentRegisterLogin() {
 
@@ -134,7 +147,7 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
     @Override
     public void onAttach(Context activity) {
         try {
-            callBack = (ILoginListener) activity;
+            callBack = (IRegisterListener) activity;
         } catch (ClassCastException e) {
 
         }
@@ -176,6 +189,9 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
         RxView.clicks(login_forget_tv).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> forget());
         header_btn.setVisibility(View.GONE);
         header_title_icon.setVisibility(View.VISIBLE);
+
+        RxView.clicks(update_iv).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s ->  BmobUpdateAgent.forceUpdate(getContext()));
+        update_tv.setText("当前版本"+util.getAppVersionName(getContext()));
         return view;
     }
 
@@ -193,10 +209,11 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        login_phone_et.setFocusable(true);
-        login_phone_et.setFocusableInTouchMode(true);
-        login_phone_et.requestFocus();
-        //KLog.v("USER_INFO_SAVE"+sp.getBoolean(Constant.USER_INFO_SAVE,false));
+        login_phone_et.postDelayed(() -> autoLogin(),2000);
+
+    }
+
+    private void autoLogin(){
         if (sp.getBoolean(Constant.USER_INFO_SAVE, false)) {
             String user_phone = sp.getString(Constant.USER_INFO_PHONE, "");
             String user_pw = sp.getString(Constant.USER_INFO_PW, "");
@@ -205,7 +222,7 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
             login_phone_et.selectAll();
             login_password_et.setText(user_pw);
             if (!user_phone.equals("") && !user_pw.equals("")) {
-                showWaitDialog("正在登录");
+               // showWaitDialog("正在登录");
                 login_login_btn.setEnabled(false);
                 login_login_btn.setText("正在登录");
                 present.initRetrofit(Constant.URL_BAIBAO, false);
@@ -216,11 +233,19 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
                 String sign1 = util.getSign(StringA1);
                 StringA1.put(Constant.SIGN, sign1);
                 present.QueryLogin(Constant.AID, sign1, StringA1.get(STR_USER_NAME), StringA1.get(STR_PW));
+            }else{
+                login_phone_et.setFocusable(true);
+                login_phone_et.setFocusableInTouchMode(true);
+                login_phone_et.requestFocus();
+                login_auto_activity.setVisibility(View.GONE);
+                login_login_activity.setVisibility(View.VISIBLE);
             }
+        }else{
+            login_auto_activity.setVisibility(View.GONE);
+            login_login_activity.setVisibility(View.VISIBLE);
         }
 
     }
-
     private void fetchCode() {
         if (!util.verifyPhone(login_phone_et.getText().toString().trim())) {
             VToast.toast(getActivity(), "请输入正确的手机号码!");
@@ -243,6 +268,8 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
      * 显示登陆界面
      */
     private void login() {
+        login_auto_activity.setVisibility(View.GONE);
+        login_login_activity.setVisibility(View.VISIBLE);
         CUR_TYPE = TYPE_LOGIN;
         cur_step = STEP_PASSWORD;
         login_login_btn.setText("登录");
@@ -332,11 +359,11 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
                 (InputMethodManager) login_phone_et.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         inputManager.hideSoftInputFromWindow(login_phone_et.getWindowToken(), 0);
     }
+
     @Override
     public void ResolveLoginInfo(HeoCodeResponse info) {
         KLog.v(info.toString());
         hideWaitDialog();
-
 
         if (disposable != null) {
             disposable.dispose();
@@ -352,6 +379,8 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
             login_login_btn.setText("登录");
         }
         if (info.getErrcode() == null) {
+            login_auto_activity.setVisibility(View.GONE);
+            login_login_activity.setVisibility(View.VISIBLE);
             VToast.toast(getActivity(), "网络错误");
             return;
         }
@@ -362,7 +391,7 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
                 case TYPE_REGISTER:
                     editor = sp.edit();
                     editor.putString(Constant.USER_INFO_PHONE, temp_info.get(STR_PHONE));
-                    editor.putString(Constant.USER_INFO_PW, temp_info.get(STR_PHONE).substring(6));
+                    editor.putString(Constant.USER_INFO_PW, temp_info.get(STR_PHONE).substring(5));
                     editor.putString(Constant.USER_INFO_INVITE_CODE, login_invite_et.getText().toString().trim());
                     editor.putBoolean(Constant.USER_INFO_SAVE, true);
                     editor.commit();
@@ -370,18 +399,22 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
                     callBack.OnRegisterSuccess();
                     break;
                 case TYPE_LOGIN:
-                    if (info.getErrcode().equals("4012") && !sp.getString(Constant.USER_INFO_PHONE,"").equals(login_phone_et.getText().toString().trim())) {
-                        VToast.toast(getContext(), info.getErrmsg());
-                        return;
-                    }
-                    KLog.v(sp.getString(Constant.USER_INFO_PHONE,"")+"----"+ sp.getString(Constant.USER_INFO_PW,""));
                     if (sp.getString(Constant.USER_INFO_PHONE,"").equals(login_phone_et.getText().toString().trim())
                             && sp.getString(Constant.USER_INFO_PW,"").equals(login_password_et.getText().toString().trim())) {
                         // VToast.toast(getContext(), "请完成实名以操作APP!");
                         callBack.OnLoginSuccess();
                     } else {
+                        login_auto_activity.setVisibility(View.GONE);
+                        login_login_activity.setVisibility(View.VISIBLE);
                         VToast.toast(getContext(), info.getErrmsg());
                     }
+                    if (info.getErrcode().equals("4012") && !sp.getString(Constant.USER_INFO_PHONE,"").equals(login_phone_et.getText().toString().trim())) {
+                        login_auto_activity.setVisibility(View.GONE);
+                        login_login_activity.setVisibility(View.VISIBLE);
+                        VToast.toast(getContext(), info.getErrmsg());
+                        return;
+                    }
+                    KLog.v(sp.getString(Constant.USER_INFO_PHONE,"")+"----"+ sp.getString(Constant.USER_INFO_PW,""));
                     break;
             }
             return;
@@ -392,7 +425,7 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
         Constant.user_info.put(Constant.USER_INFO_USER_NAME, info.getUsername());
         Constant.user_info.put(Constant.USER_INFO_MERCHANT_ID, info.getMerchant_id());
         Constant.user_info.put(Constant.USER_INFO_PW, login_password_et.getText().toString().trim());
-
+        merchant_id = info.getMerchant_id();
         editor.putString(Constant.USER_INFO_PHONE, login_phone_et.getText().toString().trim());
         editor.putString(Constant.USER_INFO_PW, login_password_et.getText().toString().trim());
         editor.putString(Constant.USER_INFO_MERCHANT_ID, info.getMerchant_id());
@@ -407,7 +440,7 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
     private void fetchMerchantInfo() {
         HashMap<String, String> StringA1 = new HashMap<>();
         StringA1.put(Constant.AID_STR, Constant.AID);
-        StringA1.put(Constant.MERCHANT_ID, Constant.user_info.get(Constant.MERCHANT_ID));
+        StringA1.put(Constant.MERCHANT_ID, merchant_id);
 
         String sign1 = util.getSign(StringA1);
         StringA1.put(Constant.SIGN, sign1);
@@ -425,7 +458,6 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
         } else {
             KLog.v(info.toString());
             VToast.toast(getActivity(), info.getErrmsg());
-
             if (info.getErrcode().equals(STATUS_SUCCESS)) {
                 login_code_et.setText("");
                 if (disposable != null) {
@@ -461,7 +493,7 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
             login_qcode_lay.setVisibility(View.VISIBLE);
             Bitmap bitmap = util.stringtoBitmap(res);
             login_qcode_iv.setImageBitmap(bitmap);
-            timer(TIMER_QCODE);
+          //  timer(TIMER_QCODE);
         } else {
             VToast.toast(getActivity(), "验证码图片解析错误");
         }
@@ -497,7 +529,7 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
                 InputMethodManager inputManager =
                         (InputMethodManager) login_code_et.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputManager.showSoftInputFromInputMethod(login_code_et.getWindowToken(), 0);
-                timer(TIMER_CODE);
+             //   timer(TIMER_CODE);
                 cur_step = STEP_PASSWORD;
             }
         }
@@ -556,7 +588,7 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
             Constant.user_info.put(Constant.RATE, merchant.getRate());
             Constant.user_info.put(Constant.MERCHANT_ID, merchant.getMerchant_id());
             Constant.user_info.put(Constant.USER_INFO_IDCARD, merchant.getId_card());
-
+            Constant.user_info.put(Constant.LEVEL_NAME, merchant.getLevel_name());
             Constant.user_info.put(Constant.BANK, merchant.getBank());
             Constant.user_info.put(Constant.BANK_ACCOUNT_NAME, merchant.getBank_account_name());
             Constant.user_info.put(Constant.BANK_ACCOUNT, merchant.getBank_account());
@@ -576,7 +608,6 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
             Constant.user_info.put(Constant.PIC_3, merchant.getImages().getPic_3());
             Constant.user_info.put(Constant.PIC_4, merchant.getImages().getPic_4());
             Constant.user_info.put(Constant.PIC_5, merchant.getImages().getPic_5());
-
             callBack.OnLoginSuccess();
         }
     }
@@ -653,11 +684,10 @@ public class FragmentRegisterLogin extends BaseFragment implements IUserView {
     /**
      *
      */
-    public interface ILoginListener {
+    public interface IRegisterListener {
         /**
          */
         void OnLoginSuccess();
-
         /**
          */
         void OnRegisterSuccess();

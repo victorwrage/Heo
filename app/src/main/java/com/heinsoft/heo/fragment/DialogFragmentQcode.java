@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.heinsoft.heo.util.VToast;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.heinsoft.heo.R;
 import com.heinsoft.heo.present.QueryPresent;
@@ -111,6 +112,7 @@ public class DialogFragmentQcode extends DialogFragment {
 
     private void save() {
         util.saveImageToGallery(getContext(), qcode);
+        VToast.toast(getContext(),"二维码已经保存");
         dismiss();
     }
 
@@ -129,7 +131,6 @@ public class DialogFragmentQcode extends DialogFragment {
      *
      */
     public interface IQcodeListener {
-
         void laterRate();
     }
 }

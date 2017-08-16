@@ -27,7 +27,7 @@ import io.reactivex.disposables.Disposable;
 
 
 /**
- * @Description:TODO(更换手机界面)
+ * @Description:TODO(实名提示)
  * @author: xiaoyl
  * @date: 2013-07-20 下午6:38:07
  */
@@ -93,12 +93,18 @@ public class DialogFragmentPhotoTip extends DialogFragment  {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setCancelable(false);
-
+        int width = 300;
+        int height = 200;
+        if(Constant.photo_idx==2){
+             width = 200;
+             height = 300;
+        }
         Picasso.with(getContext()).load( new File(Constant.photo_path))
-                 .placeholder(R.drawable.card)
+              //  .resize(width,height)
+              //  .centerCrop()
+                .placeholder(R.drawable.card)
                 .error(R.drawable.download_failed)
                 .into(photo_img_iv);
-
       // cur_state = Integer.parseInt(Constant.user_info==null?"0": Constant.user_info.get(Constant.USER_INFO_ISAUTH));
     }
 

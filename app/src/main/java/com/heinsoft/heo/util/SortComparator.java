@@ -1,5 +1,6 @@
 package com.heinsoft.heo.util;
 
+import com.heinsoft.heo.bean.HeoMerchantInfoResponse;
 import com.socks.library.KLog;
 
 import java.text.SimpleDateFormat;
@@ -13,18 +14,22 @@ import java.util.Locale;
  */
 
 public class SortComparator implements Comparator<Object> {
-    private int type = 0;
-    private int order = 0;
 
-    public SortComparator(int type, int order) {
-        this.type = type;
-        this.order = order;
+
+    public SortComparator() {
+
     }
 
     @Override
     public int compare(Object o1, Object o2) {
-
-        return -1;
+        HeoMerchantInfoResponse oo1 = (HeoMerchantInfoResponse) o1;
+        HeoMerchantInfoResponse oo2 = (HeoMerchantInfoResponse) o2;
+        if (oo1.getCreate_name() != null && oo2.getCreate_time() != null) {
+            if (ValidateFormat(oo1.getCreate_time()) >= ValidateFormat(oo2.getCreate_time())) {
+                return -1;
+            }
+        }
+        return 1;
     }
 
     @Override

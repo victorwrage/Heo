@@ -18,14 +18,17 @@ public class Constant {
 
     public static final String PUBLIC_BMOB_KEY = "c740095be78b8d373d247ceb0eab3142";//BMOB APP KEY
 
-    public static final String PUBLIC_OCR_KEY = "OKD5ePUSeNF3xMzxq4N1HNqV";//baidu ocr api key
-    public static final String PUBLIC_OCR_SECRET = "sSBSqittqxAApCpOUNSrtdPxfKebOXrG";//secret
-    public static  String PUBLIC_OCR_TOKEN = "";//token
+    public static final String PUBLIC_OCR_KEY = "Z4vmVGAxTnVrjF32oVTPXDDd";//baidu ocr api key
+    public static final String PUBLIC_OCR_SECRET = "S9ioW1vGA9k4fHIDK43rmAXQZjdiZMcx";//secret
+
 
     public static final String MESSAGE_USER_NAME = "5234TSGF2";//账号
     public static  String MESSAGE_PASSWORD = "852741";//密码
 
+    public static  String TOP_AGENT_ID = "495687";//顶级代理商ID
+
     public static final String MESSAGE_CONTENT_PREFIX = "。您正在使用锄头信用，请勿向任何人提供您收到的验证码！";//短信内容
+    public static  String MESSAGE_UPDATE_TIP = "";//
 
     public static  String MESSAGE_CODE = "";	//生成的验证码
     public static final int MESSAGE_SEND_SUCCESS = 100;	//成功
@@ -48,6 +51,8 @@ public class Constant {
     public static final String USER_INFO_ID = "user_id";//缓存
     public static final String USER_INFO_MERCHANT_ID = "merchant_id";//缓存
     public static final String USER_INFO_PHONE = "user_phone";//缓存
+    public static final String UP_AGENT_ID = "up_agent_id";//缓存
+    public static final String REFERCODES = "refercodes";//缓存
     public static final String USER_INFO_TOKEN = "token";//缓存
     public static final String USER_INFO_EMAIL = "user_email";//缓存
     public static final String USER_INFO_IDCARD = "id_card_num";//缓存
@@ -69,6 +74,7 @@ public class Constant {
 
     public static final String SIGN = "sign";
     public static final String AID_STR = "aid";
+    public static final String PARENT_ID = "parent_id";
     public static final String MERCHANT_ID = "merchant_id";
     public static final String OPENID = "openid";
     public static final String REFERRAL_CODE = "referral_code";
@@ -80,9 +86,17 @@ public class Constant {
     public static final String CITY = "city";
     public static final String ADDRESS = "address";
     public static final String AGENT_ID = "agent_id";
+    public static final String AGENT_NAME = "agent_name";
+    public static final String MY_AGENT_ID = "my_agent_id";
+    public static final String MONEY = "money";
+    public static final String MY_AGENT_NAME = "my_agent_name";
+    public static final String PROFIT_BALANCE = "profit_balance";
+    public static final String PROFIT_HISTORY = "profit_history";
+    public static final String NUM = "num";
     public static final String ID_CARD = "id_card";
     public static final String ID_CARD_NAME = "id_card_name";
     public static final String BANK = "bank";
+    public static final String LEVEL_NAME = "level_name";
     public static final String SUB_BRANCH = "sub_branch";
     public static final String BANK_ACCOUNT = "bank_account";
     public static final String BANK_ACCOUNT_NAME = "bank_account_name";

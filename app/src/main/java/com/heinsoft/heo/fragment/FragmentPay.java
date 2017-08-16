@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -21,14 +20,9 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
 import com.heinsoft.heo.R;
 import com.heinsoft.heo.bean.HeoCodeResponse;
-import com.heinsoft.heo.bean.HeoProfitResponse;
 import com.heinsoft.heo.present.QueryPresent;
 import com.heinsoft.heo.util.Constant;
 import com.heinsoft.heo.util.Utils;
@@ -38,7 +32,6 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.socks.library.KLog;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
@@ -48,7 +41,7 @@ public class FragmentPay extends BaseFragment implements IPayView {
     IPayListener listener;
     ImageView header_btn, pay_qcode_iv;
     TextView header_title, pay_set_cash, pay_save_qcode, pay_cash_tv;
-    LinearLayout pay_step_2, pay_generate_qcode,header_btn_lay;
+    LinearLayout pay_step_2, pay_generate_qcode, header_btn_lay;
 
     RelativeLayout pay_step_1;
     Spinner pay_tunnel_cs;
@@ -99,7 +92,7 @@ public class FragmentPay extends BaseFragment implements IPayView {
     String qcode;
     int pay_type = 0;
     int pay_t;
-    private static final int IMAGE_HALFWIDTH = 40;//宽度值，影响中间图片大小
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -114,10 +107,10 @@ public class FragmentPay extends BaseFragment implements IPayView {
         header_btn_lay = (LinearLayout) view.findViewById(R.id.header_btn_lay);
 
         pay_tunnel_cs = (Spinner) view.findViewById(R.id.pay_tunnel_cs);
-        spinner_adapter = new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_item, pay_types);
-        spinner_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        bankAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, pay_types);
+        bankAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        pay_tunnel_cs.setAdapter(spinner_adapter);
+        pay_tunnel_cs.setAdapter(bankAdapter);
         pay_tunnel_cs.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -154,13 +147,13 @@ public class FragmentPay extends BaseFragment implements IPayView {
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        if(hidden){
+        if (hidden) {
             initView();
         }
     }
 
     public void step(int step) {
-        KLog.v(cur_step+"cur_step");
+        KLog.v(cur_step + "cur_step");
         switch (step) {
             case 0:
                 listener.finishPay();
@@ -174,38 +167,42 @@ public class FragmentPay extends BaseFragment implements IPayView {
     }
 
     private void generate() {
-        if( Float.parseFloat(pay_cash_tv.getText().toString())==0){
-            VToast.toast(getContext(),"支付金额不能为0");
+        if (Float.parseFloat(pay_cash_tv.getText().toString()) == 0) {
+            VToast.toast(getContext(), "支付金额不能为0");
+            return;
+        }
+        if (pay_type == 6) {
+            VToast.toast(getContext(), "快捷支付暂未开通");
             return;
         }
         showWaitDialog("正在生成二维码");
         pay_generate_qcode.setEnabled(false);
-        pay_t = 0;
+        pay_t = 2;
         int trade_t = 0;
         switch (pay_type) {
-            case 0:
-                pay_t = 0;
-                trade_t = 0;
-                break;
-            case 1:
+            case 5:
                 pay_t = 0;
                 trade_t = 1;
                 break;
-            case 2:
-                pay_t = 1;
+            case 4:
+                pay_t = 0;
                 trade_t = 0;
                 break;
             case 3:
                 pay_t = 1;
                 trade_t = 1;
                 break;
-            case 4:
-                pay_t = 2;
+            case 2:
+                pay_t = 1;
                 trade_t = 0;
                 break;
-            case 5:
+            case 1:
                 pay_t = 2;
                 trade_t = 1;
+                break;
+            case 0:
+                pay_t = 2;
+                trade_t = 0;
                 break;
         }
         present.initRetrofit(Constant.URL_BAIBAO, false);
@@ -213,12 +210,10 @@ public class FragmentPay extends BaseFragment implements IPayView {
 
         StringA1.put(Constant.AID_STR, Constant.AID);
         StringA1.put("pay_money", pay_cash_tv.getText().toString());
-        StringA1.put("pay_type", pay_t+"");
-        StringA1.put("trade_type", trade_t+"");
+        StringA1.put("pay_type", pay_t + "");
+        StringA1.put("trade_type", trade_t + "");
         String merchant_id = sp.getString(Constant.USER_INFO_MERCHANT_ID, "");
-        if (merchant_id.equals("")) {//test
-          //  merchant_id = Constant.CONSTANT_MERCHANT_ID;
-        }
+
         StringA1.put(Constant.MERCHANT_ID, merchant_id);
         String sign1 = util.getSign(StringA1);
         StringA1.put(Constant.SIGN, sign1);
@@ -230,6 +225,7 @@ public class FragmentPay extends BaseFragment implements IPayView {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView();
+
     }
 
     @Override
@@ -242,7 +238,7 @@ public class FragmentPay extends BaseFragment implements IPayView {
     private void code() {
         cur_step = 2;
         String pay_type_str = "";
-        switch(pay_t){
+        switch (pay_t) {
             case 0:
                 pay_type_str = "微信支付";
                 break;
@@ -253,25 +249,46 @@ public class FragmentPay extends BaseFragment implements IPayView {
                 pay_type_str = "QQ钱包支付";
                 break;
         }
-        try {
-            qrCodeBitmap = createCode("锄头信用", BitmapFactory.decodeResource(getResources(),R.mipmap.icon),BarcodeFormat.QR_CODE);
+       /* try {
+            Utils.LogoConfig logoConfig =  util.new LogoConfig();
+            Bitmap logoBitmap = logoConfig.modifyLogo(
+                    BitmapFactory.decodeResource(getResources(),
+                            R.mipmap.icon), BitmapFactory
+                            .decodeResource(getResources(),
+                                    R.mipmap.icon));
+            qrCodeBitmap= util.createCode("锄头信用", logoBitmap);
             pay_qcode_iv.setImageBitmap(qrCodeBitmap);
         } catch (WriterException e) {
             e.printStackTrace();
-        }
+        }*/
+
         try {
-            Bitmap qrCodeBitmap =createCode(qcode, BitmapFactory.decodeResource(getResources(),R.mipmap.icon),BarcodeFormat.QR_CODE);
+            Utils.LogoConfig logoConfig =  util.new LogoConfig();
+            Bitmap logoBitmap = logoConfig.modifyLogo(
+                    BitmapFactory.decodeResource(getResources(),
+                            R.mipmap.icon), BitmapFactory
+                            .decodeResource(getResources(),
+                                    R.mipmap.icon));
+            qrCodeBitmap= util.createCode(qcode, logoBitmap);
+
+            Bitmap topBmp = util.getImage(qrCodeBitmap.getWidth(),40,pay_type_str,36, getResources().getColor(R.color.chutou_txt));
+            Bitmap bottomBmp = util.getImage(qrCodeBitmap.getWidth(),40,"￥"+pay_cash_tv.getText().toString(),36, getResources().getColor(R.color.black));
+
+            Bitmap allBmp= util.addTopBmp(topBmp ,bottomBmp,qrCodeBitmap);
+
             fragmentQcode = new DialogFragmentQcode();
-            fragmentQcode.setQcode(qrCodeBitmap,pay_type_str,pay_cash_tv.getText().toString());
+            fragmentQcode.setQcode(allBmp, pay_type_str, pay_cash_tv.getText().toString());
             fragmentQcode.setCancelable(false);
             fragmentQcode.show(getFragmentManager(), "");
         } catch (WriterException e) {
-
+            e.printStackTrace();
         }
+
     }
 
     private void save() {
         util.saveImageToGallery(getContext(), qrCodeBitmap);
+        VToast.toast(getContext(),"二维码已经保存");
     }
 
     private void setCash() {
@@ -280,7 +297,6 @@ public class FragmentPay extends BaseFragment implements IPayView {
         showPopupWindow();
         cur_step = 2;
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -302,6 +318,7 @@ public class FragmentPay extends BaseFragment implements IPayView {
             popupWindow.setBackgroundDrawable(dw);
             passwordLis();
         }
+        tv_digit.setText("0");
         popupWindow.showAtLocation(View.inflate(getContext(), R.layout.pay_lay, null),
                 Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
 
@@ -387,7 +404,7 @@ public class FragmentPay extends BaseFragment implements IPayView {
         if (d.indexOf(".") == -1) {
             d += ".00";
         }
-        if (d.indexOf(".") == d.length()-1) {
+        if (d.indexOf(".") == d.length() - 1) {
             d += "00";
         }
         if (d.equals("0.0") || d.equals("0.00")) {
@@ -402,12 +419,12 @@ public class FragmentPay extends BaseFragment implements IPayView {
         pay_generate_qcode.setEnabled(true);
         KLog.v(info.toString());
         if (info.getErrmsg() != null) {
-        //    VToast.toast(getContext(), info.getErrmsg());
-        }else{
+            VToast.toast(getContext(), info.getErrmsg());
+        } else {
             VToast.toast(getContext(), "网络错误,请重试");
         }
-        if(info.getMerchant_id() == null){
-            cur_step=1;
+        if (info.getMerchant_id() == null) {
+            cur_step = 1;
             return;
         }
         qcode = info.getQrcode();
@@ -415,57 +432,30 @@ public class FragmentPay extends BaseFragment implements IPayView {
     }
 
     @Override
-    public void ResolveProfitInfo(HeoProfitResponse info) {
+    public void ResolveProfitInfo(HeoCodeResponse info) {
 
     }
 
-    /**
-     * 生成二维码
-     * @param string 二维码中包含的文本信息
-     * @param mBitmap logo图片
-     * @param format  编码格式
-     * [url=home.php?mod=space&uid=309376]@return[/url] Bitmap 位图
-     * @throws WriterException
-     */
-    public Bitmap createCode(String string,Bitmap mBitmap, BarcodeFormat format)
-            throws WriterException {
-        Matrix m = new Matrix();
-        float sx = (float) 2 * IMAGE_HALFWIDTH / mBitmap.getWidth();
-        float sy = (float) 2 * IMAGE_HALFWIDTH
-                / mBitmap.getHeight();
-        m.setScale(sx, sy);//设置缩放信息
-        //将logo图片按martix设置的信息缩放
-        mBitmap = Bitmap.createBitmap(mBitmap, 0, 0,
-                mBitmap.getWidth(), mBitmap.getHeight(), m, false);
-        MultiFormatWriter writer = new MultiFormatWriter();
-        Hashtable<EncodeHintType, String> hst = new Hashtable<EncodeHintType, String>();
-        hst.put(EncodeHintType.CHARACTER_SET, "UTF-8");//设置字符编码
-        BitMatrix matrix = writer.encode(string, format, 400, 400, hst);//生成二维码矩阵信息
-        int width = matrix.getWidth();//矩阵高度
-        int height = matrix.getHeight();//矩阵宽度
-        int halfW = width / 2;
-        int halfH = height / 2;
-        int[] pixels = new int[width * height];//定义数组长度为矩阵高度*矩阵宽度，用于记录矩阵中像素信息
-        for (int y = 0; y < height; y++) {//从行开始迭代矩阵
-            for (int x = 0; x < width; x++) {//迭代列
-                if (x > halfW - IMAGE_HALFWIDTH && x < halfW + IMAGE_HALFWIDTH
-                        && y > halfH - IMAGE_HALFWIDTH
-                        && y < halfH + IMAGE_HALFWIDTH) {//该位置用于存放图片信息
-//记录图片每个像素信息
-                    pixels[y * width + x] = mBitmap.getPixel(x - halfW
-                            + IMAGE_HALFWIDTH, y - halfH + IMAGE_HALFWIDTH);              } else {
-                    if (matrix.get(x, y)) {//如果有黑块点，记录信息
-                        pixels[y * width + x] = 0xff000000;//记录黑块信息
-                    }
-                }
-            }
-        }
-        Bitmap bitmap = Bitmap.createBitmap(width, height,
-                Bitmap.Config.ARGB_8888);
-        // 通过像素数组生成bitmap
-        bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-        return bitmap;
+    @Override
+    public void ResolveAgentOrderInfo(HeoCodeResponse info) {
+
     }
+
+    @Override
+    public void ResolveAgentProfitInfo(HeoCodeResponse info) {
+
+    }
+
+    @Override
+    public void ResolveAgentWithdrawInfo(HeoCodeResponse info) {
+
+    }
+
+    @Override
+    public void ResolveMerchantOrderInfo(HeoCodeResponse info) {
+
+    }
+
 
     public interface IPayListener {
         void finishPay();

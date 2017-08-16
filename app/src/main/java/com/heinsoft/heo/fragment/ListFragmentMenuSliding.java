@@ -18,8 +18,8 @@ import android.widget.TextView;
 import com.heinsoft.heo.R;
 import com.heinsoft.heo.activity.SettingActivity;
 import com.heinsoft.heo.util.Constant;
+import com.heinsoft.heo.util.Utils;
 import com.jakewharton.rxbinding2.view.RxView;
-import com.socks.library.KLog;
 
 import java.util.concurrent.TimeUnit;
 
@@ -35,6 +35,8 @@ import butterknife.ButterKnife;
 public class ListFragmentMenuSliding extends ListFragment implements OnItemClickListener {
     private final String COOKIE_KEY = "cookie";
     protected static final String PAGE_9 = "page_9";
+    protected final String VISIBLE_MONEY_LEFT_KEY = "visible_left_money";
+    protected final String VISIBLE_MONEY_RIGHT_KEY = "visible_right_money";
     @Bind(R.id.setting_header_lay)
     LinearLayout setting_header_lay;
     @Bind(R.id.setting_phone_tv)
@@ -43,8 +45,8 @@ public class ListFragmentMenuSliding extends ListFragment implements OnItemClick
     TextView setting_logout_tv;
     MenuAdapter adapter;
     IFragmentSlindingListtener listtener;
-    private String menus[] = {"实名认证"};
-    private int icons[] = {R.drawable.verify_ico};
+    private String menus[] = {"实名认证","交易记录","分润提现","更新锄头"};
+    private int icons[] = {R.drawable.doverify,R.drawable.record,R.drawable.withdraw,R.drawable.update_icon};
     SharedPreferences sp;
 
     @Override
@@ -64,6 +66,9 @@ public class ListFragmentMenuSliding extends ListFragment implements OnItemClick
         sp = getActivity().getSharedPreferences(COOKIE_KEY, 0);
         adapter = new MenuAdapter(getActivity());
         adapter.add(new SlidingMenuItem(menus[0], icons[0]));
+        adapter.add(new SlidingMenuItem(menus[1], icons[1]));
+        adapter.add(new SlidingMenuItem(menus[2], icons[2]));
+        adapter.add(new SlidingMenuItem(menus[3], icons[3]));
 //      adapter.add(new SlidingMenuItem(menus[1], icons[1]));
 //      adapter.add(new SlidingMenuItem(menus[2], icons[2]));
 //        adapter.add(new SlidingMenuItem(menus[3], icons[3]));
@@ -87,6 +92,9 @@ public class ListFragmentMenuSliding extends ListFragment implements OnItemClick
         //   sp.edit().clear().commit();
         setting_logout_tv.setVisibility(View.GONE);
         setting_phone_tv.setText("未实名");
+        sp.edit().putBoolean(VISIBLE_MONEY_LEFT_KEY, true).commit();
+        sp.edit().putBoolean(VISIBLE_MONEY_RIGHT_KEY, true).commit();
+        Constant.MESSAGE_UPDATE_TIP = "";
         listtener.clearDateFlag();
     }
 
@@ -117,9 +125,9 @@ public class ListFragmentMenuSliding extends ListFragment implements OnItemClick
     }
 
     public void initView() {
-        KLog.v("initView");
+
         if (setting_phone_tv != null) {
-            setting_phone_tv.setText(Constant.user_info == null ? "请实名认证" : Constant.user_info.get(Constant.USER_INFO_USER_NAME));
+            setting_phone_tv.setText(Constant.user_info == null ? sp.getString(Constant.USER_INFO_PHONE,"10000") : Constant.user_info.get(Constant.USER_INFO_USER_NAME));
             switch (Integer.parseInt(Constant.user_info == null ? "0" : Constant.user_info.get(Constant.USER_INFO_ISAUTH))) {
                 case 0:
                     menus[0] = "实名认证";
@@ -134,7 +142,11 @@ public class ListFragmentMenuSliding extends ListFragment implements OnItemClick
                     menus[0] = "更新认证资料";
                     break;
             }
-            adapter.notifyDataSetChanged();
+            adapter.clear();
+            adapter.add(new SlidingMenuItem(menus[0], icons[0]));
+            adapter.add(new SlidingMenuItem(menus[1], icons[1]));
+            adapter.add(new SlidingMenuItem(menus[2], icons[2]));
+            adapter.add(new SlidingMenuItem(menus[3], icons[3]));
         }
 
     }
@@ -147,14 +159,15 @@ public class ListFragmentMenuSliding extends ListFragment implements OnItemClick
                 listtener.verify();
                 break;
             case 1:
-
+                listtener.orderRecord();
                 // startPakage();
                 break;
             case 2:
-                startFeedBack();
+
+                listtener.withdraw();
                 break;
             case 3:
-                //    startSetting();
+                listtener.update();
                 break;
             case 4:
                 //  startEvaluate();
@@ -204,7 +217,39 @@ public class ListFragmentMenuSliding extends ListFragment implements OnItemClick
             ImageView img = (ImageView) convertView.findViewById(R.id.row_icon);
             img.setImageResource(getItem(position).getIcon());
             TextView txv = (TextView) convertView.findViewById(R.id.row_title);
+            TextView txv2 = (TextView) convertView.findViewById(R.id.row_msg);
+            TextView row_detail = (TextView) convertView.findViewById(R.id.row_detail);
             txv.setText(getItem(position).getName());
+
+
+            if(position==0) {
+                row_detail.setVisibility(View.VISIBLE);
+                row_detail.setBackground(getContext().getResources().getDrawable(R.drawable.text_bg2));
+                switch (Integer.parseInt(Constant.user_info == null ? "0" : Constant.user_info.get(Constant.USER_INFO_ISAUTH))) {
+                    case 0:
+
+                        row_detail.setText("未实名");
+                        break;
+                    case 1:
+                        row_detail.setBackground(getContext().getResources().getDrawable(R.drawable.text_bg));
+                        row_detail.setText("已实名");
+                        break;
+                    case 2:
+                        row_detail.setText("认证失效");
+                        break;
+                    case 3:
+                        row_detail.setText("认证未通过");
+                        break;
+                    default:
+                        row_detail.setText("未注册");
+                        break;
+                }
+
+            }
+            if(position==3) {
+                txv2.setVisibility(View.VISIBLE);
+                txv2.setText("当前版本:"+Utils.getInstance().getAppVersionName(getContext()));
+            }
             return convertView;
         }
     }
@@ -240,6 +285,10 @@ public class ListFragmentMenuSliding extends ListFragment implements OnItemClick
 
         void verify();
 
+        void orderRecord();
+
         void showVerify();
+        void withdraw();
+        void update();
     }
 }

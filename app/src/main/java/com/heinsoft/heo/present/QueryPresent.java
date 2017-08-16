@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 
+import com.heinsoft.heo.bean.HeoCodeObjResponse;
 import com.heinsoft.heo.bean.HeoCodeResponse;
-import com.heinsoft.heo.bean.HeoProfitResponse;
 import com.heinsoft.heo.model.IRequestMode;
 import com.heinsoft.heo.model.converter.CustomGsonConverter;
 import com.heinsoft.heo.util.Constant;
+import com.heinsoft.heo.view.IAgentView;
+import com.heinsoft.heo.view.IInviteView;
 import com.heinsoft.heo.view.IPayView;
 import com.heinsoft.heo.view.IUserEditView;
 import com.heinsoft.heo.view.IUserView;
@@ -63,9 +65,13 @@ public class QueryPresent implements IRequestPresent {
         context = context_;
     }
 
-    public static synchronized QueryPresent getInstance(Context context) {
+    public static  QueryPresent getInstance(Context context) {
         if (instance == null) {
-            return new QueryPresent(context);
+            synchronized (QueryPresent.class) {
+                if(instance==null) {
+                    return new QueryPresent(context);
+                }
+            }
         }
         return instance;
     }
@@ -282,7 +288,7 @@ public class QueryPresent implements IRequestPresent {
     @Override
     public void QueryProfit(String aid, String sign, String agent_id, String date_start, String date_end) {
         iRequestMode.QueryProfit(aid, sign, agent_id,date_start,date_end)
-                .onErrorReturn(s -> new HeoProfitResponse())
+                .onErrorReturn(s -> new HeoCodeResponse())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> ((IPayView) iView).ResolveProfitInfo(s));
@@ -313,6 +319,114 @@ public class QueryPresent implements IRequestPresent {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> ((IUserEditView) iView).ResolveEditMerchantPicInfo(s));
+    }
+
+    @Override
+    public void QueryBank(String aid, String sign) {
+        iRequestMode.QueryBank(aid, sign)
+                .onErrorReturn(s -> new HeoCodeResponse())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IVerifyView) iView).ResolveBankInfo(s));
+    }
+
+    @Override
+    public void QueryBankBranch(String aid, String sign, String bankname) {
+        iRequestMode.QueryBankBranch(aid, sign,bankname)
+                .onErrorReturn(s -> new HeoCodeResponse())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IVerifyView) iView).ResolvBankBranchInfo(s));
+    }
+
+    @Override
+    public void QueryInviteCode(String aid, String sign, String referral_code) {
+        iRequestMode.QueryInviteCode(aid, sign,referral_code)
+                .onErrorReturn(s -> new HeoCodeObjResponse())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IInviteView) iView).ResolveInviteInfo(s));
+    }
+
+    @Override
+    public void QueryUsefullInviteCode(String aid, String sign, String agent_id) {
+        iRequestMode.QueryUserfullInviteCode(aid, sign,agent_id)
+                .onErrorReturn(s -> new HeoCodeResponse())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IInviteView) iView).ResolveUsefullInviteInfo(s));
+    }
+
+    @Override
+    public void QueryObtainInviteCode(String aid, String sign, String agent_id, String num) {
+        iRequestMode.QueryObtainInviteCode(aid, sign,agent_id,num)
+                .onErrorReturn(s -> new HeoCodeResponse())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IInviteView) iView).ResolveObtainInviteInfo(s));
+    }
+
+    @Override
+    public void QueryAssignInviteCode(String aid, String sign, String up_agent_id, String agent_id, String refercodes) {
+        iRequestMode.QueryAssignInviteCode(aid, sign, up_agent_id, agent_id, refercodes)
+                .onErrorReturn(s -> new HeoCodeResponse())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IInviteView) iView).ResolveAssignInviteInfo(s));
+    }
+
+    @Override
+    public void QueryAddAgent(String aid, String sign, String parent_id, String phone,String agent_name, String contact, String province, String city, String rate, String bank, String sub_branch, String bank_account, String bank_account_name, String bankfirm, String account, String password) {
+        iRequestMode.QueryAddAgent(aid, sign, parent_id, phone, agent_name,contact, province, city, rate, bank, sub_branch, bank_account, bank_account_name, bankfirm, account, password)
+                .onErrorReturn(s -> new HeoCodeResponse())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IAgentView) iView).ResolveAddAgentInfo(s));
+    }
+
+    @Override
+    public void QueryAgentInfo(String aid, String sign, String phone) {
+        iRequestMode.QueryAgentInfo(aid, sign, phone)
+                .onErrorReturn(s -> new HeoCodeResponse())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IAgentView) iView).ResolveAgentInfo(s));
+    }
+
+    @Override
+    public void QueryAgentOrder(String aid, String sign, String agent_id, String date_start, String date_end) {
+        iRequestMode.QueryAgentOrder(aid, sign, agent_id, date_start, date_end)
+                .onErrorReturn(s -> new HeoCodeResponse())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IPayView) iView).ResolveAgentOrderInfo(s));
+    }
+
+    @Override
+    public void QueryAgentProfit(String aid, String sign, String agent_id, String date_start, String date_end) {
+        iRequestMode.QueryAgentProfit(aid, sign, agent_id, date_start, date_end)
+                .onErrorReturn(s -> new HeoCodeResponse())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IPayView) iView).ResolveAgentProfitInfo(s));
+    }
+
+    @Override
+    public void QueryAgentWithDraw(String aid, String sign, String agent_id, String money) {
+        iRequestMode.QueryAgentWithDraw(aid, sign, agent_id, money)
+                .onErrorReturn(s -> new HeoCodeResponse())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IPayView) iView).ResolveAgentWithdrawInfo(s));
+    }
+
+    @Override
+    public void QueryMerchantOrder(String aid, String sign, String merchant_id,  String date_start, String date_end) {
+        iRequestMode.QueryMerchantOrder(aid, sign, merchant_id, date_start, date_end)
+                .onErrorReturn(s -> new HeoCodeResponse())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IPayView) iView).ResolveMerchantOrderInfo(s));
     }
 
     @Override

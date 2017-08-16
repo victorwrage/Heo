@@ -28,6 +28,27 @@ public interface IRequestPresent {
                              String merchant_id,String pic_1, String pic_2,
                                String pic_3,String pic_4, String pic_5);
 
+    void QueryBank(String aid,String sign);
+
+    void QueryBankBranch(String aid,String sign,String bankname);
+
+
+    void QueryInviteCode(String aid,String sign ,String referral_code);
+    void QueryUsefullInviteCode(String aid,String sign ,String agent_id);
+    void QueryObtainInviteCode(String aid,String sign,String agent_id,String num);
+    void QueryAssignInviteCode(String aid,String sign,String up_agent_id,String agent_id,String refercodes);
+
+    void QueryAddAgent(String aid,String sign,String parent_id,String phone,String agent_name,String contact,String province,String city,String rate,
+                       String  bank,String sub_branch,String bank_account,String bank_account_name,String bankfirm,String account,String password);
+
+    void QueryAgentInfo(String aid,String sign,String phone);
+
+    void QueryAgentOrder(String aid,String sign,String agent_id,String date_start,String date_end);
+    void QueryAgentProfit(String aid,String sign,String agent_id,String date_start,String date_end);
+    void QueryAgentWithDraw(String aid,String sign,String agent_id,String money);
+    void QueryMerchantOrder(String aid,String sign,String merchant_id,String date_start,String date_end);
+
+
 
     void QueryQcode(String mobile);
     void QueryVerify(String mobile);

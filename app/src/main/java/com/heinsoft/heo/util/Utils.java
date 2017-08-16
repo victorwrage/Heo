@@ -7,6 +7,11 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -19,6 +24,12 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.socks.library.KLog;
 
 import java.io.BufferedReader;
@@ -32,6 +43,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
@@ -62,12 +74,267 @@ import java.util.regex.Pattern;
  */
 
 public class Utils {
+    /**
+     * 黑点颜色
+     */
+    private static final int BLACK = 0xFF000000;
+    /**
+     * 白色
+     */
+    private static final int WHITE = 0xFFFFFFFF;
+    /**
+     * 正方形二维码宽度
+     */
+    private static final int CODE_WIDTH = 440;
+    /**
+     * LOGO宽度值,最大不能大于二维码20%宽度值,大于可能会导致二维码信息失效
+     */
+    private static final int LOGO_WIDTH_MAX = CODE_WIDTH / 5;
+    /**
+     * LOGO宽度值,最小不能小于二维码10%宽度值,小于影响Logo与二维码的整体搭配
+     */
+    private static final int LOGO_WIDTH_MIN = CODE_WIDTH / 10;
     private final static String[] hexDigits = {
             "0", "1", "2", "3", "4", "5", "6",
             "7",
             "8", "9", "a", "b", "c", "d", "e",
             "f"};
 
+    public Bitmap addTopBmp(Bitmap topBitmap, Bitmap bottomBitmap, Bitmap contentBitmap) {
+
+        Bitmap bitmap = Bitmap.createBitmap(contentBitmap.getWidth(), contentBitmap.getHeight() + topBitmap.getHeight() + bottomBitmap.getHeight(), contentBitmap.getConfig());
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawBitmap(topBitmap, new Matrix(), null);
+        canvas.drawBitmap(contentBitmap, 0, topBitmap.getHeight(), null);
+        canvas.drawBitmap(bottomBitmap, 0, contentBitmap.getHeight() + topBitmap.getHeight(), null);
+        return bitmap;
+    }
+
+
+    /**
+     * 生成带LOGO的二维码
+     */
+    public Bitmap createCode2(String content, String top, Bitmap logoBitmap)
+            throws WriterException {
+        Bitmap topStr = getImage(20, 120, top, 16, Color.BLACK);
+
+
+        int logoWidth = logoBitmap.getWidth();
+        int logoHeight = logoBitmap.getHeight();
+        int logoHaleWidth = logoWidth >= CODE_WIDTH ? LOGO_WIDTH_MIN
+                : LOGO_WIDTH_MAX;
+        int logoHaleHeight = logoHeight >= CODE_WIDTH ? LOGO_WIDTH_MIN
+                : LOGO_WIDTH_MAX;
+        // 将logo图片按martix设置的信息缩放
+        Matrix m = new Matrix();
+        /*
+         * 给的源码是,由于CSDN上传的资源不能改动，这里注意改一下
+         * float sx = (float) 2*logoHaleWidth / logoWidth;
+         * float sy = (float) 2*logoHaleHeight / logoHeight;
+         */
+        float sx = (float) logoHaleWidth / logoWidth;
+        float sy = (float) logoHaleHeight / logoHeight;
+        m.setScale(sx, sy);// 设置缩放信息
+        Bitmap newLogoBitmap = Bitmap.createBitmap(logoBitmap, 0, 0, logoWidth,
+                logoHeight, m, false);
+        int newLogoWidth = newLogoBitmap.getWidth();
+        int newLogoHeight = newLogoBitmap.getHeight();
+        Hashtable<EncodeHintType, Object> hints = new Hashtable<>();
+        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);//设置容错级别,H为最高
+//        hints.put(EncodeHintType.MAX_SIZE, LOGO_WIDTH_MAX);// 设置图片的最大值
+//        hints.put(EncodeHintType.MIN_SIZE, LOGO_WIDTH_MIN);// 设置图片的最小值
+//        hints.put(EncodeHintType.MARGIN, 2);//设置白色边距值
+        // 生成二维矩阵,编码时指定大小,不要生成了图片以后再进行缩放,这样会模糊导致识别失败
+        BitMatrix matrix = new MultiFormatWriter().encode(content,
+                BarcodeFormat.QR_CODE, CODE_WIDTH, CODE_WIDTH, hints);
+        int width = matrix.getWidth();
+        int height = matrix.getHeight() + topStr.getHeight();
+        int halfW = width / 2;
+        int halfH = height / 2;
+        // 二维矩阵转为一维像素数组,也就是一直横着排了
+        int[] pixels = new int[width * height];
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+            /*
+                 * 取值范围,可以画图理解下
+                 * halfW + newLogoWidth / 2 - (halfW - newLogoWidth / 2) = newLogoWidth
+                 * halfH + newLogoHeight / 2 - (halfH - newLogoHeight) = newLogoHeight
+                 */
+                if (x > halfW - newLogoWidth / 2 && x < halfW + newLogoWidth / 2
+                        && y > halfH - newLogoHeight / 2 && y < halfH + newLogoHeight / 2) {// 该位置用于存放图片信息
+                    /*
+                     *  记录图片每个像素信息
+                     *  halfW - newLogoWidth / 2 < x < halfW + newLogoWidth / 2
+                     *  --> 0 < x - halfW + newLogoWidth / 2 < newLogoWidth
+                     *   halfH - newLogoHeight / 2  < y < halfH + newLogoHeight / 2
+                     *   -->0 < y - halfH + newLogoHeight / 2 < newLogoHeight
+                     *   刚好取值newLogoBitmap。getPixel(0-newLogoWidth,0-newLogoHeight);
+                     */
+                    pixels[y * width + x] = newLogoBitmap.getPixel(
+                            x - halfW + newLogoWidth / 2, y - halfH + newLogoHeight / 2);
+                } else {
+                    pixels[y * width + x] = matrix.get(x, y) ? BLACK : WHITE;// 设置信息
+                }
+            }
+        }
+        Bitmap bitmap = Bitmap.createBitmap(width, height,
+                Bitmap.Config.ARGB_8888);
+        // 通过像素数组生成bitmap,具体参考api
+        bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+        return bitmap;
+    }
+
+
+    public static Bitmap getImage(int width, int height, String mString, int size, int color) {
+        int x = width;
+        int y = height;
+
+        Bitmap bmp = Bitmap.createBitmap(x, y, Bitmap.Config.ARGB_8888);
+        //图象大小要根据文字大小算下,以和文本长度对应
+        Canvas canvasTemp = new Canvas(bmp);
+        canvasTemp.drawColor(Color.WHITE);
+        Paint p = new Paint();
+        p.setColor(color);
+        // p.setTypeface(Typeface.create("宋体", Typeface.BOLD));
+        p.setAntiAlias(true);//去除锯齿
+        p.setFilterBitmap(true);//对位图进行滤波处理
+        p.setTextSize(scalaFonts(size));
+        float tX = (x - getFontlength(p, mString)) / 2;
+        float tY = (y - getFontHeight(p)) / 2 + getFontLeading(p);
+        canvasTemp.drawText(mString, tX, tY, p);
+
+        return bmp;
+    }
+
+    /**
+     * 根据屏幕系数比例获取文字大小
+     *
+     * @return
+     */
+    private static float scalaFonts(int size) {
+        //暂未实现
+        return size;
+    }
+
+    /**
+     * @return 返回指定笔和指定字符串的长度
+     */
+    public static float getFontlength(Paint paint, String str) {
+        return paint.measureText(str);
+    }
+
+    /**
+     * @return 返回指定笔的文字高度
+     */
+    public static float getFontHeight(Paint paint) {
+        Paint.FontMetrics fm = paint.getFontMetrics();
+        return fm.descent - fm.ascent;
+    }
+
+    /**
+     * @return 返回指定笔离文字顶部的基准距离
+     */
+    public static float getFontLeading(Paint paint) {
+        Paint.FontMetrics fm = paint.getFontMetrics();
+        return fm.leading - fm.ascent;
+    }
+
+    /**
+     * 生成带LOGO的二维码
+     */
+
+    public Bitmap createCode(String content, Bitmap logoBitmap)
+            throws WriterException {
+        int logoWidth = logoBitmap.getWidth();
+        int logoHeight = logoBitmap.getHeight();
+        int logoHaleWidth = logoWidth >= CODE_WIDTH ? LOGO_WIDTH_MIN
+                : LOGO_WIDTH_MAX;
+        int logoHaleHeight = logoHeight >= CODE_WIDTH ? LOGO_WIDTH_MIN
+                : LOGO_WIDTH_MAX;
+        // 将logo图片按martix设置的信息缩放
+        Matrix m = new Matrix();
+        /*
+         * 给的源码是,由于CSDN上传的资源不能改动，这里注意改一下
+         * float sx = (float) 2*logoHaleWidth / logoWidth;
+         * float sy = (float) 2*logoHaleHeight / logoHeight;
+         */
+        float sx = (float) logoHaleWidth / logoWidth;
+        float sy = (float) logoHaleHeight / logoHeight;
+        m.setScale(sx, sy);// 设置缩放信息
+        Bitmap newLogoBitmap = Bitmap.createBitmap(logoBitmap, 0, 0, logoWidth,
+                logoHeight, m, false);
+        int newLogoWidth = newLogoBitmap.getWidth();
+        int newLogoHeight = newLogoBitmap.getHeight();
+        Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
+        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);//设置容错级别,H为最高
+//        hints.put(EncodeHintType.MAX_SIZE, LOGO_WIDTH_MAX);// 设置图片的最大值
+//        hints.put(EncodeHintType.MIN_SIZE, LOGO_WIDTH_MIN);// 设置图片的最小值
+//        hints.put(EncodeHintType.MARGIN, 2);//设置白色边距值
+        // 生成二维矩阵,编码时指定大小,不要生成了图片以后再进行缩放,这样会模糊导致识别失败
+        BitMatrix matrix = new MultiFormatWriter().encode(content,
+                BarcodeFormat.QR_CODE, CODE_WIDTH, CODE_WIDTH, hints);
+        int width = matrix.getWidth();
+        int height = matrix.getHeight();
+        int halfW = width / 2;
+        int halfH = height / 2;
+        // 二维矩阵转为一维像素数组,也就是一直横着排了
+        int[] pixels = new int[width * height];
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+            /*
+                 * 取值范围,可以画图理解下
+                 * halfW + newLogoWidth / 2 - (halfW - newLogoWidth / 2) = newLogoWidth
+                 * halfH + newLogoHeight / 2 - (halfH - newLogoHeight) = newLogoHeight
+                 */
+                if (x > halfW - newLogoWidth / 2 && x < halfW + newLogoWidth / 2
+                        && y > halfH - newLogoHeight / 2 && y < halfH + newLogoHeight / 2) {// 该位置用于存放图片信息
+                    /*
+                     *  记录图片每个像素信息
+                     *  halfW - newLogoWidth / 2 < x < halfW + newLogoWidth / 2
+                     *  --> 0 < x - halfW + newLogoWidth / 2 < newLogoWidth
+                     *   halfH - newLogoHeight / 2  < y < halfH + newLogoHeight / 2
+                     *   -->0 < y - halfH + newLogoHeight / 2 < newLogoHeight
+                     *   刚好取值newLogoBitmap。getPixel(0-newLogoWidth,0-newLogoHeight);
+                     */
+                    pixels[y * width + x] = newLogoBitmap.getPixel(
+                            x - halfW + newLogoWidth / 2, y - halfH + newLogoHeight / 2);
+                } else {
+                    pixels[y * width + x] = matrix.get(x, y) ? BLACK : WHITE;// 设置信息
+                }
+            }
+        }
+        Bitmap bitmap = Bitmap.createBitmap(width, height,
+                Bitmap.Config.ARGB_8888);
+        // 通过像素数组生成bitmap,具体参考api
+        bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+        return bitmap;
+    }
+
+    public class LogoConfig {
+        /**
+         * @return 返回带有白色背景框logo
+         */
+        public Bitmap modifyLogo(Bitmap bgBitmap, Bitmap logoBitmap) {
+
+            int bgWidth = bgBitmap.getWidth();
+            int bgHeigh = bgBitmap.getHeight();
+            //通过ThumbnailUtils压缩原图片，并指定宽高为背景图的3/4
+            logoBitmap = ThumbnailUtils.extractThumbnail(logoBitmap, bgWidth * 3 / 4, bgHeigh * 3 / 4, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+            Bitmap cvBitmap = Bitmap.createBitmap(bgWidth, bgHeigh, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(cvBitmap);
+            // 开始合成图片
+            canvas.drawBitmap(bgBitmap, 0, 0, null);
+            canvas.drawBitmap(logoBitmap, (bgWidth - logoBitmap.getWidth()) / 2, (bgHeigh - logoBitmap.getHeight()) / 2, null);
+            canvas.save(Canvas.ALL_SAVE_FLAG);// 保存
+            canvas.restore();
+            if (cvBitmap.isRecycled()) {
+                cvBitmap.recycle();
+            }
+            return cvBitmap;
+        }
+    }
 
     private static Utils instance = null;
 
@@ -123,6 +390,16 @@ public class Utils {
         return sb.toString();
     }
 
+    //两个Double数相加
+    public Double add(Double v1, Double v2) {
+
+        BigDecimal b1 = new BigDecimal(v1.toString());
+        BigDecimal b2 = new BigDecimal(v2.toString());
+
+        return b1.add(b2).doubleValue();
+
+    }
+
     public String getSign(HashMap<String, String> StringA) {
         //字典序排序
         Collection<String> keyset = StringA.keySet();
@@ -141,8 +418,8 @@ public class Utils {
         sb.append("&key=");
         sb.append(Constant.PUBLIC_KEY);
         KLog.v(sb.toString());
-        KLog.v( MD5(sb.toString()));
-        return MD5(sb.toString());
+        KLog.v(getMD5(sb.toString()));
+        return getMD5(sb.toString());
     }
 
     /**
@@ -226,15 +503,40 @@ public class Utils {
         return sb.replace(0, card.length() - 4, card.substring(0, card.length() - 4)).toString();
     }
 
+
     public long getTodayZero() {
         Date date = new Date();
         long l = 24 * 60 * 60 * 1000; //每天的毫秒数
         //date.getTime()是现在的毫秒数，它 减去 当天零点到现在的毫秒数（ 现在的毫秒数%一天总的毫秒数，取余。），理论上等于零点的毫秒数，不过这个毫秒数是UTC+0时区的。
         //减8个小时的毫秒值是为了解决时区的问题。
-        return (date.getTime() - (date.getTime() % l) - (long) 8 * 60 * 60 * 1000 - (long) 24 * 60 * 60 * 1000);
+        return (date.getTime() - (date.getTime() % l) - (long) 8 * 60 * 60 * 1000 - l);
     }
 
-    public  File getSaveFile(Context context) {
+
+    /**
+     * 获取前n天日期、后n天日期
+     *
+     * @param distanceDay 前几天 如获取前7天日期则传-7即可；如果后7天则传7
+     * @return
+     */
+    public  String getOldDate(int distanceDay) {
+        SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd");
+        Date beginDate = new Date();
+        Calendar date = Calendar.getInstance();
+        date.setTime(beginDate);
+        date.set(Calendar.DATE, date.get(Calendar.DATE) + distanceDay);
+        Date endDate = null;
+        try {
+            endDate = dft.parse(dft.format(date.getTime()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        KLog.d("前"+distanceDay+"天==" + dft.format(endDate));
+        return dft.format(endDate);
+    }
+
+
+    public File getSaveFile(Context context) {
 
         // 首先保存图片
         File appDir = new File(Environment.getExternalStorageDirectory(), "chutou");
@@ -248,7 +550,7 @@ public class Utils {
         return file;
     }
 
-    public String getRealPathFromURI(Context context,Uri contentURI) {
+    public String getRealPathFromURI(Context context, Uri contentURI) {
         String result;
         Cursor cursor = context.getContentResolver().query(contentURI, null, null, null, null);
         if (cursor == null) { // Source is Dropbox or other similar local file path
@@ -274,7 +576,7 @@ public class Utils {
         return false;
     }
 
-    public  void saveImageToGallery(Context context, Bitmap bmp) {
+    public String saveImageToGallery(Context context, Bitmap bmp) {
         // 首先保存图片
         File appDir = new File(Environment.getExternalStorageDirectory(), "chutou");
         if (!appDir.exists()) {
@@ -302,7 +604,7 @@ public class Utils {
         }
         // 最后通知图库更新
         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + appDir.getAbsolutePath())));
-        VToast.toast(context,"二维码已经保存");
+        return file.getAbsolutePath();
     }
 
     public String UrlEnco(String secret) {
@@ -324,6 +626,39 @@ public class Utils {
             return mBInteger.toString(16);
         } catch (NoSuchAlgorithmException e) {
             return null;
+        }
+    }
+
+    public String getMD5(String info)
+    {
+        try
+        {
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            md5.update(info.getBytes("UTF-8"));
+            byte[] encryption = md5.digest();
+
+            StringBuffer strBuf = new StringBuffer();
+            for (int i = 0; i < encryption.length; i++)
+            {
+                if (Integer.toHexString(0xff & encryption[i]).length() == 1)
+                {
+                    strBuf.append("0").append(Integer.toHexString(0xff & encryption[i]));
+                }
+                else
+                {
+                    strBuf.append(Integer.toHexString(0xff & encryption[i]));
+                }
+            }
+
+            return strBuf.toString();
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            return "";
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            return "";
         }
     }
 
@@ -416,9 +751,9 @@ public class Utils {
         return sdf.format(new Date());
     }
 
-    public String currentDate(long time,String format) {
+    public String currentDate(long time, String format) {
         SimpleDateFormat sdf = new SimpleDateFormat(format);
-        if(time!=-1) {
+        if (time != -1) {
             return sdf.format(new Date(time));
         }
         return sdf.format(new Date());
@@ -590,7 +925,7 @@ public class Utils {
      * @param
      * @return
      */
-    public  boolean isDate(String strDate) {
+    public boolean isDate(String strDate) {
         Pattern pattern = Pattern
                 .compile("^((\\d{2}(([02468][048])|([13579][26]))[\\-\\/\\s]?((((0?[13578])|(1[02]))[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(3[01])))|(((0?[469])|(11))[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(30)))|(0?2[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])))))|(\\d{2}(([02468][1235679])|([13579][01345789]))[\\-\\/\\s]?((((0?[13578])|(1[02]))[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(3[01])))|(((0?[469])|(11))[\\-\\/\\s]?((0?[1-9])|([1-2][0-9])|(30)))|(0?2[\\-\\/\\s]?((0?[1-9])|(1[0-9])|(2[0-8]))))))(\\s(((0?[0-9])|([1-2][0-3]))\\:([0-5]?[0-9])((\\s)|(\\:([0-5]?[0-9])))))?$");
         Matcher m = pattern.matcher(strDate);
@@ -602,38 +937,38 @@ public class Utils {
     }
 
 
-    public  String getDeviceId(Context context) {
+    public String getDeviceId(Context context) {
         String deviceId = "";
-        if (deviceId != null && !"" .equals(deviceId)) {
+        if (deviceId != null && !"".equals(deviceId)) {
             return deviceId;
         }
-        if (deviceId == null || "" .equals(deviceId)) {
+        if (deviceId == null || "".equals(deviceId)) {
             try {
                 deviceId = getLocalMac(context).replace(":", "");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        if (deviceId == null || "" .equals(deviceId)) {
+        if (deviceId == null || "".equals(deviceId)) {
             try {
                 deviceId = getAndroidId(context);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        if (deviceId == null || "" .equals(deviceId)) {
+        if (deviceId == null || "".equals(deviceId)) {
 
-            if (deviceId == null || "" .equals(deviceId)) {
+            if (deviceId == null || "".equals(deviceId)) {
                 UUID uuid = UUID.randomUUID();
                 deviceId = uuid.toString().replace("-", "");
-               // writeDeviceID(deviceId);
+                // writeDeviceID(deviceId);
             }
         }
         return deviceId;
     }
 
     // IMEI码
-    private  String getIMIEStatus(Context context) {
+    private String getIMIEStatus(Context context) {
         TelephonyManager tm = (TelephonyManager) context
                 .getSystemService(Context.TELEPHONY_SERVICE);
         String deviceId = tm.getDeviceId();
@@ -641,7 +976,7 @@ public class Utils {
     }
 
     // Mac地址
-    private  String getLocalMac(Context context) {
+    private String getLocalMac(Context context) {
         WifiManager wifi = (WifiManager) context
                 .getSystemService(Context.WIFI_SERVICE);
         WifiInfo info = wifi.getConnectionInfo();

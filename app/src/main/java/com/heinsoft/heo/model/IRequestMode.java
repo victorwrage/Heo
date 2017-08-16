@@ -1,7 +1,7 @@
 package com.heinsoft.heo.model;
 
+import com.heinsoft.heo.bean.HeoCodeObjResponse;
 import com.heinsoft.heo.bean.HeoCodeResponse;
-import com.heinsoft.heo.bean.HeoProfitResponse;
 import com.heinsoft.heo.util.Constant;
 
 import java.util.Map;
@@ -49,6 +49,67 @@ public interface IRequestMode {
     Flowable<HeoCodeResponse> QueryMerchantID(@Field("aid") String aid, @Field("sign") String sign,
                                               @Field("merchant_id") String merchant_id);
 
+    @FormUrlEncoded
+    @POST("index.php?g=Api&m=Refercode&a=check")
+    Flowable<HeoCodeObjResponse> QueryInviteCode(@Field("aid") String aid, @Field("sign") String sign,
+                                                 @Field("referral_code") String referral_code);
+
+    @FormUrlEncoded
+    @POST("index.php?g=Api&m=Agent&a=usefulcode")
+    Flowable<HeoCodeResponse> QueryUserfullInviteCode(@Field("aid") String aid, @Field("sign") String sign,
+                                              @Field("agent_id") String agent_id);
+
+    @FormUrlEncoded
+    @POST("index.php?g=Api&m=Refercode&a=add")
+    Flowable<HeoCodeResponse> QueryObtainInviteCode(@Field("aid") String aid, @Field("sign") String sign,
+                                              @Field("agent_id") String agent_id, @Field("num") String num);
+
+    @FormUrlEncoded
+    @POST("index.php?g=Api&m=Refercode&a=allot")
+    Flowable<HeoCodeResponse> QueryAssignInviteCode(@Field("aid") String aid, @Field("sign") String sign,
+                                                    @Field("up_agent_id") String up_agent_id, @Field("agent_id") String agent_id, @Field("refercodes") String refercodes);
+
+    @FormUrlEncoded
+    @POST("index.php?g=Api&m=Agent&a=add")
+    Flowable<HeoCodeResponse> QueryAddAgent(@Field("aid") String aid, @Field("sign") String sign,
+                                            @Field("parent_id") String parent_id, @Field("phone") String phone, @Field("agent_name")String agent_name, @Field("contact") String contact,
+     @Field("province") String province, @Field("city") String city, @Field("rate") String rate, @Field("bank") String bank, @Field("sub_branch") String sub_branch,
+                                            @Field("bank_account") String bank_account,
+                                            @Field("bank_account_name") String bank_account_name, @Field("bankfirm") String bankfirm,
+                                            @Field("account") String account, @Field("password") String password);
+
+    @FormUrlEncoded
+    @POST("index.php?g=Api&m=Agent&a=getInfo")
+    Flowable<HeoCodeResponse> QueryAgentInfo(@Field("aid") String aid, @Field("sign") String sign,
+                                                    @Field("phone") String phone);
+
+
+    @FormUrlEncoded
+    @POST("index.php?g=Api&m=Order&a=getInfo")
+    Flowable<HeoCodeResponse> QueryMerchantOrder(@Field("aid") String aid, @Field("sign") String sign,
+                                                    @Field("merchant_id") String merchant_id,
+                                                 @Field("date_start") String date_start, @Field("date_end") String date_end);
+
+
+    @FormUrlEncoded
+    @POST("index.php?g=Api&m=Agent&a=order")
+    Flowable<HeoCodeResponse> QueryAgentOrder(@Field("aid") String aid, @Field("sign") String sign,
+                                                 @Field("agent_id") String agent_id,
+                                                 @Field("date_start") String date_start, @Field("date_end") String date_end);
+
+    @FormUrlEncoded
+    @POST("index.php?g=Api&m=Profit&a=index")
+    Flowable<HeoCodeResponse> QueryAgentProfit(@Field("aid") String aid, @Field("sign") String sign,
+                                              @Field("agent_id") String agent_id,
+                                              @Field("date_start") String date_start, @Field("date_end") String date_end);
+
+    @FormUrlEncoded
+    @POST("index.php?g=Api&m=Agent&a=withdraw")
+    Flowable<HeoCodeResponse> QueryAgentWithDraw(@Field("aid") String aid, @Field("sign") String sign,
+                                               @Field("agent_id") String agent_id,
+                                               @Field("money") String money);
+
+
 
     @FormUrlEncoded
     @POST("index.php?g=Api&m=Merchant&a=editInfo")
@@ -72,10 +133,18 @@ public interface IRequestMode {
 
     @FormUrlEncoded
     @POST("index.php?g=Api&m=Profit&a=index")
-    Flowable<HeoProfitResponse> QueryProfit(@Field("aid") String aid, @Field("sign") String sign,
+    Flowable<HeoCodeResponse> QueryProfit(@Field("aid") String aid, @Field("sign") String sign,
                                                 @Field("agent_id") String agent_id,
                                                 @Field("date_start") String date_start,
                                                 @Field("date_end") String date_end);
+
+    @FormUrlEncoded
+    @POST("index.php?g=Api&m=Bank&a=main")
+    Flowable<HeoCodeResponse> QueryBank(@Field("aid") String aid, @Field("sign") String sign);
+
+    @FormUrlEncoded
+    @POST("index.php?g=Api&m=Bank&a=branch")
+    Flowable<HeoCodeResponse> QueryBankBranch(@Field("aid") String aid, @Field("sign") String sign, @Field("bankname") String bankname);
 
     @FormUrlEncoded
     @POST("index.php?g=Api&m=Api&a=newPass")

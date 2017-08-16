@@ -9,6 +9,229 @@ package com.heinsoft.heo.bean;
 public class HeoMerchantInfoResponse {
     String errcode;
 
+    String en;
+    String code;
+    String level_name;
+    String type;
+    String bankcode;
+
+    public String getLevel_name() {
+        return level_name;
+    }
+
+    public void setLevel_name(String level_name) {
+        this.level_name = level_name;
+    }
+
+    String bankname;
+    String banktype;
+    String order_id;
+    String pay_time;
+    String pay_money;
+
+    public String getProfit_balance() {
+        return profit_balance;
+    }
+
+    public void setProfit_balance(String profit_balance) {
+        this.profit_balance = profit_balance;
+    }
+
+    public String getProfit_history() {
+        return profit_history;
+    }
+
+    public void setProfit_history(String profit_history) {
+        this.profit_history = profit_history;
+    }
+
+    String procedure_fee;
+    String cashier;
+    String wr_fee;
+    String profit_balance;
+    String profit_history;
+
+    public String getWr_fee() {
+        return wr_fee;
+    }
+
+    public void setWr_fee(String wr_fee) {
+        this.wr_fee = wr_fee;
+    }
+
+    public String getOrder_id() {
+        return order_id;
+    }
+
+    public void setOrder_id(String order_id) {
+        this.order_id = order_id;
+    }
+
+    public String getPay_time() {
+        return pay_time;
+    }
+
+    public void setPay_time(String pay_time) {
+        this.pay_time = pay_time;
+    }
+
+    public String getPay_money() {
+        return pay_money;
+    }
+
+    public void setPay_money(String pay_money) {
+        this.pay_money = pay_money;
+    }
+
+    public String getProcedure_fee() {
+        return procedure_fee;
+    }
+
+    public void setProcedure_fee(String procedure_fee) {
+        this.procedure_fee = procedure_fee;
+    }
+
+    public String getT0_fee() {
+        return t0_fee;
+    }
+
+    public void setT0_fee(String t0_fee) {
+        this.t0_fee = t0_fee;
+    }
+
+    public String getCashier() {
+        return cashier;
+    }
+
+    public void setCashier(String cashier) {
+        this.cashier = cashier;
+    }
+
+    public String getOrder_desc() {
+        return order_desc;
+    }
+
+    public void setOrder_desc(String order_desc) {
+        this.order_desc = order_desc;
+    }
+
+    public String getChannel_name() {
+        return channel_name;
+    }
+
+    public void setChannel_name(String channel_name) {
+        this.channel_name = channel_name;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    String order_desc;
+    String channel_name;
+    String source;
+
+
+    public String getBatch_no() {
+        return batch_no;
+    }
+
+    public void setBatch_no(String batch_no) {
+        this.batch_no = batch_no;
+    }
+
+    public String getReferral_code() {
+        return referral_code;
+    }
+
+    public void setReferral_code(String referral_code) {
+        this.referral_code = referral_code;
+    }
+
+    public String getHas_bind() {
+        return has_bind;
+    }
+
+    public void setHas_bind(String has_bind) {
+        this.has_bind = has_bind;
+    }
+
+    public String getOpen_id() {
+        return open_id;
+    }
+
+    public void setOpen_id(String open_id) {
+        this.open_id = open_id;
+    }
+
+    String batch_no;
+    String referral_code;
+    String has_bind;
+    String open_id;
+
+    public String getBankcode() {
+        return bankcode;
+    }
+
+    public void setBankcode(String bankcode) {
+        this.bankcode = bankcode;
+    }
+
+    public String getBankname() {
+        return bankname;
+    }
+
+    public void setBankname(String bankname) {
+        this.bankname = bankname;
+    }
+
+    public String getBanktype() {
+        return banktype;
+    }
+
+    public void setBanktype(String banktype) {
+        this.banktype = banktype;
+    }
+
+    public String getCitycode() {
+        return citycode;
+    }
+
+    public void setCitycode(String citycode) {
+        this.citycode = citycode;
+    }
+
+    String citycode;
+
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getEn() {
+        return en;
+    }
+
+    public void setEn(String en) {
+        this.en = en;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
     public String getErrcode() {
         return errcode;
     }
@@ -205,6 +428,54 @@ public class HeoMerchantInfoResponse {
         return day;
     }
 
+    public String getStatistics_date() {
+        return statistics_date;
+    }
+
+    public void setStatistics_date(String statistics_date) {
+        this.statistics_date = statistics_date;
+    }
+
+    public String getAgent_name() {
+        return agent_name;
+    }
+
+    public void setAgent_name(String agent_name) {
+        this.agent_name = agent_name;
+    }
+
+    public String getOrder_amount() {
+        return order_amount;
+    }
+
+    public void setOrder_amount(String order_amount) {
+        this.order_amount = order_amount;
+    }
+
+    public String getTotal_money() {
+        return total_money;
+    }
+
+    public void setTotal_money(String total_money) {
+        this.total_money = total_money;
+    }
+
+    public String getTotal_fee() {
+        return total_fee;
+    }
+
+    public void setTotal_fee(String total_fee) {
+        this.total_fee = total_fee;
+    }
+
+    public String getPayoff_money() {
+        return payoff_money;
+    }
+
+    public void setPayoff_money(String payoff_money) {
+        this.payoff_money = payoff_money;
+    }
+
     public void setDay(String day) {
         this.day = day;
     }
@@ -266,8 +537,7 @@ public class HeoMerchantInfoResponse {
     String province;
     String city;//
     String address;//
-    String agent_id;//
-    String state;//
+
     String create_time;//
     String create_name;//
     String update_time;//
@@ -287,6 +557,17 @@ public class HeoMerchantInfoResponse {
     OCRImages images;//
     String username;//
     String password;//
+
+
+    String statistics_date;
+    String agent_id;
+    String agent_name;
+    String order_amount;//
+    String total_money;//
+    String total_fee;//
+    String payoff_money;//
+    String t0_fee;//
+    String state;//
 
 
     public class OCRImages{
@@ -340,8 +621,12 @@ public class HeoMerchantInfoResponse {
 
     @Override
     public String toString() {
+        if(images==null){
+            return "errcode:"+errcode+"errmsg:"+ errmsg +"merchant_id:"+merchant_id+"name:"+name+"username"+username
+                    +"rate"+rate+"state"+state+"password"+password +"pic1\n"+"agent_id:"+agent_id+"city"+city;
+        }
         return "errcode:"+errcode+"errmsg:"+ errmsg +"merchant_id:"+merchant_id+"name:"+name+"username"+username
                 +"rate"+rate+"state"+state+"password"+password +"pic1\n"+ images.pic_1+"pic2\n"+ images.pic_2
-                +"pic3\n"+ images.pic_3+"pic4\n"+ images.pic_4;
+                +"pic3\n"+ images.pic_3+"pic4\n"+ images.pic_4+"city"+city;
     }
 }

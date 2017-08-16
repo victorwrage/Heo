@@ -26,7 +26,7 @@ import io.reactivex.disposables.Disposable;
 
 
 /**
- * @Description:TODO(更换手机界面)
+ * @Description:TODO(实名认证)
  * @author: xiaoyl
  * @date: 2013-07-20 下午6:38:07
  */
@@ -99,7 +99,7 @@ public class DialogFragmentVerifyTip extends DialogFragment  {
                 break;
             case 2:
                 verify_do_btn.setText("立即认证");
-                verify_tip_tv.setText("您的实名认证已作废");
+                verify_tip_tv.setText("您的实名认证已失效");
                 verify_tip_tv.setTextColor(getResources().getColor(R.color.gray));
                 break;
             case 3:

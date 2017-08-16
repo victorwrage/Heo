@@ -13,6 +13,130 @@ public class HeoCodeResponse {
     String errmsg;
     String merchant_id;
     String name;
+    String allot_time;
+    String allot_num;
+
+    public String getAgent_id() {
+        return agent_id;
+    }
+
+    public void setAgent_id(String agent_id) {
+        this.agent_id = agent_id;
+    }
+
+    public String getAgent_name() {
+        return agent_name;
+    }
+
+    public void setAgent_name(String agent_name) {
+        this.agent_name = agent_name;
+    }
+
+    String agent_id;
+    String agent_name;
+
+    public String getUsefulcode() {
+        return usefulcode;
+    }
+
+    public void setUsefulcode(String usefulcode) {
+        this.usefulcode = usefulcode;
+    }
+
+    String batch_no;
+    String usefulcode;
+
+    public String getAllot_time() {
+        return allot_time;
+    }
+
+    public void setAllot_time(String allot_time) {
+        this.allot_time = allot_time;
+    }
+
+    public String getAllot_num() {
+        return allot_num;
+    }
+
+    public void setAllot_num(String allot_num) {
+        this.allot_num = allot_num;
+    }
+
+    public String getBatch_no() {
+        return batch_no;
+    }
+
+    public void setBatch_no(String batch_no) {
+        this.batch_no = batch_no;
+    }
+
+    public String getNum() {
+        return num;
+    }
+
+    public void setNum(String num) {
+        this.num = num;
+    }
+
+    public String getRange() {
+        return range;
+    }
+
+    public void setRange(String range) {
+        this.range = range;
+    }
+
+    public String getUpdate_time() {
+        return update_time;
+    }
+
+    public void setUpdate_time(String update_time) {
+        this.update_time = update_time;
+    }
+
+    String num;
+    String range;
+
+
+
+    public String getBankcode() {
+        return bankcode;
+    }
+
+    public void setBankcode(String bankcode) {
+        this.bankcode = bankcode;
+    }
+
+    public String getBanktype() {
+        return banktype;
+    }
+
+    public void setBanktype(String banktype) {
+        this.banktype = banktype;
+    }
+
+    public String getBankname() {
+        return bankname;
+    }
+
+    public void setBankname(String bankname) {
+        this.bankname = bankname;
+    }
+
+    public String getCitycode() {
+        return citycode;
+    }
+
+    public void setCitycode(String citycode) {
+        this.citycode = citycode;
+    }
+
+    String bankcode;
+    String banktype;
+    String bankname;
+    String citycode;
+
+
     String create_time;
     String update_time;
     String aid;//支付接入ID

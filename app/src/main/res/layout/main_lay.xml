@@ -3,17 +3,48 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F0F0F0"
     android:orientation="vertical">
+
     <com.youth.banner.Banner
         android:id="@+id/main_banner"
         android:layout_width="match_parent"
         android:layout_height="120dp" />
+
+    <LinearLayout
+        android:id="@+id/main_level_lay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:gravity="center"
+
+        android:background="@color/white"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:src="@drawable/level"/>
+        <TextView
+            android:id="@+id/main_level_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@color/chutou_txt"
+            android:layout_marginLeft="5dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:text="领导人" />
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/main_tab2_lay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginBottom="10dp"
+        android:layout_marginTop="3dp"
         android:background="#ffffff"
         android:orientation="horizontal"
         android:visibility="visible">
@@ -38,10 +69,12 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="120dp"
                     android:layout_height="wrap_content"
-                    android:text="今日奖励"
-                    android:textColor="@color/gold"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="今日分润"
+                    android:textColor="@color/black"
                     android:textSize="16sp" />
 
                 <TextView
@@ -49,7 +82,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0.00"
-                    android:textColor="@color/red"
+                    android:textColor="@color/chutou_txt"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -60,8 +93,7 @@
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_gravity="center"
-            android:src="@drawable/share_btn"
-            />
+            android:src="@drawable/share_btn" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -85,10 +117,12 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="120dp"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     android:text="历史奖励"
-                    android:textColor="@color/gold"
+                    android:textColor="@color/black"
                     android:textSize="16sp" />
 
                 <TextView
@@ -171,11 +205,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
             android:layout_weight="1"
-            android:gravity="center"
             android:background="@color/white"
+            android:gravity="center"
             android:orientation="horizontal"
             android:visibility="visible">
 
@@ -184,21 +218,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-
                 android:gravity="center"
                 android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:src="@drawable/pay_ico" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
                     android:text="收款"
-                    android:textColor="@color/darkorange"
-                    android:textSize="36sp" />
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/pay_ico"
-                    />
+                    android:textColor="#D96C2B"
+                    android:textSize="32sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
         </LinearLayout>
@@ -296,8 +331,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:background="#ffffff"
-        android:visibility="gone"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <LinearLayout
             android:id="@+id/main_bank_inf_lay"
@@ -316,7 +351,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/bank_inf"
+                android:src="@drawable/bank_inf_select"
                 app:civ_border_color="@color/whitesmoke"
                 app:civ_border_overlay="false"
                 app:civ_border_width="10dp"
@@ -327,7 +362,6 @@
                 android:layout_height="wrap_content"
                 android:text="银行资讯" />
         </LinearLayout>
-
 
 
         <LinearLayout

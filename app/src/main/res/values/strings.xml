@@ -6,5 +6,9 @@
     <string name="scan_tip"></string>
     <string name="push_title"> 您收到一条新消息</string>
     <string name="push_content"> 请点击查看</string>
+    <string name="register"><u>注册</u></string>
+    <string name="forgot"><u>忘记密码？</u></string>
+    <string name="login"><u>登录</u></string>
+
 
 </resources>

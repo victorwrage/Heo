@@ -1,7 +1,9 @@
 package com.heinsoft.heo.fragment;
 
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,25 +22,30 @@ import java.util.ArrayList;
 
 public abstract class BaseFragment extends Fragment {
     protected final String COOKIE_KEY = "cookie";
-    protected long isFar = 5000;//5公里
-   // protected String[] scopes = new String[]{"全部目的地", "只看近的", "只看远的"};
+    protected final String VISIBLE_MONEY_LEFT_KEY = "visible_left_money";
+    protected final String VISIBLE_MONEY_RIGHT_KEY = "visible_right_money";
+
+    protected String[] scopes = new String[]{"交易成功", "交易失败", "已撤销", "已冲正", "待支付"};
 
     protected ArrayList<String> pay_types = new ArrayList<>();
     protected final static String SUCCESS = "0";
 
-    protected ArrayAdapter<String> spinner_adapter;
+    protected ArrayAdapter<String> bankAdapter;
+    protected ArrayAdapter<String> proviceAdapter;
+    protected ArrayAdapter<String> cityAdapter;
    // RecyclerView.Adapter<RecyclerView.ViewHolder> adapter;
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pay_types.add("微信T0");
-        pay_types.add("微信T1");
-        pay_types.add("支付宝T0");
-        pay_types.add("支付宝T1");
         pay_types.add("QQ钱包T0");
         pay_types.add("QQ钱包T1");
+        pay_types.add("支付宝T0");
+        pay_types.add("支付宝T1");
+        pay_types.add("微信T0");
+        pay_types.add("微信T1");
+        pay_types.add("快捷支付");
 
     }
 
@@ -74,6 +81,34 @@ public abstract class BaseFragment extends Fragment {
             initView();
         }
     }
+
+    AlertDialog dialog;
+    protected void showDialog(int type, String title, String tip, String posbtn, String negbtn) {
+        dialog = null;
+        if (negbtn == null) {
+            dialog = new AlertDialog.Builder(getActivity()).setTitle(title)
+                    .setMessage(tip)
+                    .setPositiveButton(posbtn, (dia, which) -> confirm(type, dia))
+                    .create();
+        } else {
+            dialog = new AlertDialog.Builder(getActivity()).setTitle(title)
+                    .setMessage(tip)
+                    .setPositiveButton(posbtn, (dia, which) -> confirm(type, dia))
+                    .setNegativeButton(negbtn, (dia, which) -> cancel(type, dia)).create();
+        }
+        dialog.setCancelable(false);
+        dialog.show();
+
+    }
+
+    protected void cancel(int type, DialogInterface dia) {
+        dialog.dismiss();
+    }
+
+    protected void confirm(int type, DialogInterface dia) {
+        dialog.dismiss();
+    }
+
 
     protected void initView(){
 

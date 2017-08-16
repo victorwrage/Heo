@@ -29,6 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:gravity="center"
             android:text="微信支付"
             android:textColor="@color/chocolate"
@@ -58,14 +59,15 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
                 android:gravity="center"
+                android:visibility="gone"
                 android:text="￥30"
                 android:textColor="@color/chutou_txt"
                 android:textSize="22sp" />
 
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="144dp"
+                android:layout_height="40dp"
                 android:layout_gravity="center"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
@@ -88,8 +90,8 @@
 
                 <TextView
                     android:id="@+id/my_qcode_later_tv"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_width="144dp"
+                    android:layout_height="40dp"
                     android:layout_gravity="center"
                     android:layout_margin="5dp"
                     android:layout_marginBottom="10dp"

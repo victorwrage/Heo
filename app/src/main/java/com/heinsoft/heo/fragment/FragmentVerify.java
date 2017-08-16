@@ -1,18 +1,27 @@
 package com.heinsoft.heo.fragment;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.alibaba.apigateway.ApiInvokeException;
@@ -23,19 +32,29 @@ import com.alibaba.apigateway.client.ApiGatewayClient;
 import com.alibaba.apigateway.enums.HttpMethod;
 import com.alibaba.apigateway.service.RpcService;
 import com.baidu.ocr.sdk.OCR;
+import com.baidu.ocr.sdk.OnResultListener;
+import com.baidu.ocr.sdk.exception.OCRError;
+import com.baidu.ocr.sdk.model.BankCardParams;
+import com.baidu.ocr.sdk.model.BankCardResult;
+import com.baidu.ocr.sdk.model.IDCardParams;
+import com.baidu.ocr.sdk.model.IDCardResult;
 import com.google.gson.Gson;
 import com.heinsoft.heo.R;
 import com.heinsoft.heo.bean.DataValueBean;
+import com.heinsoft.heo.bean.HeoCodeObjResponse;
 import com.heinsoft.heo.bean.HeoCodeResponse;
+import com.heinsoft.heo.bean.HeoMerchantInfoResponse;
 import com.heinsoft.heo.bean.NumBean;
 import com.heinsoft.heo.present.QueryPresent;
 import com.heinsoft.heo.util.Constant;
 import com.heinsoft.heo.util.Utils;
 import com.heinsoft.heo.util.VToast;
+import com.heinsoft.heo.view.IInviteView;
 import com.heinsoft.heo.view.IUserEditView;
 import com.heinsoft.heo.view.IUserView;
 import com.heinsoft.heo.view.IVerifyView;
 import com.jakewharton.rxbinding2.view.RxView;
+import com.lljjcoder.citypickerview.widget.CityPicker;
 import com.socks.library.KLog;
 import com.squareup.picasso.Picasso;
 
@@ -44,6 +63,7 @@ import org.apache.commons.codec.binary.Base64;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -55,14 +75,17 @@ import cn.bmob.v3.listener.UploadFileListener;
 import okhttp3.ResponseBody;
 
 
-public class FragmentVerify extends BaseFragment implements IUserView, IVerifyView, IUserEditView {
-    IVerifyListtener listener;
+public class FragmentVerify extends BaseFragment implements IUserView, IVerifyView, IUserEditView ,IInviteView{
+    IVerifyListener listener;
 
     @Bind(R.id.header_btn_lay)
     LinearLayout header_btn_lay;
 
     @Bind(R.id.verify_commit_tv)
     TextView verify_commit_tv;
+
+    @Bind(R.id.scroll_lay)
+    ScrollView scroll_lay;
 
     @Bind(R.id.verify_card_card1)
     LinearLayout verify_card_card1;
@@ -123,14 +146,17 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
     @Bind(R.id.verify_add_et)
     EditText verify_add_et;
 
-    @Bind(R.id.verify_bank_name_et)
-    EditText verify_bank_name_et;
+    @Bind(R.id.verify_bank_name_sp)
+    Spinner verify_bank_name_sp;
     @Bind(R.id.verify_owner_et)
     EditText verify_owner_et;
     @Bind(R.id.verify_bank_cardnum_et)
     EditText verify_bank_cardnum_et;
     @Bind(R.id.verify_b_bank_et)
     EditText verify_b_bank_et;
+    @Bind(R.id.verify_b_bank_lv)
+    ListView verify_b_bank_lv;
+
     @Bind(R.id.verify_b_bank_num_et)
     EditText verify_b_bank_num_et;
 
@@ -144,10 +170,12 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
     EditText verify_merchant_name_et;
     @Bind(R.id.verify_contact_phone_et)
     EditText verify_contact_phone_et;
-    @Bind(R.id.verify_province_et)
-    EditText verify_province_et;
-    @Bind(R.id.verify_city_et)
-    EditText verify_city_et;
+    @Bind(R.id.verify_province_sp)
+    Spinner verify_province_sp;
+    @Bind(R.id.verify_city_sp)
+    Spinner verify_city_sp;
+    @Bind(R.id.verify_dis_tv)
+    TextView verify_dis_tv;
     @Bind(R.id.verify_now_add_et)
     EditText verify_now_add_et;
     @Bind(R.id.verify_invite_et)
@@ -159,7 +187,18 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
     private final String PIC4 = "pic4";
     private final String PIC5 = "pic5";
     private int cur_step = 1;
+    boolean isSearching = false;
 
+    private ArrayList<String> bank_list = new ArrayList<>();
+    private ArrayList<String> bank_branch_list = new ArrayList<>();
+    private ArrayList<HeoMerchantInfoResponse> bank_branch_data = new ArrayList<>();
+    ArrayAdapter branch_bank_adapter;
+    private String cur_bank;
+    private String cur_provice;
+    private String cur_city;
+    private String cur_branch_bank;
+    private String cur_branch_bank_firm;
+    private Boolean isAutoWrite = true;
     private static final int OCR_SUCESS = 100;
     private static final int OCR_FAIL = OCR_SUCESS + 1;
     private HashMap<String, Boolean> isLocalBMPUploadMap = new HashMap<>();
@@ -183,6 +222,7 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
     Map<String, String> temp_info;
     QueryPresent present;
     Utils util;
+
     SharedPreferences sp;
 
     //  UploadManager uploadManager;
@@ -192,13 +232,23 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
         View view = inflater.inflate(R.layout.verify_card_lay, container, false);
         ButterKnife.bind(FragmentVerify.this, view);
 
-        OCR.getInstance().initWithToken(getActivity().getApplicationContext(), Constant.PUBLIC_OCR_TOKEN);//初始化OCR
         ApiGatewayClient.init(getContext(), false);
         util = Utils.getInstance();
         temp_info = new HashMap<>();
         present = QueryPresent.getInstance(getContext());
         present.setView(FragmentVerify.this);
         sp = getContext().getSharedPreferences(COOKIE_KEY, Context.MODE_PRIVATE);
+
+        branch_bank_adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, bank_branch_list);
+
+        verify_b_bank_lv.setAdapter(branch_bank_adapter);
+        verify_b_bank_lv.setOnItemClickListener((parent, view1, position, id) -> {
+            cur_branch_bank = bank_branch_list.get(position);
+            cur_branch_bank_firm = bank_branch_data.get(position).getBankcode();
+            verify_b_bank_et.setText(cur_branch_bank);
+            verify_b_bank_lv.setVisibility(View.GONE);
+            isAutoWrite = true;
+        });
         return view;
     }
 
@@ -212,9 +262,119 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
         RxView.clicks(verify_bank_card1).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> photograph(3));
         RxView.clicks(verify_bank_card2).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> photograph(4));
         RxView.clicks(header_btn_lay).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> listener.finishVerify());
-        initVisible();
-        autoWriteInfo();
-        showWidget();
+        RxView.clicks(verify_dis_tv).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> initProvice());
+
+        verify_b_bank_lv.setOnTouchListener((v, event) -> {
+           scroll_lay.requestDisallowInterceptTouchEvent(true);
+            return false;
+        });
+
+        bankAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, bank_list);
+        proviceAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, bank_list);
+        cityAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, bank_list);
+        bankAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        verify_bank_name_sp.setAdapter(bankAdapter);
+        verify_bank_name_sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                cur_bank = bank_list.get(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        verify_b_bank_et.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(isAutoWrite){
+                    isAutoWrite = false;
+                    return;
+                }
+                if (!isSearching && s.length()!=0 && count!=0) {
+                    initBranckBank();
+                    isSearching = true;
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        initBankName();
+    }
+
+    private void initProvice() {
+        CityPicker cityPicker = new CityPicker.Builder(getContext())
+                .textSize(20)
+                .title("地址选择")
+                .backgroundPop(0xa0DD6F32)
+                .titleBackgroundColor("#AFAFAD")
+                .titleTextColor("#d96c2b")
+                .backgroundPop(0xa0DD6F32)
+                .confirTextColor("#5A5A5A")
+                .cancelTextColor("#5A5A5A")
+                .province("广东省")
+                .city("深圳市")
+                .district("南山区")
+                .textColor(Color.parseColor("#d96c2b"))
+                .provinceCyclic(true)
+                .cityCyclic(false)
+                .districtCyclic(false)
+                .visibleItemsCount(7)
+                .itemPadding(10)
+                .onlyShowProvinceAndCity(true)
+                .build();
+        cityPicker.show();
+
+        //监听方法，获取选择结果
+        cityPicker.setOnCityItemClickListener(new CityPicker.OnCityItemClickListener() {
+            @Override
+            public void onSelected(String... citySelected) {
+                //省份
+                cur_provice = citySelected[0];
+                //城市
+                cur_city = citySelected[1];
+                verify_dis_tv.setText(cur_provice + "    " + cur_city);
+                //区县（如果设定了两级联动，那么该项返回空）
+                // String district = citySelected[2];
+                //邮编
+                //    String code = citySelected[3];
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
+    }
+
+    private void initBranckBank() {
+        present.initRetrofit(Constant.URL_BAIBAO, false);
+        HashMap<String, String> StringA = new HashMap<>();
+        StringA.put(Constant.AID_STR, Constant.AID);
+        StringA.put("bankname", verify_b_bank_et.getText().toString());
+        String sign = util.getSign(StringA);
+        StringA.put(Constant.SIGN, sign);
+        present.QueryBankBranch(StringA.get(Constant.AID_STR), StringA.get(Constant.SIGN), StringA.get("bankname"));
+    }
+
+    private void initBankName() {
+        showWaitDialog("正在获取信息");
+        present.initRetrofit(Constant.URL_BAIBAO, false);
+        HashMap<String, String> StringA = new HashMap<>();
+        StringA.put(Constant.AID_STR, Constant.AID);
+        String sign = util.getSign(StringA);
+        StringA.put(Constant.SIGN, sign);
+        present.QueryBank(StringA.get(Constant.AID_STR), StringA.get(Constant.SIGN));
     }
 
     private void initVisible() {
@@ -239,17 +399,19 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
         verify_name_et.setEnabled(true);
         verify_num_et.setEnabled(true);
         verify_add_et.setEnabled(true);
-        verify_bank_name_et.setEnabled(true);
+        verify_bank_name_sp.setEnabled(true);
         verify_owner_et.setEnabled(true);
         verify_bank_cardnum_et.setEnabled(true);
         verify_b_bank_et.setEnabled(true);
         verify_b_bank_num_et.setEnabled(true);
         verify_account_name_et.setEnabled(true);
         verify_merchant_name_et.setEnabled(true);
+        verify_b_bank_lv.setVisibility(View.GONE);
         verify_contact_et.setEnabled(true);
         verify_contact_phone_et.setEnabled(true);
-        verify_province_et.setEnabled(true);
-        verify_city_et.setEnabled(true);
+        verify_province_sp.setEnabled(true);
+        verify_city_sp.setEnabled(true);
+        verify_dis_tv.setEnabled(true);
         verify_now_add_et.setEnabled(true);
         verify_invite_et.setEnabled(true);
         verify_step1.setVisibility(View.VISIBLE);
@@ -271,8 +433,8 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
                 verify_step2.setVisibility(View.GONE);
                 verify_step3.setVisibility(View.GONE);
 
-            //    verify_account_name_lay.setVisibility(View.GONE);
-           //     verify_pw_lay.setVisibility(View.GONE);
+                verify_account_name_lay.setVisibility(View.GONE);
+                verify_pw_lay.setVisibility(View.GONE);
                 break;
             case 1://
                 verify_commit_tv.setText("返回");
@@ -286,22 +448,23 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
                 verify_pw_lay.setVisibility(View.GONE);
                 verify_invite_lay.setVisibility(View.GONE);
                 verify_add_lay.setVisibility(View.GONE);
+                verify_b_bank_lv.setVisibility(View.GONE);
 
                 verify_name_et.setEnabled(false);
                 verify_num_et.setEnabled(false);
                 verify_add_et.setEnabled(false);
-                verify_bank_name_et.setEnabled(false);
+                verify_bank_name_sp.setEnabled(false);
                 verify_owner_et.setEnabled(false);
                 verify_bank_cardnum_et.setEnabled(false);
                 verify_b_bank_et.setEnabled(false);
                 verify_b_bank_num_et.setEnabled(false);
                 verify_merchant_name_et.setEnabled(false);
                 verify_contact_et.setEnabled(false);
-
+                verify_dis_tv.setEnabled(false);
                 verify_account_name_et.setEnabled(false);
                 verify_contact_phone_et.setEnabled(false);
-                verify_province_et.setEnabled(false);
-                verify_city_et.setEnabled(false);
+                verify_province_sp.setEnabled(false);
+                verify_city_sp.setEnabled(false);
                 verify_now_add_et.setEnabled(false);
 
                 verify_step1.setVisibility(View.VISIBLE);
@@ -309,7 +472,7 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
                 verify_step3.setVisibility(View.VISIBLE);
                 break;
             case 2://
-                break;
+
             case 3://
                 cur_step = 1;
 //                verify_card_card1_finished.setVisibility(temp_info.get(PIC1).equals("") ? View.GONE : View.VISIBLE);
@@ -317,7 +480,6 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
 //                verify_card_card3_finished.setVisibility(temp_info.get(PIC3).equals("") ? View.GONE : View.VISIBLE);
 //                verify_bank_card1_finished.setVisibility(temp_info.get(PIC4).equals("") ? View.GONE : View.VISIBLE);
 //                verify_bank_card2_finished.setVisibility(temp_info.get(PIC5).equals("") ? View.GONE : View.VISIBLE);
-
                 Picasso.with(getContext()).load(temp_info.get(PIC1))
                         .placeholder(R.drawable.card)
                         .error(R.drawable.download_failed)
@@ -342,35 +504,57 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
                 verify_step1.setVisibility(View.VISIBLE);
                 verify_step2.setVisibility(View.VISIBLE);
                 verify_step3.setVisibility(View.VISIBLE);
-
+                verify_do_lay.setEnabled(true);
                 verify_add_lay.setVisibility(View.GONE);
                 verify_invite_lay.setVisibility(View.GONE);
-             //   verify_account_name_lay.setVisibility(View.GONE);
-              //  verify_pw_lay.setVisibility(View.GONE);
+                verify_account_name_lay.setVisibility(View.GONE);
+                verify_pw_lay.setVisibility(View.GONE);
                 verify_commit_tv.setText("提交");
                 break;
         }
     }
 
     private void autoWriteInfo() {
-
         verify_name_et.setText(Constant.user_info == null ? "" : Constant.user_info.get(Constant.NAME));
         verify_num_et.setText(Constant.user_info == null ? "" : Constant.user_info.get(Constant.USER_INFO_IDCARD));
+        int idx = 0;
+        for (int i = 0; i < bank_list.size(); i++) {
+            if (Constant.user_info != null && bank_list.get(i).equals(Constant.user_info.get(Constant.BANK))) {
+                idx = i;
+                cur_bank = bank_list.get(idx);
+                break;
+            }
+        }
+        verify_bank_name_sp.setSelection(idx);
 
-        verify_bank_name_et.setText(Constant.user_info == null ? "" : Constant.user_info.get(Constant.BANK));
         verify_owner_et.setText(Constant.user_info == null ? "" : Constant.user_info.get(Constant.BANK_ACCOUNT_NAME));
         verify_bank_cardnum_et.setText(Constant.user_info == null ? "" : Constant.user_info.get(Constant.BANK_ACCOUNT));
         verify_b_bank_et.setText(Constant.user_info == null ? "" : Constant.user_info.get(Constant.SUB_BRANCH));
         verify_b_bank_num_et.setText(Constant.user_info == null ? "" : Constant.user_info.get(Constant.BANKFIRM));
 
-        verify_account_name_et.setText(Constant.user_info == null ? "" : Constant.user_info.get(Constant.USER_INFO_INVITE_CODE));
+        verify_account_name_et.setText(Constant.user_info == null ? "" : Constant.user_info.get(Constant.ACCOUNT));
         verify_pw_et.setText(Constant.user_info == null ? "" : Constant.user_info.get(Constant.USER_INFO_PW));
         verify_contact_et.setText(Constant.user_info == null ? "" : Constant.user_info.get(Constant.CONTACT));
         verify_contact_phone_et.setText(Constant.user_info == null ? "" : Constant.user_info.get(Constant.PHONE));
-        verify_province_et.setText(Constant.user_info == null ? "" : Constant.user_info.get(Constant.PROVINCE));
+        verify_add_et.setText("");
+        verify_dis_tv.setText(Constant.user_info == null ? "广东省 深圳市" : Constant.user_info.get(Constant.PROVINCE) + "   " +
+                (Constant.user_info.get(Constant.CITY)==null?"中国":Constant.user_info.get(Constant.CITY)));
+        cur_provice = Constant.user_info == null ?"广东省":Constant.user_info.get(Constant.PROVINCE);
+        cur_city = Constant.user_info == null ?"深圳市":(Constant.user_info.get(Constant.CITY)==null?"中国":Constant.user_info.get(Constant.CITY));
+
         verify_merchant_name_et.setText(Constant.user_info == null ? "" : Constant.user_info.get(Constant.NAME));
-        verify_city_et.setText(Constant.user_info == null ? "" : Constant.user_info.get(Constant.CITY));
         verify_now_add_et.setText(Constant.user_info == null ? "" : Constant.user_info.get(Constant.ADDRESS));
+
+        Picasso.with(getContext()).load(R.drawable.card).into(verify_bank_card1_thumb);
+        Picasso.with(getContext()).load(R.drawable.card).into(verify_bank_card2_thumb);
+        Picasso.with(getContext()).load(R.drawable.card).into(verify_card_card1_thumb);
+        Picasso.with(getContext()).load(R.drawable.card).into(verify_card_card2_thumb);
+        Picasso.with(getContext()).load(R.drawable.card).into(verify_card_card3_thumb);
+        verify_bank_card1_thumb.setTag("");
+        verify_bank_card2_thumb.setTag("");
+        verify_card_card1_thumb.setTag("");
+        verify_card_card2_thumb.setTag("");
+        verify_card_card3_thumb.setTag("");
 
         temp_info.put(PIC1, Constant.user_info == null ? "" : Constant.user_info.get(Constant.PIC_1));
         temp_info.put(PIC2, Constant.user_info == null ? "" : Constant.user_info.get(Constant.PIC_2));
@@ -435,7 +619,6 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
     }
 
     private void doVerify() {
-
         int verify_state = Integer.parseInt(Constant.user_info == null ? "0" : Constant.user_info.get(Constant.USER_INFO_ISAUTH));
         switch (verify_state) {
             case 0://未审核
@@ -454,7 +637,11 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
                         verify_commit_tv.setText("提交");
                         break;
                     case 4:
-                        submitInfo();
+                        if (verify_invite_et.getText().toString().trim().equals("")) {
+                            showDialog(1, "提示", "默认成为顶级代理商下游商户，是否同意？", "是", "否");
+                        }else{
+                            queryCodeUsefull();
+                        }
                         break;
                 }
                 break;
@@ -463,7 +650,7 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
 
                 break;
             case 2://已作废
-                break;
+
             case 3://未通过
                 if (!doEmptyVerify2()) {
                     return;
@@ -483,8 +670,35 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
         }
     }
 
+    private void queryCodeUsefull() {
+        showWaitDialog("正在验证推荐码有效性");
+        present.initRetrofit(Constant.URL_BAIBAO,false);
+        HashMap<String, String> StringA2 = new HashMap<>();
+        StringA2.put(Constant.AID_STR, Constant.AID);
+        StringA2.put(Constant.REFERRAL_CODE, verify_invite_et.getText().toString());
+        String sign0 = util.getSign(StringA2);
+        StringA2.put(Constant.SIGN, sign0);
+        present.QueryInviteCode(StringA2.get(Constant.AID_STR),
+                StringA2.get(Constant.SIGN),StringA2.get(Constant.REFERRAL_CODE));
+    }
+
+    /**
+     * 获取推荐码
+     */
+    private void fetchInviteCode() {
+        showWaitDialog("正在获取推荐码");
+        present.initRetrofit(Constant.URL_BAIBAO,false);
+        HashMap<String, String> StringA2 = new HashMap<>();
+        StringA2.put(Constant.AID_STR, Constant.AID);
+        StringA2.put(Constant.AGENT_ID, Constant.TOP_AGENT_ID);
+        String sign0 = util.getSign(StringA2);
+        StringA2.put(Constant.SIGN, sign0);
+        present.QueryUsefullInviteCode(StringA2.get(Constant.AID_STR),
+                StringA2.get(Constant.SIGN),StringA2.get(Constant.AGENT_ID));
+    }
+
     private void verifyMerchantInfo() {
-        verify_commit_tv.setText("正在提交商户资料");
+        verify_commit_tv.setText("提交中");
         verify_do_lay.setEnabled(false);
         showWaitDialog("正在提交商户资料");
         HashMap<String, String> StringA2 = new HashMap<>();
@@ -493,8 +707,8 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
         StringA2.put(Constant.NAME, verify_name_et.getText().toString().trim());
         StringA2.put(Constant.CONTACT, verify_contact_et.getText().toString().trim());
         StringA2.put(Constant.PHONE, verify_contact_phone_et.getText().toString().trim());
-        StringA2.put(Constant.PROVINCE, verify_province_et.getText().toString().trim());
-        StringA2.put(Constant.CITY, verify_city_et.getText().toString().trim());
+        StringA2.put(Constant.PROVINCE, cur_provice);
+        StringA2.put(Constant.CITY, cur_city);
         StringA2.put(Constant.ADDRESS, verify_now_add_et.getText().toString().trim());
         StringA2.put(Constant.ID_CARD, verify_num_et.getText().toString().trim());
 
@@ -514,7 +728,7 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
         HashMap<String, String> StringA2 = new HashMap<>();
         StringA2.put(Constant.AID_STR, Constant.AID);
         StringA2.put(Constant.MERCHANT_ID, Constant.user_info.get(Constant.MERCHANT_ID));
-        StringA2.put(Constant.BANK, verify_bank_name_et.getText().toString().trim());
+        StringA2.put(Constant.BANK, cur_bank);
         StringA2.put(Constant.SUB_BRANCH, verify_b_bank_et.getText().toString().trim());
         StringA2.put(Constant.BANK_ACCOUNT, verify_bank_cardnum_et.getText().toString().trim());
         StringA2.put(Constant.BANK_ACCOUNT_NAME, verify_owner_et.getText().toString().trim());
@@ -558,26 +772,26 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
         HashMap<String, String> StringA2 = new HashMap<>();
         StringA2.put(Constant.AID_STR, Constant.AID);
         //   StringA2.put(Constant.MERCHANT_ID, "123456789123456");
-        StringA2.put(Constant.OPENID, Constant.OPENID);
+        StringA2.put(Constant.OPENID, verify_invite_et.getText().toString().trim());
         StringA2.put(Constant.REFERRAL_CODE, verify_invite_et.getText().toString().trim());
-        StringA2.put(Constant.NAME, verify_name_et.getText().toString().trim());
-        StringA2.put(Constant.RATE, "49");
+        StringA2.put(Constant.NAME, verify_merchant_name_et.getText().toString().trim());
+        StringA2.put(Constant.RATE, "38");
         StringA2.put(Constant.CONTACT, verify_contact_et.getText().toString().trim());
         StringA2.put(Constant.PHONE, verify_contact_phone_et.getText().toString().trim());
-        StringA2.put(Constant.PROVINCE, verify_province_et.getText().toString().trim());
-        StringA2.put(Constant.CITY, verify_city_et.getText().toString().trim());
+        StringA2.put(Constant.PROVINCE, cur_provice);
+        StringA2.put(Constant.CITY, cur_city);
         StringA2.put(Constant.ADDRESS, verify_now_add_et.getText().toString().trim());
         //    StringA2.put(Constant.AGENT_ID, "无");
         StringA2.put(Constant.ID_CARD, verify_num_et.getText().toString().trim());
-        StringA2.put(Constant.BANK, verify_bank_name_et.getText().toString().trim());
-        StringA2.put(Constant.SUB_BRANCH, verify_b_bank_et.getText().toString().trim());
+        StringA2.put(Constant.BANK, cur_bank);
+        StringA2.put(Constant.SUB_BRANCH, cur_branch_bank);
         StringA2.put(Constant.BANK_ACCOUNT, verify_bank_cardnum_et.getText().toString().trim());
         StringA2.put(Constant.BANK_ACCOUNT_NAME, verify_owner_et.getText().toString().trim());
-        StringA2.put(Constant.BANKFIRM, "");
+        StringA2.put(Constant.BANKFIRM, cur_branch_bank_firm);
         //  StringA2.put(Constant.ACCOUNT, verify_account_name_et.getText().toString().trim());
         //   StringA2.put(Constant.PASSWORD, verify_pw_et.getText().toString().trim());
-        StringA2.put(Constant.ACCOUNT, Constant.user_info == null ? verify_contact_phone_et.getText().toString().trim() : Constant.user_info.get(Constant.PHONE));
-        StringA2.put(Constant.PASSWORD, Constant.user_info == null ? verify_contact_phone_et.getText().toString().trim().substring(6) : Constant.user_info.get(Constant.PHONE).substring(6));
+        StringA2.put(Constant.ACCOUNT, Constant.user_info == null ? sp.getString(Constant.USER_INFO_PHONE, "10000") : Constant.user_info.get(Constant.USER_INFO_PHONE));
+        StringA2.put(Constant.PASSWORD, Constant.user_info == null ? sp.getString(Constant.USER_INFO_PW, "10000") : Constant.user_info.get(Constant.USER_INFO_PW));
         StringA2.put(Constant.PIC_1, temp_info.get(PIC1));
         StringA2.put(Constant.PIC_2, temp_info.get(PIC2));
         StringA2.put(Constant.PIC_3, temp_info.get(PIC3));
@@ -590,12 +804,29 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
         present.QueryRegister(StringA2);
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if(!hidden){
+            if(bank_list.size()==0){
+                initBankName();
+            }
+        }
+    }
 
     public void initState() {
         KLog.v("initState");
         if (verify_card_card1 == null) {
             return;
         }
+        bank_branch_list.clear();
+        bank_branch_data.clear();
+        cur_branch_bank_firm = "";
+        cur_branch_bank = "";
+        isAutoWrite = true;
+        cur_city = "";
+        cur_provice = "";
+
         initVisible();
         autoWriteInfo();
         showWidget();
@@ -686,12 +917,16 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
                 }
                 break;
             case 3:
-                if (verify_account_name_et.getText().toString().trim().equals("")) {
+               /* if (verify_account_name_et.getText().toString().trim().equals("")) {
                     VToast.toast(getContext(), "请输入帐户名");
                     return false;
                 }
                 if (verify_pw_et.getText().toString().trim().equals("")) {
                     VToast.toast(getContext(), "请输入账户密码");
+                    return false;
+                }*/
+                if (verify_merchant_name_et.getText().toString().trim().equals("")) {
+                    VToast.toast(getContext(), "请输入商户名称");
                     return false;
                 }
                 if (verify_contact_et.getText().toString().trim().equals("")) {
@@ -702,22 +937,12 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
                     VToast.toast(getContext(), "请输入正确的联系人电话");
                     return false;
                 }
-                if (verify_province_et.getText().toString().trim().equals("")) {
-                    VToast.toast(getContext(), "请输入联系人所在省份");
-                    return false;
-                }
-                if (verify_city_et.getText().toString().trim().equals("")) {
-                    VToast.toast(getContext(), "请输入联系人所在城市");
-                    return false;
-                }
+
                 if (verify_now_add_et.getText().toString().trim().equals("")) {
                     VToast.toast(getContext(), "请输入联系人当前住址");
                     return false;
                 }
-                if (verify_invite_et.getText().toString().trim().equals("")) {
-                    VToast.toast(getContext(), "请输入邀请码");
-                    return false;
-                }
+
                 break;
             default:
                 return true;
@@ -755,14 +980,7 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
             VToast.toast(getContext(), "请输入正确的联系人电话");
             return false;
         }
-        if (verify_province_et.getText().toString().trim().equals("")) {
-            VToast.toast(getContext(), "请输入联系人所在省份");
-            return false;
-        }
-        if (verify_city_et.getText().toString().trim().equals("")) {
-            VToast.toast(getContext(), "请输入联系人所在城市");
-            return false;
-        }
+
         if (verify_now_add_et.getText().toString().trim().equals("")) {
             VToast.toast(getContext(), "请输入联系人当前住址");
             return false;
@@ -776,7 +994,7 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            listener = (IVerifyListtener) context;
+            listener = (IVerifyListener) context;
         } catch (Exception e) {
             e.fillInStackTrace();
         }
@@ -786,16 +1004,18 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
         KLog.v(path);
         showWaitDialog("正在上传,请稍等");
         upTobmob(type, path);
-      /*  switch (type) {
+        switch (type) {
             case 0:
+            case 3:
                 showWaitDialog("正在验证&上传,请稍等");
-                new Thread(() -> trygetCardNum(type, path)).start();
+               // new Thread(() -> trygetCardNum(type, path)).start();
+                new Thread(() -> baiduOcr(type, path)).start();
                 break;
             default:
                 showWaitDialog("正在上传,请稍等");
                 upTobmob(type, path);
                 break;
-        }*/
+        }
     }
 
     private void upTobmob(int type, String path) {
@@ -819,35 +1039,45 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
                     case 0:
                         //   verify_card_card1_finished.setVisibility(View.VISIBLE);
                         temp_info.put(PIC1, ret_path);
-                        verify_card_card1_thumb.setTag(local_file.getAbsolutePath());
-                        Picasso.with(getContext()).load(local_file).
-                                into(verify_card_card1_thumb);
+                        verify_card_card1_thumb.setTag(path);
+                        Picasso.with(getContext()).load(local_file.getAbsoluteFile())
+                                .placeholder(R.drawable.card)
+                                .error(R.drawable.download_failed)
+                                .into(verify_card_card1_thumb);
                         break;
                     case 1:
                         // verify_card_card2_finished.setVisibility(View.VISIBLE);
                         temp_info.put(PIC2, ret_path);
-                        verify_card_card2_thumb.setTag(local_file.getAbsolutePath());
-                        Picasso.with(getContext()).load(local_file).
-                                into(verify_card_card2_thumb);
+                        verify_card_card2_thumb.setTag(path);
+                        Picasso.with(getContext()).load(local_file.getAbsoluteFile())
+                                .placeholder(R.drawable.card)
+                                .error(R.drawable.download_failed)
+                                .into(verify_card_card2_thumb);
                         break;
                     case 2:
                         //   verify_card_card3_finished.setVisibility(View.VISIBLE);
-                        verify_card_card3_thumb.setTag(local_file.getAbsolutePath());
-                        Picasso.with(getContext()).load(local_file).
+                        verify_card_card3_thumb.setTag(path);
+                        Picasso.with(getContext()).load(local_file.getAbsoluteFile())
+                                .placeholder(R.drawable.card)
+                                .error(R.drawable.download_failed).
                                 into(verify_card_card3_thumb);
                         temp_info.put(PIC3, ret_path);
                         break;
                     case 3:
                         //  verify_bank_card1_finished.setVisibility(View.VISIBLE);
-                        verify_bank_card1_thumb.setTag(local_file.getAbsolutePath());
-                        Picasso.with(getContext()).load(local_file).
+                        verify_bank_card1_thumb.setTag(path);
+                        Picasso.with(getContext()).load(local_file.getAbsoluteFile())
+                                .placeholder(R.drawable.card)
+                                .error(R.drawable.download_failed).
                                 into(verify_bank_card1_thumb);
                         temp_info.put(PIC4, ret_path);
                         break;
                     case 4:
                         //   verify_bank_card2_finished.setVisibility(View.VISIBLE);
-                        verify_bank_card2_thumb.setTag(local_file.getAbsolutePath());
-                        Picasso.with(getContext()).load(local_file).
+                        verify_bank_card2_thumb.setTag(path);
+                        Picasso.with(getContext()).load(local_file.getAbsoluteFile())
+                                .placeholder(R.drawable.card)
+                                .error(R.drawable.download_failed).
                                 into(verify_bank_card2_thumb);
                         temp_info.put(PIC5, ret_path);
                         break;
@@ -863,6 +1093,70 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
         });
     }
 
+    private void baiduOcr(int type, String filePath){
+        File u_file = new File(filePath);
+        KLog.v("baiduOcr"+u_file.getAbsolutePath());
+
+        switch (type){
+            case 0:
+                IDCardParams id_param =  new IDCardParams();
+                id_param.setImageFile(u_file);
+                id_param.setIdCardSide(IDCardParams.ID_CARD_SIDE_FRONT);
+                id_param.setDetectDirection(true);
+                OCR.getInstance().recognizeIDCard(id_param, new OnResultListener<IDCardResult>() {
+                    @Override
+                    public void onResult(IDCardResult result) {
+                        KLog.v(result.toString());
+                        KLog.v(result.getName().getWords());
+                        if(result.getName()!=null && !result.getName().getWords().equals("")) {
+                            verify_name_et.setText(result.getName().getWords());
+                        }
+                        if(result.getIdNumber()!=null && !result.getIdNumber().getWords().equals("")) {
+                            verify_num_et.setText(result.getIdNumber().getWords());
+                        }
+                        if(result.getAddress()!=null && !result.getAddress().getWords().equals("")) {
+                            verify_add_et.setText(result.getAddress().getWords());
+                        }
+                        upTobmob(type, filePath);
+                        VToast.toast(getContext(), "请检查获取的信息是否正确");
+                    }
+                    @Override
+                    public void onError(OCRError error) {
+                        KLog.v(error.toString());
+                        upTobmob(type, filePath);
+                        VToast.toast(getContext(), "获取信息失败,请手动输入");
+                    }
+                });
+                break;
+            case 3:
+                BankCardParams param = new BankCardParams();
+                param.setImageFile(new File(filePath));
+                OCR.getInstance().recognizeBankCard(param, new OnResultListener<BankCardResult>() {
+                    @Override
+                    public void onResult(BankCardResult result) {
+                        if(result.getBankCardNumber()!=null && !result.getBankCardNumber().equals("")) {
+                            verify_b_bank_num_et.setText(result.getBankCardNumber());
+                        }
+                        upTobmob(type, filePath);
+                    }
+
+                    @Override
+                    public void onError(OCRError error) {
+                        KLog.v(error.toString());
+                        upTobmob(type, filePath);
+                        VToast.toast(getContext(), "获取信息失败,请手动输入");
+                    }
+                });
+                break;
+        }
+
+    }
+
+    /**
+     * 阿里巴巴身份证验证API
+     * @param type
+     * @param filePath
+     */
     private void trygetCardNum(int type, String filePath) {
         if (!util.isNetworkConnected(getContext())) {
             VToast.toast(getContext(), "没有网络");
@@ -937,6 +1231,7 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
         hideWaitDialog();
         verify_commit_tv.setText("提交");
         verify_do_lay.setEnabled(true);
+        cur_step--;
         if (info.getErrcode() == null) {
             VToast.toast(getContext(), "网络错误");
             return;
@@ -1016,6 +1311,70 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
     }
 
     @Override
+    public void ResolveBankInfo(HeoCodeResponse info) {
+        hideWaitDialog();
+        if (info.getErrcode() == null) {
+            VToast.toast(getContext(), "获取银行名称失败!");
+            showDialog(0, "提示", "获取银行名称失败", "重试", "退出");
+            return;
+        }
+        if (info.getErrcode().equals(SUCCESS)) {
+            for (HeoMerchantInfoResponse name : info.getContent()) {
+                bank_list.add(name.getName());
+            }
+
+            bankAdapter.notifyDataSetChanged();
+            initVisible();
+            autoWriteInfo();
+            showWidget();
+
+        }
+    }
+
+    @Override
+    public void ResolvBankBranchInfo(HeoCodeResponse info) {
+        isSearching = false;
+        if (info.getErrcode() == null) {
+            VToast.toast(getContext(), "获取分行数据失败!");
+            return;
+        }
+        if (info.getErrcode().equals(SUCCESS)) {
+            if (info.getContent().size() == 0){
+                verify_b_bank_lv.setVisibility(View.GONE);
+                return;
+            }
+            bank_branch_data.clear();
+            bank_branch_list.clear();
+            for (HeoMerchantInfoResponse name : info.getContent()) {
+                bank_branch_data.add(name);
+                bank_branch_list.add(name.getBankname());
+            }
+            verify_b_bank_lv.setVisibility(View.VISIBLE);
+            cur_branch_bank = bank_branch_list.get(0);
+            cur_branch_bank_firm = bank_branch_data.get(0).getBankcode();
+            branch_bank_adapter.notifyDataSetChanged();
+        }
+    }
+
+
+
+    protected void cancel(int type, DialogInterface dia) {
+        listener.finishVerify();
+    }
+
+    protected void confirm(int type, DialogInterface dia) {
+        switch (type){
+            case 0:
+                initBankName();
+                break;
+            case 1:
+                fetchInviteCode();
+                break;
+        }
+    }
+
+
+    @Override
     public void ResolveEditMerchantInfo(HeoCodeResponse info) {
         KLog.v(info.toString());
         hideWaitDialog();
@@ -1070,7 +1429,52 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
         }
     }
 
-    public interface IVerifyListtener {
+    @Override
+    public void ResolveInviteInfo(HeoCodeObjResponse info) {
+        KLog.v(info.toString());
+        hideWaitDialog();
+        verify_commit_tv.setText("提交");
+        verify_do_lay.setEnabled(true);
+        if (info.getErrcode() == null) {
+            VToast.toast(getContext(), "网络错误");
+            return;
+        }
+        if (info.getErrcode().equals(SUCCESS)) {
+            submitInfo();
+        } else {
+            VToast.toast(getContext(), info.getErrmsg());
+        }
+    }
+
+    @Override
+    public void ResolveUsefullInviteInfo(HeoCodeResponse info) {
+        KLog.v(info.toString());
+        hideWaitDialog();
+        verify_commit_tv.setText("提交");
+        verify_do_lay.setEnabled(true);
+        if (info.getErrcode() == null) {
+            VToast.toast(getContext(), "网络错误");
+            return;
+        }
+        if (info.getErrcode().equals(SUCCESS)) {
+            verify_invite_et.setText(info.getUsefulcode());
+            submitInfo();
+        } else {
+            VToast.toast(getContext(), info.getErrmsg());
+        }
+    }
+
+    @Override
+    public void ResolveObtainInviteInfo(HeoCodeResponse info) {
+
+    }
+
+    @Override
+    public void ResolveAssignInviteInfo(HeoCodeResponse info) {
+
+    }
+
+    public interface IVerifyListener {
 
         void finishVerify();
 

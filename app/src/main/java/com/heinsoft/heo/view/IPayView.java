@@ -2,7 +2,6 @@ package com.heinsoft.heo.view;
 
 
 import com.heinsoft.heo.bean.HeoCodeResponse;
-import com.heinsoft.heo.bean.HeoProfitResponse;
 
 /**
  * Info:
@@ -18,6 +17,21 @@ public interface IPayView extends IView{
     /**
      * @param info
      */
-    void ResolveProfitInfo(HeoProfitResponse info);
-
+    void ResolveProfitInfo(HeoCodeResponse info);
+    /**
+     * @param info
+     */
+    void ResolveAgentOrderInfo(HeoCodeResponse info);
+    /**
+     * @param info
+     */
+    void ResolveAgentProfitInfo(HeoCodeResponse info);
+    /**
+     * @param info
+     */
+    void ResolveAgentWithdrawInfo(HeoCodeResponse info);
+    /**
+     * @param info
+     */
+    void ResolveMerchantOrderInfo(HeoCodeResponse info);
 }

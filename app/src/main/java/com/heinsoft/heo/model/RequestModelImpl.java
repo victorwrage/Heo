@@ -1,8 +1,8 @@
 package com.heinsoft.heo.model;
 
 
+import com.heinsoft.heo.bean.HeoCodeObjResponse;
 import com.heinsoft.heo.bean.HeoCodeResponse;
-import com.heinsoft.heo.bean.HeoProfitResponse;
 import com.heinsoft.heo.util.Constant;
 
 import java.util.Map;
@@ -55,6 +55,56 @@ public class RequestModelImpl implements IRequestMode {
     }
 
     @Override
+    public Flowable<HeoCodeObjResponse> QueryInviteCode(@Field("aid") String aid, @Field("sign") String sign, @Field("referral_code") String referral_code) {
+        return iRequestMode.QueryInviteCode(aid, sign, referral_code);
+    }
+
+    @Override
+    public Flowable<HeoCodeResponse> QueryUserfullInviteCode(@Field("aid") String aid, @Field("sign") String sign, @Field("agent_id") String agent_id) {
+        return iRequestMode.QueryUserfullInviteCode(aid, sign, agent_id);
+    }
+
+    @Override
+    public Flowable<HeoCodeResponse> QueryObtainInviteCode(@Field("aid") String aid, @Field("sign") String sign, @Field("agent_id") String agent_id, @Field("num") String num) {
+        return iRequestMode.QueryObtainInviteCode(aid, sign, agent_id, num);
+    }
+
+    @Override
+    public Flowable<HeoCodeResponse> QueryAssignInviteCode(@Field("aid") String aid, @Field("sign") String sign, @Field("up_agent_id") String up_agent_id, @Field("agent_id") String agent_id, @Field("refercodes") String refercodes) {
+        return iRequestMode.QueryAssignInviteCode(aid, sign, up_agent_id, agent_id, refercodes);
+    }
+
+    @Override
+    public Flowable<HeoCodeResponse> QueryAddAgent(@Field("aid") String aid, @Field("sign") String sign, @Field("parent_id") String parent_id, @Field("phone") String phone, @Field("agent_name") String agent_name, @Field("contact") String contact, @Field("province") String province, @Field("city") String city, @Field("rate") String rate, @Field("bank") String bank, @Field("sub_branch") String sub_branch, @Field("bank_account") String bank_account, @Field("bank_account_name") String bank_account_name, @Field("bankfirm") String bankfirm, @Field("account") String account, @Field("password") String password) {
+        return iRequestMode.QueryAddAgent(aid, sign, parent_id, phone,agent_name, contact, province, city, rate, bank, sub_branch, bank_account, bank_account_name, bankfirm, account, password);
+    }
+
+    @Override
+    public Flowable<HeoCodeResponse> QueryAgentInfo(@Field("aid") String aid, @Field("sign") String sign, @Field("phone") String phone) {
+        return iRequestMode.QueryAgentInfo(aid, sign, phone);
+    }
+
+    @Override
+    public Flowable<HeoCodeResponse> QueryMerchantOrder(@Field("aid") String aid, @Field("sign") String sign, @Field("merchant_id") String merchant_id,  @Field("date_start") String date_start, @Field("date_end") String date_end) {
+        return iRequestMode.QueryMerchantOrder(aid, sign, merchant_id, date_start, date_end);
+    }
+
+    @Override
+    public Flowable<HeoCodeResponse> QueryAgentOrder(@Field("aid") String aid, @Field("sign") String sign, @Field("agent_id") String agent_id, @Field("date_start") String date_start, @Field("date_end") String date_end) {
+        return iRequestMode.QueryAgentOrder(aid, sign, agent_id, date_start, date_end);
+    }
+
+    @Override
+    public Flowable<HeoCodeResponse> QueryAgentProfit(@Field("aid") String aid, @Field("sign") String sign, @Field("agent_id") String agent_id, @Field("date_start") String date_start, @Field("date_end") String date_end) {
+        return iRequestMode.QueryAgentProfit(aid, sign, agent_id, date_start, date_end);
+    }
+
+    @Override
+    public Flowable<HeoCodeResponse> QueryAgentWithDraw(@Field("aid") String aid, @Field("sign") String sign, @Field("agent_id") String agent_id, @Field("money") String money) {
+        return iRequestMode.QueryAgentWithDraw(aid, sign, agent_id, money);
+    }
+
+    @Override
     public Flowable<HeoCodeResponse> QueryEditMerchant(@Field("aid") String aid, @Field("sign") String sign, @Field("merchant_id") String merchant_id, @Field("name") String name, @Field("contact") String contact, @Field("phone") String phone, @Field("province") String province, @Field("city") String city, @Field("address") String address, @Field("id_card") String id_card) {
         return iRequestMode.QueryEditMerchant(aid, sign, merchant_id, name, contact, phone, province, city, address, id_card);
     }
@@ -70,8 +120,18 @@ public class RequestModelImpl implements IRequestMode {
     }
 
     @Override
-    public Flowable<HeoProfitResponse> QueryProfit(@Field("aid") String aid, @Field("sign") String sign, @Field("agent_id") String agent_id, @Field("date_start") String date_start, @Field("date_end") String date_end) {
+    public Flowable<HeoCodeResponse> QueryProfit(@Field("aid") String aid, @Field("sign") String sign, @Field("agent_id") String agent_id, @Field("date_start") String date_start, @Field("date_end") String date_end) {
         return iRequestMode.QueryProfit(aid, sign, agent_id, date_start, date_end);
+    }
+
+    @Override
+    public Flowable<HeoCodeResponse> QueryBank(@Field("aid") String aid, @Field("sign") String sign) {
+        return iRequestMode.QueryBank(aid, sign);
+    }
+
+    @Override
+    public Flowable<HeoCodeResponse> QueryBankBranch(@Field("aid") String aid, @Field("sign") String sign, @Field("bankname") String bankname) {
+        return iRequestMode.QueryBankBranch(aid, sign, bankname);
     }
 
 

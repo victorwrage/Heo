@@ -17,7 +17,7 @@
             android:id="@+id/empty_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#4682B4"
+            android:textColor="@color/chutou_txt"
             android:text="正努力加载..."/>
     </LinearLayout>
 

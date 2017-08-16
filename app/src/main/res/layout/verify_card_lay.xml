@@ -8,6 +8,7 @@
         layout="@layout/header_lay" />
 
     <ScrollView
+        android:id="@+id/scroll_lay"
         android:layout_below="@id/verify_header_lay"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -66,7 +67,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:text="上传身份证正面"
-                            android:textColor="@color/gold" />
+                            android:textColor="@color/chutou_txt" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -105,7 +106,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:text=" 上传身份证反面"
-                            android:textColor="@color/gold" />
+                            android:textColor="@color/chutou_txt" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -118,8 +119,6 @@
                     android:layout_margin="15dp"
                     android:layout_weight="1"
                     android:background="@drawable/item_back_shade"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
                     android:orientation="vertical">
 
                     <FrameLayout
@@ -145,7 +144,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="上传手持身份证照片"
-                        android:textColor="@color/gold" />
+                        android:textColor="@color/chutou_txt" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -289,7 +288,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:text="上传银行卡正面"
-                            android:textColor="@color/gold" />
+                            android:textColor="@color/chutou_txt" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -328,7 +327,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:text=" 上传银行卡反面"
-                            android:textColor="@color/gold" />
+                            android:textColor="@color/chutou_txt" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -350,13 +349,19 @@
                         android:text="银行名称"
                         android:textColor="@color/chocolate" />
 
-                    <EditText
+                   <!-- <EditText
                         android:id="@+id/verify_bank_name_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="left"
                         android:layout_marginTop="5dp"
-                        android:hint="填写银行名称" />
+                        android:hint="填写银行名称" />-->
+                    <Spinner
+                        android:id="@+id/verify_bank_name_sp"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="5dp"
+                         />
 
                 </LinearLayout>
 
@@ -412,6 +417,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="left"
+                        android:inputType="number"
                         android:layout_marginTop="5dp"
                         android:hint="填写银行卡号" />
 
@@ -434,17 +440,31 @@
                         android:layout_gravity="center"
                         android:text="分行名称"
                         android:textColor="@color/chocolate" />
-
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
                     <EditText
                         android:id="@+id/verify_b_bank_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="left"
                         android:layout_marginTop="5dp"
-                        android:hint="填写支行名称" />
-
+                        android:hint="搜索支行名称" />
+                    </LinearLayout>
                 </LinearLayout>
+                <ListView
+                    android:id="@+id/verify_b_bank_lv"
+                    android:layout_width="match_parent"
+                    android:layout_height="160dp"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="center|left"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
 
+                    />
                 <LinearLayout
                     android:id="@+id/verify_b_bank_num_lay"
                     android:layout_width="match_parent"
@@ -557,9 +577,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="商户名称"
-
                         android:textColor="@color/chocolate" />
-
                     <EditText
                         android:id="@+id/verify_merchant_name_et"
                         android:layout_width="match_parent"
@@ -580,9 +598,7 @@
                     android:background="@color/white"
                     android:gravity="center|left"
                     android:orientation="horizontal">
-
                     <TextView
-
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -609,9 +625,7 @@
                     android:background="@color/white"
                     android:gravity="center|left"
                     android:orientation="horizontal">
-
                     <TextView
-
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -628,12 +642,12 @@
                         android:hint="填写联系人电话" />
 
                 </LinearLayout>
-
                 <LinearLayout
-                    android:id="@+id/verify_province_lay"
+                    android:id="@+id/verify_dis_lay"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
+                    android:visibility="visible"
                     android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp"
                     android:background="@color/white"
@@ -641,20 +655,45 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="地区"
+                        android:textColor="@color/chocolate" />
+                    <TextView
+                        android:id="@+id/verify_dis_tv"
+                        android:layout_width="match_parent"
+                        android:gravity="center|left"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="5dp"
+                        />
 
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/verify_province_lay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:visibility="gone"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/white"
+                    android:gravity="center|left"
+                    android:orientation="horizontal">
+
+                    <TextView
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="省份"
                         android:textColor="@color/chocolate" />
-
-                    <EditText
-                        android:id="@+id/verify_province_et"
+                    <Spinner
+                        android:id="@+id/verify_province_sp"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left"
+                        android:layout_height="50dp"
                         android:layout_marginTop="5dp"
-                        android:hint="填写联系人当前所在省" />
+                        />
 
                 </LinearLayout>
 
@@ -664,27 +703,23 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
+                    android:visibility="gone"
                     android:layout_marginTop="10dp"
                     android:background="@color/white"
                     android:gravity="center|left"
                     android:orientation="horizontal">
-
                     <TextView
-
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="城市"
                         android:textColor="@color/chocolate" />
-
-                    <EditText
-                        android:id="@+id/verify_city_et"
+                    <Spinner
+                        android:id="@+id/verify_city_sp"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left"
+                        android:layout_height="50dp"
                         android:layout_marginTop="5dp"
-                        android:hint="输入所在城市" />
-
+                        />
                 </LinearLayout>
 
                 <LinearLayout
@@ -741,7 +776,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="left"
                         android:layout_marginTop="5dp"
-                        android:hint="填写邀请码" />
+                        android:hint="邀请码(选填)" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -754,8 +789,8 @@
 
     <LinearLayout
         android:id="@+id/verify_do_lay"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
+        android:layout_width="144dp"
+        android:layout_height="40dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"

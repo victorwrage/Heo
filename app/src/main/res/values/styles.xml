@@ -6,8 +6,8 @@
         <item name="android:textSize">30sp</item>
         <item name="android:layout_weight">1</item>
         <item name="android:gravity">center</item>
-        <item name="android:background">@drawable/digit_back_shade</item>
-        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:background">@drawable/big_btn_backgroud2</item>
+        <item name="android:textColor">@color/chutou_btn</item>
         <item name="android:layout_margin">1dp</item>
 
     </style>
