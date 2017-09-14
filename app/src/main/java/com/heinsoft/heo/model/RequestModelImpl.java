@@ -5,6 +5,7 @@ import com.heinsoft.heo.bean.HeoCodeObjResponse;
 import com.heinsoft.heo.bean.HeoCodeResponse;
 import com.heinsoft.heo.util.Constant;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import io.reactivex.Flowable;
@@ -31,6 +32,11 @@ public class RequestModelImpl implements IRequestMode {
     @Override
     public Flowable<ResponseBody> QueryQcode(@Query("mobile") String mobile) {
         return iRequestMode.QueryQcode(mobile);
+    }
+
+    @Override
+    public Flowable<ResponseBody> QueryMessage() {
+        return iRequestMode.QueryMessage();
     }
 
     @Override
@@ -87,6 +93,23 @@ public class RequestModelImpl implements IRequestMode {
     @Override
     public Flowable<HeoCodeResponse> QueryMerchantOrder(@Field("aid") String aid, @Field("sign") String sign, @Field("merchant_id") String merchant_id,  @Field("date_start") String date_start, @Field("date_end") String date_end) {
         return iRequestMode.QueryMerchantOrder(aid, sign, merchant_id, date_start, date_end);
+    }
+
+   /* @Override
+    public Flowable<ResponseBody> QuerySettle(@Field("aid") String aid, @Field("sign") String sign, @Field("merchant_id") String merchant_id, @Field("person_type") String person_type, @Field("phone") String phone, @Field("email") String email, @Field("name") String name, @Field("inst") String inst, @Field("address") String address, @Nullable @Field( "bus_lic") String bus_lic, @Nullable @Field( "sto_pic") String sto_pic, @Field( "idcard_face") String idcard_face, @Field( "idcard_back") String idcard_back, @Field( "bank_card_face") String bank_card_face, @Field( "bank_card_back") String bank_card_back, @Field("truename") String truename, @Field("idcard_no") String idcard_no, @Field("bank_card_no") String bank_card_no, @Field("bank_card_name") String bank_card_name, @Field("bank_card_type") String bank_card_type, @Field("bank_name") String bank_name, @Field("bank_branch") String bank_branch, @Field("bankfirm") String bankfirm) {
+        return iRequestMode.QuerySettle(aid, sign, merchant_id, person_type, phone, email, name, inst, address, bus_lic, sto_pic, idcard_face, idcard_back, bank_card_face, bank_card_back, truename, idcard_no, bank_card_no, bank_card_name, bank_card_type, bank_name, bank_branch, bankfirm);
+    }*/
+
+    @Override
+    public Flowable<HeoCodeResponse> QuerySettle(@FieldMap HashMap<String,String> request){
+        return iRequestMode.QuerySettle(request);
+    }
+
+
+
+    @Override
+    public Flowable<HeoCodeResponse> QuerySettleInfo(@Field("aid") String aid, @Field("sign") String sign, @Field("merchant_id") String merchant_id) {
+        return iRequestMode.QuerySettleInfo(aid, sign, merchant_id);
     }
 
     @Override
@@ -168,6 +191,21 @@ public class RequestModelImpl implements IRequestMode {
     @Override
     public Flowable<HeoCodeResponse> QueryPay(@Query("aid") String aid, @Query("sign") String sign, @Query("merchant_id") String merchant_id, @Query("pay_money") String pay_money, @Query("pay_type") int pay_type, @Query("trade_type") int trade_type) {
         return iRequestMode.QueryPay(aid, sign, merchant_id, pay_money, pay_type, trade_type);
+    }
+
+    @Override
+    public Flowable<ResponseBody> QueryQuickPay(@Query("aid") String aid, @Query("sign") String sign, @Query("merchant_id") String merchant_id, @Query("pay_money") String pay_money, @Query("bank_account") String bank_account, @Query("mobile") String mobile, @Query("name") String name, @Query("id_card") String id_card, @Query("cvv2") String cvv2, @Query("vd") String vd, @Query("trantp") String trantp) {
+        return iRequestMode.QueryQuickPay(aid, sign, merchant_id, pay_money, bank_account, mobile, name, id_card, cvv2, vd, trantp);
+    }
+
+    @Override
+    public Flowable<ResponseBody> QueryQuickPayConfirm(@Query("aid") String aid, @Query("sign") String sign, @Query("merchant_id") String merchant_id, @Query("order_id") String order_id, @Query("orderNo") String orderNo, @Query("smCode") String smCode) {
+        return iRequestMode.QueryQuickPayConfirm(aid, sign, merchant_id, order_id, orderNo, smCode);
+    }
+
+    @Override
+    public Flowable<HeoCodeResponse> QueryResetPassword(@Field("aid") String aid, @Field("sign") String sign, @Field("account") String account, @Field("newpass") String newpass) {
+        return iRequestMode.QueryResetPassword(aid, sign, account, newpass);
     }
 
 }

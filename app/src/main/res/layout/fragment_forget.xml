@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:layout_marginTop="45dp"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:id="@+id/forget_step1_lay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/layer_list"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:paddingBottom="5dp"
+                    android:src="@drawable/phone_icon" />
+
+                <EditText
+                    android:id="@+id/forget_user_et"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:gravity="center|left"
+                    android:hint="请输入手机号"
+                    android:inputType="phone"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:textColorHint="@color/chutou_check_txt" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/forget_step1_btn"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/big_btn_backgroud"
+                android:text="下一步"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/forget_step2_lay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:visibility="visible"
+            android:gravity="center|left"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/forget_tip_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="验证码已发送至您的手机133****5379"
+                android:textColor="@color/chutou_check_txt"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/layer_list"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/phone_icon" />
+
+                <EditText
+                    android:id="@+id/forget_code_et"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:gravity="center|left"
+                    android:hint="请输入验证码"
+                    android:inputType="number"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:textColorHint="@color/chutou_check_txt" />
+                <ImageView
+                    android:layout_width="1dp"
+                    android:layout_height="30dp"
+                    android:layout_margin="5dp"
+                    android:background="@color/chutou_check_txt"/>
+                <TextView
+                    android:id="@+id/foget_code_again"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:singleLine="true"
+                    android:textColor="@color/chutou_check_txt"
+                    android:textSize="14sp"
+                    android:text="(59)重新获取"
+                    android:layout_weight="2"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/forget_step2_btn"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/big_btn_backgroud"
+                android:text="下一步"
+                android:textColor="@color/white" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/forget_step3_lay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:visibility="gone"
+            android:gravity="center|left"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/layer_list"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:paddingBottom="5dp"
+                    android:src="@drawable/password_icon" />
+
+                <EditText
+                    android:id="@+id/forget_password_et"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:gravity="center|left"
+                    android:hint="请输入密码"
+                    android:textColorHint="@color/chutou_check_txt"
+                    android:inputType="textPassword"
+                    android:lines="1"
+                    android:maxLines="1" />
+                <CheckBox
+                    android:id="@+id/forget_show1_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center|right"
+                    android:layout_gravity="center|right"
+                    android:button="@drawable/checkbox_pw_visible"
+                    android:visibility="visible" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/layer_list"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:paddingBottom="5dp"
+                    android:src="@drawable/password_icon" />
+
+                <EditText
+                    android:id="@+id/forget_password2_et"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:gravity="center|left"
+                    android:hint="请再输入一次密码"
+                    android:textColorHint="@color/chutou_check_txt"
+                    android:inputType="textPassword"
+                    android:lines="1"
+                    android:maxLines="1" />
+                <CheckBox
+                    android:id="@+id/forget_show2_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center|right"
+                    android:layout_gravity="center|right"
+                    android:button="@drawable/checkbox_pw_visible"
+                    android:visibility="visible" />
+            </LinearLayout>
+            <Button
+                android:id="@+id/forget_step3_btn"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/big_btn_backgroud"
+                android:text="确定"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+    </LinearLayout>
+    <include
+        android:id="@+id/forget_header"
+        layout="@layout/header_lay"
+        android:visibility="visible" />
+</RelativeLayout>

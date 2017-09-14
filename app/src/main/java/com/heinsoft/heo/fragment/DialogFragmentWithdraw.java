@@ -15,6 +15,7 @@ import android.widget.RelativeLayout;
 import com.heinsoft.heo.R;
 import com.heinsoft.heo.bean.HeoCodeResponse;
 import com.heinsoft.heo.customView.ProgressBarItem;
+import com.heinsoft.heo.view.IFragmentActivity;
 import com.heinsoft.heo.present.QueryPresent;
 import com.heinsoft.heo.util.Constant;
 import com.heinsoft.heo.util.Utils;
@@ -30,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import okhttp3.ResponseBody;
 
 
 /**
@@ -39,7 +41,7 @@ import butterknife.ButterKnife;
  */
 public class DialogFragmentWithdraw extends DialogFragment implements IPayView {
     private static final String COOKIE_KEY = "cookie";
-    private IWithdrawListtener callBack;
+    private IFragmentActivity listener;
     private static final String SUCCESS = "0";
 
 
@@ -62,7 +64,7 @@ public class DialogFragmentWithdraw extends DialogFragment implements IPayView {
     @Override
     public void onAttach(Context activity) {
         try {
-            callBack = (IWithdrawListtener) activity;
+            listener = (IFragmentActivity) activity;
         } catch (ClassCastException e) {
         }
         super.onAttach(activity);
@@ -149,6 +151,16 @@ public class DialogFragmentWithdraw extends DialogFragment implements IPayView {
     }
 
     @Override
+    public void ResolveQuickPayInfo(ResponseBody info) {
+
+    }
+
+    @Override
+    public void ResolveQuickPayConfirmInfo(ResponseBody info) {
+
+    }
+
+    @Override
     public void ResolveProfitInfo(HeoCodeResponse info) {
 
     }
@@ -183,7 +195,4 @@ public class DialogFragmentWithdraw extends DialogFragment implements IPayView {
 
     }
 
-    public interface IWithdrawListtener {
-        void doWithdraw();
-    }
 }

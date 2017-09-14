@@ -6,16 +6,21 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 
+import com.heinsoft.heo.HeoApplication;
 import com.heinsoft.heo.R;
-import com.heinsoft.heo.RRSApplication;
+import com.heinsoft.heo.fragment.BaseFragment;
+import com.heinsoft.heo.fragment.FragmentForget;
+import com.heinsoft.heo.fragment.FragmentLogin;
 import com.heinsoft.heo.fragment.FragmentMain;
+import com.heinsoft.heo.fragment.FragmentMessage;
 import com.heinsoft.heo.fragment.FragmentPay;
 import com.heinsoft.heo.fragment.FragmentRecord;
-import com.heinsoft.heo.fragment.FragmentRegisterLogin;
+import com.heinsoft.heo.fragment.FragmentRegister;
+import com.heinsoft.heo.fragment.FragmentRepayment;
+import com.heinsoft.heo.fragment.FragmentSettle;
 import com.heinsoft.heo.fragment.FragmentVerify;
 import com.heinsoft.heo.fragment.FragmentWebview;
 import com.heinsoft.heo.fragment.ListFragmentMenuSliding;
-import com.heinsoft.heo.util.Constant;
 import com.heinsoft.heo.util.DoubleConfirm;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
@@ -28,7 +33,7 @@ import com.socks.library.KLog;
  * @author: xiaoyl
  * @date: 2013-7-10 下午2:30:06
  */
-public class BaseActivity extends SlidingFragmentActivity implements ListFragmentMenuSliding.IFragmentSlindingListtener {
+public class BaseActivity extends SlidingFragmentActivity  {
     protected static final String PAGE_0 = "page_0";
     protected static final String PAGE_1 = "page_1";
     protected static final String PAGE_2 = "page_2";
@@ -39,28 +44,31 @@ public class BaseActivity extends SlidingFragmentActivity implements ListFragmen
     protected static final String PAGE_7 = "page_7";
     protected static final String PAGE_8 = "page_8";
     protected static final String PAGE_9 = "page_9";
+    protected static final String PAGE_10 = "page_10";
 
-    protected FragmentRegisterLogin fragment0;
+    protected FragmentLogin fragment0;
     protected FragmentMain fragment1;
     protected FragmentWebview fragment2;
-    protected FragmentWebview fragment3;
-    protected FragmentWebview fragment4;
-    protected FragmentPay fragment5;
-    protected FragmentVerify fragment6;
-    protected FragmentWebview fragment7;
-    protected FragmentRecord fragment8;
+    protected FragmentPay fragment3;
+    protected FragmentVerify fragment4;
+    protected FragmentRecord fragment5;
+    protected FragmentRegister fragment6;
+    protected FragmentSettle fragment7;
+    protected FragmentMessage fragment8;
+    protected FragmentRepayment fragment9;
+    protected FragmentForget fragment10;
     private DoubleConfirm double_c;
     ListFragmentMenuSliding mFrag;
     SlidingMenu slidingMenu;
     protected Context context;
     protected int cur_page = -1;
-
+    protected BaseFragment curFragment;
     /**
      * 双击事件
      */
     private DoubleConfirm.DoubleConfirmEvent doubleConfirmEvent = new DoubleConfirm.DoubleConfirmEvent() {
         public void doSecondConfirmEvent() {
-            RRSApplication.getInstance().exitApplication();
+            HeoApplication.getInstance().exitApplication();
         }
 
         public int getFirstConfirmTipsId() {
@@ -73,7 +81,7 @@ public class BaseActivity extends SlidingFragmentActivity implements ListFragmen
         super.onCreate(savedInstanceState);
         setBehindContentView(R.layout.activity_behind_lay);
 
-        RRSApplication.getInstance().addActivitys(this);
+        HeoApplication.getInstance().addActivitys(this);
         context = getApplicationContext();
         this.double_c = new DoubleConfirm();
         this.double_c.setEvent(this.doubleConfirmEvent);
@@ -94,6 +102,9 @@ public class BaseActivity extends SlidingFragmentActivity implements ListFragmen
 
         this.slidingMenu = getSlidingMenu();
         this.slidingMenu.setMode(SlidingMenu.RIGHT);
+        slidingMenu.setOnCloseListener(() -> {
+             bottomToMain();
+        });
         //this.slidingMenu.setShadowWidthRes(R.dimen.shadow_width);
         this.slidingMenu.setShadowDrawable(R.drawable.shadow);
         //this.slidingMenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
@@ -109,66 +120,31 @@ public class BaseActivity extends SlidingFragmentActivity implements ListFragmen
         invalidateOptionsMenu();
     }
 
-    protected void refreshSliding() {
-        if (mFrag != null) {
-            mFrag.initView();
-        }
-    }
-
-    protected void toggleSliding() {
-        if (slidingMenu != null && !slidingMenu.isMenuShowing()) {
-            slidingMenu.toggle();
-
-        }
-    }
 
     public boolean onKeyDown(int paramInt, KeyEvent paramKeyEvent) {
         if (paramInt == KeyEvent.KEYCODE_BACK) {
-            if (slidingMenu != null && slidingMenu.isMenuShowing()) {
-                return super.onKeyDown(paramInt, paramKeyEvent);
-            }
-            KLog.v("onKeyDown"+cur_page);
+            KLog.v("cur_page"+cur_page);
             switch (cur_page) {
-                case 0:
-                case 1:
-                    this.double_c.onKeyPressed(paramKeyEvent, this);
-                    return true;
                 case 2:
-                    if(fragment2.canBack()){
-                        fragment2.back();
-                        return true;
-                    }
-                    gotoMain();
-                    return true;
                 case 3:
-                    if(fragment3.canBack()){
-                        fragment3.back();
-                        return true;
-                    }
-                    gotoMain();
-                    return true;
                 case 4:
-                    if(fragment4.canBack()){
-                        fragment4.back();
-                        return true;
-                    }
-                    gotoMain();
-                    return true;
                 case 5:
-                    fragment5.step(0);
-                    return true;
                 case 6:
-                    fragment6.back();
-                    return true;
                 case 7:
-                    if(fragment7.canBack()){
-                        fragment7.back();
-                        return true;
-                    }
-                    gotoMain();
-                    return true;
                 case 8:
-                    fragment8.back();
+                case 9:
+                case 10:
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                case 15:
+                case 16:
+                case 17:
+                case 18:
+                case 19:
+                case 20:
+                    curFragment.Back();
                     return true;
                 default:
                     this.double_c.onKeyPressed(paramKeyEvent, this);
@@ -178,62 +154,75 @@ public class BaseActivity extends SlidingFragmentActivity implements ListFragmen
         return false;
     }
 
-    protected void gotoMain() {
+    protected void closeSliding() {
+        if (slidingMenu != null && slidingMenu.isMenuShowing()) {
+            slidingMenu.toggle();
+        }
+    }
+    protected void openSliding() {
+        if (slidingMenu != null && !slidingMenu.isMenuShowing()) {
+            slidingMenu.toggle();
+        }
+    }
+
+
+    public void gotoPay() {
 
     }
 
-    @Override
-    public void clearDateFlag() {
-        slidingMenu.toggle();
-        Constant.user_info = null;
-        FragmentTransaction ft = getSupportFragmentManager()
-                .beginTransaction();
-        ft.remove(mFrag);
-        ft.commit();
-        this.slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
-        gotoLogin();
+    public void gotoMain() {
+        KLog.v("gotoMain"+mFrag +slidingMenu);
+        if(slidingMenu!=null) {
+            mFrag.refreshInfo();
+            this.slidingMenu.setTouchModeAbove(SlidingMenu.RIGHT);
+        }
     }
 
-    @Override
-    public void verify() {
-        slidingMenu.toggle();
-        gotoVerify();
+
+    public void openCamera(int type) {
+
     }
 
-    @Override
-    public void orderRecord() {
-        slidingMenu.toggle();
+
+    public void doPhoto(int type) {
+
     }
 
-    @Override
+
     public void showVerify() {
+        closeSliding();
+    }
+
+    public void gotoLogin() {
+        closeSliding();
+        if(this.slidingMenu !=null) {
+            this.slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_NONE);
+        }
+    }
+
+
+    public void gotoRecord() {
+        closeSliding();
+    }
+
+
+    public void showWithdraw() {
+        closeSliding();
+    }
+
+
+    public void gotoRegister() {
 
     }
 
-    @Override
-    public void withdraw() {
-        slidingMenu.toggle();
+    public void gotoVerify() {
+        closeSliding();
     }
 
-    @Override
-    public void update() {
-        slidingMenu.toggle();
-    }
+    protected void bottomToMain()
+    {}
 
-    protected void gotoLogin() {
+    public void gotoForgot() {
 
     }
-
-    protected void gotoVerify() {
-
-    }
-
-    protected void webviewBack() {
-
-    }
-
-    protected boolean webviewCanBack() {
-        return true;
-    }
-
 }

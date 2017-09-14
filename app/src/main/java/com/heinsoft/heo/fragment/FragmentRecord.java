@@ -35,9 +35,10 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import okhttp3.ResponseBody;
 
-public class FragmentRecord extends BaseFragment  implements IPayView{
-    IRecordListener listener;
+public class FragmentRecord extends BaseFragment implements IPayView {
+
 
     QueryPresent present;
     Utils util;
@@ -63,78 +64,47 @@ public class FragmentRecord extends BaseFragment  implements IPayView{
     @Bind(R.id.empty_lay)
     RelativeLayout empty_lay;
     ArrayList<HeoMerchantInfoResponse> temp_data;
-
+    View view;
     ArrayList<HeoMerchantInfoResponse> data;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.record_lay, container, false);
-
+        view = inflater.inflate(R.layout.record_lay, container, false);
         ButterKnife.bind(FragmentRecord.this, view);
-
-        util = Utils.getInstance();
-        present = QueryPresent.getInstance(getContext());
-        present.setView(FragmentRecord.this);
-        sp = getContext().getSharedPreferences(COOKIE_KEY, Context.MODE_PRIVATE);
-
-        data = new ArrayList<>();
-        temp_data = new ArrayList<>();
-        adapter = new RecordItemListAdapter(data, getActivity(), FragmentRecord.this);
-        empty_iv = (ImageView) view.findViewById(R.id.empty_iv);
-        empty_tv = (TextView) view.findViewById(R.id.empty_tv);
-        empty_lay = (RelativeLayout) view.findViewById(R.id.empty_lay);
-
-		spinner_order = (CustomSinnper) view.findViewById(R.id.spinner_order);
-		ChoiceSpinnerAdapter adapter_scope = new ChoiceSpinnerAdapter(getActivity(),scopes);
-        spinner_order.setAdapter(adapter_scope);
-        spinner_order.setOnItemSeletedListener((parent,v, position,  id)->changeOrder(position));
-
-     //   recycle_view.setLayoutManager(new LinearLayoutManager(getActivity()));
-        //	recycle_view.setItemAnimator(new SlideInOutLeftItemAnimator(recycle_view));
-     //   AlphaAnimatorAdapter animatorApdapter = new AlphaAnimatorAdapter(adapter, recycle_view);
-        //mRecyclerView.addItemDecoration(new DividerItemDecoration(this,LinearLayoutManager.VERTICAL));
-        recycle_view.setEmptyView(empty_lay);
-        recycle_view.setAdapter(adapter);
-
-        RxView.clicks(header_btn_lay).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> listener.finishRecord());
-
         return view;
     }
 
-    public void initState(){
-        if(data !=null){
+    @Override
+    public void RefreshState() {
+        if (data != null) {
             data.clear();
         }
-        if(temp_data!=null){
+        if (temp_data != null) {
             temp_data.clear();
         }
-        if(adapter!=null) {
+        if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
+        fetchFromNetWork();
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if(!hidden){
-            fetchFromNetWork();
-        }
-    }
 
     protected void changeOrder(int position) {
-        if(data!=null){
+        if (data != null) {
             data.clear();
         }
-        for(HeoMerchantInfoResponse t_p:temp_data){
-            if(Integer.parseInt(t_p.getState()) == position){
+
+        for (HeoMerchantInfoResponse t_p : temp_data) {
+         //   KLog.v("temp_data==="+t_p.getState());
+            if (Integer.parseInt(t_p.getState()) == position) {
                 data.add(t_p);
             }
         }
         SortComparator disComparator = new SortComparator();
         Collections.sort(data, disComparator);
 
-        header_count.setText("当月:"+data.size()+"条记录");
+        header_count.setText("当月:" + data.size() + "条记录");
         adapter.notifyDataSetChanged();
     }
 
@@ -156,7 +126,7 @@ public class FragmentRecord extends BaseFragment  implements IPayView{
         StringA1.put("date_start", start_t);
         StringA1.put("date_end", end_t);
 
-        String merchant_id = sp.getString(Constant.USER_INFO_MERCHANT_ID, "");
+        String merchant_id = Constant.user_info.get(Constant.USER_INFO_MERCHANT_ID);
 
         StringA1.put(Constant.MERCHANT_ID, merchant_id);
         String sign1 = util.getSign(StringA1);
@@ -169,7 +139,7 @@ public class FragmentRecord extends BaseFragment  implements IPayView{
 
     protected void setEmptyStatus(boolean isOffLine) {
         if (isOffLine) {
-            empty_iv.setImageResource(R.drawable.netword_error);
+            empty_iv.setImageResource(R.drawable.network_error);
             empty_tv.setText("(=^_^=)，粗错了，点我刷新试试~");
             empty_lay.setEnabled(true);
             RxView.clicks(empty_iv).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> emptyClick());
@@ -189,33 +159,57 @@ public class FragmentRecord extends BaseFragment  implements IPayView{
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initView();
         initData();
+        initView();
     }
 
+
+
     private void initData() {
+        util = Utils.getInstance();
+        present = QueryPresent.getInstance(getContext());
+        present.setView(FragmentRecord.this);
+        sp = getContext().getSharedPreferences(COOKIE_KEY, Context.MODE_PRIVATE);
+
+    }
+
+    private void initView() {
+
+        data = new ArrayList<>();
+        temp_data = new ArrayList<>();
+        adapter = new RecordItemListAdapter(data, getActivity(), FragmentRecord.this);
+        empty_iv = (ImageView) view.findViewById(R.id.empty_iv);
+        empty_tv = (TextView) view.findViewById(R.id.empty_tv);
+        empty_lay = (RelativeLayout) view.findViewById(R.id.empty_lay);
+
+        spinner_order = (CustomSinnper) view.findViewById(R.id.spinner_order);
+        ChoiceSpinnerAdapter adapter_scope = new ChoiceSpinnerAdapter(getActivity(), scopes);
+        spinner_order.setAdapter(adapter_scope);
+        spinner_order.setOnItemSeletedListener((parent, v, position, id) -> changeOrder(position));
+
+        //   recycle_view.setLayoutManager(new LinearLayoutManager(getActivity()));
+        //	recycle_view.setItemAnimator(new SlideInOutLeftItemAnimator(recycle_view));
+        //   AlphaAnimatorAdapter animatorApdapter = new AlphaAnimatorAdapter(adapter, recycle_view);
+        //mRecyclerView.addItemDecoration(new DividerItemDecoration(this,LinearLayoutManager.VERTICAL));
+        recycle_view.setEmptyView(empty_lay);
+        recycle_view.setAdapter(adapter);
+
+        RxView.clicks(header_btn_lay).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> listener.gotoMain());
         fetchFromNetWork();
     }
 
     @Override
-    protected void initView() {
-        super.initView();
-
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            listener = (IRecordListener) context;
-        } catch (Exception e) {
-            e.fillInStackTrace();
-        }
-    }
-
-    @Override
     public void ResolvePayInfo(HeoCodeResponse info) {
+
+    }
+
+    @Override
+    public void ResolveQuickPayInfo(ResponseBody info) {
+
+    }
+
+    @Override
+    public void ResolveQuickPayConfirmInfo(ResponseBody info) {
 
     }
 
@@ -242,35 +236,46 @@ public class FragmentRecord extends BaseFragment  implements IPayView{
     @Override
     public void ResolveMerchantOrderInfo(HeoCodeResponse info) {
         hideWaitDialog();
-        if(data!=null){
+        if (data != null) {
             data.clear();
         }
         setEmptyStatus(false);
-        if(info.getErrcode()==null){
-            VToast.toast(getContext(),"网络错误");
+        if (info.getErrcode() == null) {
+            VToast.toast(getContext(), "网络错误");
             setEmptyStatus(true);
             return;
         }
+
         if (info.getErrcode().equals(SUCCESS)) {
-            if(info.getContent()!=null && info.getContent().size()>0) {
+        //    KLog.v(info.getContent().size()+"");
+            if (info.getContent() != null && info.getContent().size() > 0) {
                 temp_data.addAll(info.getContent());
                 changeOrder(0);
                 adapter.notifyDataSetChanged();
-            }else{
+            } else {
                 setEmptyStatus(false);
                 header_count.setText("当月:0条记录");
             }
-        }else{
+        } else {
             header_count.setText("当月:0条记录");
         }
     }
 
-    public void back() {
-        listener.finishRecord();
+    private HeoMerchantInfoResponse test() {
+        HeoMerchantInfoResponse item = new HeoMerchantInfoResponse();
+        item.setMerchant_id("1234567");
+        item.setOrder_id("1234567");
+        item.setState("0");
+        item.setPay_money("100");
+        item.setT0_fee("10");
+        item.setSource("0");
+        item.setCreate_name("2017-09-10 10:10:20");
+        return item;
     }
 
-
-    public interface IRecordListener {
-        void finishRecord();
+    @Override
+    public void Back() {
+        listener.gotoMain();
     }
+
 }

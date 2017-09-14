@@ -126,10 +126,6 @@ public class FragmentUserVerify extends BaseFragment implements IUserView {
 
     }
 
-    @Override
-    public void ResolveQcodeInfo(ResponseBody info) {
-
-    }
 
     @Override
     public void ResolveCodeInfo(ResponseBody info) {
@@ -180,7 +176,7 @@ public class FragmentUserVerify extends BaseFragment implements IUserView {
     }
 
     @Override
-    public void ResolveMerchantInfo(HeoCodeResponse info) {
+    public void ResolveResetPasswordInfo(HeoCodeResponse info) {
 
     }
 

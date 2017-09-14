@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.heinsoft.heo.R;
+import com.heinsoft.heo.view.IFragmentActivity;
 import com.heinsoft.heo.present.QueryPresent;
 import com.heinsoft.heo.util.Constant;
 import com.heinsoft.heo.util.Utils;
@@ -32,7 +33,7 @@ import io.reactivex.disposables.Disposable;
  */
 public class DialogFragmentVerifyTip extends DialogFragment  {
     private static final String COOKIE_KEY = "cookie";
-    private IVerifyTipListtener callBack;
+    private IFragmentActivity listener;
     private static final String STATUS_SUCCESS = "1001";
     private static final String STATUS_FAIL = "1002";
 
@@ -60,7 +61,7 @@ public class DialogFragmentVerifyTip extends DialogFragment  {
     @Override
     public void onAttach(Context activity) {
         try {
-            callBack = (IVerifyTipListtener) activity;
+            listener = (IFragmentActivity) activity;
         } catch (ClassCastException e) {
         }
         super.onAttach(activity);
@@ -112,10 +113,7 @@ public class DialogFragmentVerifyTip extends DialogFragment  {
 
     void verify(){
         dismiss();
-        callBack.doVerify();
+        listener.gotoVerify();
     }
 
-    public interface IVerifyTipListtener {
-        void doVerify();
-    }
 }

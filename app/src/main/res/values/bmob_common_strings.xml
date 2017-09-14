@@ -14,4 +14,8 @@
 	<string name="bmob_common_download_finish">下载完成，请点击安装</string>
 	<string name="bmob_common_patch_finish">更新完成，请点击安装</string>
 	<string name="bmob_common_silent_download_finish">新版本已经准备好，请点击安装</string>
+
+	<string name="btn_confirm">确定</string>
+	<string name="btn_cancel">取消</string>
+	<string name="btn_retry">重试</string>
 </resources>

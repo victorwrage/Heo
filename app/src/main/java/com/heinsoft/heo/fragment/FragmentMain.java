@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.heinsoft.heo.R;
 import com.heinsoft.heo.adapter.GlideImageLoader;
 import com.heinsoft.heo.bean.HeoCodeObjResponse;
@@ -24,6 +25,7 @@ import com.heinsoft.heo.util.Utils;
 import com.heinsoft.heo.util.VToast;
 import com.heinsoft.heo.view.IAgentView;
 import com.heinsoft.heo.view.IInviteView;
+import com.heinsoft.heo.view.IMerchantView;
 import com.heinsoft.heo.view.IPayView;
 import com.heinsoft.heo.view.IUserView;
 import com.jakewharton.rxbinding2.view.RxView;
@@ -43,7 +45,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import okhttp3.ResponseBody;
 
-public class FragmentMain extends BaseFragment implements OnBannerListener, IPayView, IUserView, IAgentView, IInviteView {
+public class FragmentMain extends BaseFragment implements OnBannerListener, IPayView, IUserView, IAgentView, IInviteView,IMerchantView {
     @Bind(R.id.main_tab_left_lay)
     LinearLayout main_tab_left_lay;
     @Bind(R.id.main_pay_lay)
@@ -58,13 +60,13 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
     @Bind(R.id.main_level_tv)
     TextView main_level_tv;
 
-    @Bind(R.id. main_level_lay)
-    LinearLayout  main_level_lay;
+    @Bind(R.id.main_level_lay)
+    LinearLayout main_level_lay;
     @Bind(R.id.main_tab_right_lay)
     LinearLayout main_tab_right_lay;
     @Bind(R.id.main_banner)
     Banner main_banner;
-    IMainListener listener;
+
 
     QueryPresent present;
     Utils util;
@@ -74,32 +76,16 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
     String invite_arr[];
     String invite_str;
     Double today_money = 0.00, history_money = 0.00;
+    private boolean isLeftShow;
+    private boolean isRightShow;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.main_lay, container, false);
         ButterKnife.bind(FragmentMain.this, view);
-        RxView.clicks(main_tab_left_lay).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> card());
-        RxView.clicks(main_tab_right_lay).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> scan());
-        RxView.clicks(main_pay_lay).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> pay());
-        RxView.clicks(main_share_rv).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> share());
-
-        RxView.clicks(main_today_reward).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> visible(main_today_reward, 0));
-        RxView.clicks(main_history_reward).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> visible(main_history_reward, 1));
-
-        util = Utils.getInstance();
-        present = QueryPresent.getInstance(getContext());
-        present.setView(FragmentMain.this);
-        sp = getContext().getSharedPreferences(COOKIE_KEY, Context.MODE_PRIVATE);
-        if (Constant.user_info != null) {
-            Constant.user_info.put(Constant.MY_AGENT_ID, "");
-        }
-        visibleLeftMoney();
-        visibleRightMoney();
         return view;
     }
-
 
 
     private void share() {
@@ -109,7 +95,16 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
         }
         KLog.v(Constant.user_info.get(Constant.MY_AGENT_ID));
         if (Constant.user_info.get(Constant.MY_AGENT_ID).equals("")) {
-            showDialog(0, "提示", "您还不是代理商，是否立即成为代理商？", "是", "否");
+            new MaterialDialog.Builder(getContext())
+                    .title("提示")
+                    .content("您还不是代理商，是否立即成为代理商？")
+                    .positiveText(R.string.btn_confirm)
+                    .negativeText(R.string.btn_cancel)
+                    .autoDismiss(true)
+                    .onPositive((materialDialog, dialogAction) -> {
+                        addAgent();
+                    })
+                    .show();
         } else {
             generateAgentCode();
         }
@@ -182,6 +177,9 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
     }
 
     public void fetchMerchantInfo() {
+        if(Constant.user_info == null){
+            return;
+        }
         HashMap<String, String> StringA1 = new HashMap<>();
         StringA1.put(Constant.AID_STR, Constant.AID);
         StringA1.put(Constant.MERCHANT_ID, Constant.user_info.get(Constant.MERCHANT_ID));
@@ -226,24 +224,13 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
         super.cancel(type, dia);
     }
 
-    public void initState() {
-        if (main_banner == null) {
-            return;
-        }
-        today_money = 0.0;
-        history_money = 0.0;
-        if (main_today_reward != null) {
-            main_today_reward.setText("0.0");
-            main_history_reward.setText("0.0");
-        }
-        initDate();
-    }
 
-    private void initDate() {
-        initBanner();
-        main_banner.startAutoPlay();
-
-        initAgentInfo();
+    @Override
+    public void RefreshState() {
+        sp = getContext().getSharedPreferences(COOKIE_KEY, Context.MODE_PRIVATE);
+        if (Constant.user_info != null) {
+            Constant.user_info.put(Constant.MY_AGENT_ID, "");
+        }
         switch (Integer.parseInt(Constant.user_info == null ? "0" : Constant.user_info.get(Constant.USER_INFO_ISAUTH))) {
             case 1:
                 main_level_lay.setVisibility(View.VISIBLE);
@@ -253,6 +240,66 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
                 main_level_lay.setVisibility(View.GONE);
                 break;
         }
+        isLeftShow = sp.getBoolean(VISIBLE_MONEY_LEFT_KEY,true);
+        isRightShow = sp.getBoolean(VISIBLE_MONEY_RIGHT_KEY,true);
+        today_money = 0.00;
+        history_money = 0.00;
+        main_today_reward.setText("0.00");
+        main_history_reward.setText("0.00");
+        initAgentInfo();
+    }
+
+    private void initDate() {
+        util = Utils.getInstance();
+        present = QueryPresent.getInstance(getContext());
+        present.setView(FragmentMain.this);
+        sp = getContext().getSharedPreferences(COOKIE_KEY, Context.MODE_PRIVATE);
+    }
+
+    private void initView() {
+        RxView.clicks(main_tab_left_lay).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> card());
+        RxView.clicks(main_tab_right_lay).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> scan());
+        RxView.clicks(main_pay_lay).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> pay());
+        RxView.clicks(main_share_rv).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> share());
+
+        RxView.clicks(main_today_reward).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> visible(main_today_reward));
+        RxView.clicks(main_history_reward).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> visible(main_history_reward));
+
+        util = Utils.getInstance();
+        present = QueryPresent.getInstance(getContext());
+        present.setView(FragmentMain.this);
+        sp = getContext().getSharedPreferences(COOKIE_KEY, Context.MODE_PRIVATE);
+        if (Constant.user_info != null) {
+            Constant.user_info.put(Constant.MY_AGENT_ID, "");
+        }
+
+        switch (Integer.parseInt(Constant.user_info == null ? "0" : Constant.user_info.get(Constant.USER_INFO_ISAUTH))) {
+            case 1:
+                main_level_lay.setVisibility(View.VISIBLE);
+                main_level_tv.setText(Constant.user_info.get(Constant.LEVEL_NAME));
+                break;
+            default:
+                main_level_lay.setVisibility(View.GONE);
+                break;
+        }
+
+        isLeftShow = sp.getBoolean(VISIBLE_MONEY_LEFT_KEY,true);
+        isRightShow = sp.getBoolean(VISIBLE_MONEY_RIGHT_KEY,true);
+        KLog.v("isLeftShow"+isLeftShow);
+        if(!isLeftShow){
+            main_today_reward.setText("****");
+        }else{
+            main_today_reward.setText("0.00");
+        }
+
+        if(!isRightShow){
+            main_history_reward.setText("****");
+        }else{
+            main_history_reward.setText("0.00");
+        }
+        initBanner();
+        main_banner.startAutoPlay();
+        initAgentInfo();
     }
 
     private void initAgentInfo() {
@@ -273,6 +320,7 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initDate();
+        initView();
     }
 
     private void getTodayProfit() {
@@ -319,6 +367,7 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
         present.QueryAgentOrder(Constant.AID, StringA1.get(Constant.SIGN), StringA1.get(Constant.AGENT_ID), StringA1.get("date_start"), StringA1.get("date_end"));
 
     }
+
     private void getTodayAgentProfit() {
 
         HashMap<String, String> StringA1 = new HashMap<>();
@@ -367,19 +416,7 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
         present.QueryProfit(Constant.AID, StringA1.get(Constant.SIGN), StringA1.get(Constant.AGENT_ID), StringA1.get("date_start"), StringA1.get("date_end"));
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            listener = (IMainListener) context;
-        } catch (Exception e) {
-            e.fillInStackTrace();
-        }
-    }
 
-    /**
-     * 准备轮播
-     */
     private void initBanner() {
         List<Integer> bannerImageList = new ArrayList<>();
         bannerImageList.add(R.drawable.b01);
@@ -413,55 +450,29 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
 
     }
 
-    /**
-     * 显示金额
-     */
-    private void visibleLeftMoney() {
-        if (sp.getBoolean(VISIBLE_MONEY_LEFT_KEY, true)) {
-            main_today_reward.setTag("0");
-        } else {
-            main_today_reward.setTag("1");
-        }
-        visible(main_today_reward, 0);
+    @Override
+    public void ResolveQuickPayInfo(ResponseBody info) {
+
     }
 
-    /**
-     * 显示金额
-     */
-    private void visibleRightMoney() {
-        if (sp.getBoolean(VISIBLE_MONEY_RIGHT_KEY, true)) {
-            main_history_reward.setTag("0");
-        } else {
-            main_history_reward.setTag("1");
-        }
-        visible(main_history_reward, 1);
+    @Override
+    public void ResolveQuickPayConfirmInfo(ResponseBody info) {
+
     }
 
-    private void visible(TextView tv, int tv_id) {
-        KLog.v("visible"+tv_id+"----"+tv.getTag()+"---"+history_money);
-        if (Integer.parseInt(tv.getTag() + "") == 0) {
-            switch (tv_id) {
-                case 0:
-                    sp.edit().putBoolean(VISIBLE_MONEY_LEFT_KEY, false).commit();
-                    break;
-                case 1:
-                    sp.edit().putBoolean(VISIBLE_MONEY_RIGHT_KEY, false).commit();
-                    break;
-            }
-            tv.setText("***");
-            tv.setTag("1");
-        } else {
-            tv.setTag("0");
-            switch (tv_id) {
-                case 0:
-                    tv.setText(today_money + "");
-                    sp.edit().putBoolean(VISIBLE_MONEY_LEFT_KEY, true).commit();
-                    break;
-                case 1:
-                    tv.setText(history_money + "");
-                    sp.edit().putBoolean(VISIBLE_MONEY_RIGHT_KEY, true).commit();
-                    break;
-            }
+    private void visible(TextView tv) {
+
+        switch (tv.getId()) {
+            case R.id.main_today_reward:
+                isLeftShow = !isLeftShow;
+                tv.setText(isLeftShow?today_money+"":"****");
+                sp.edit().putBoolean(VISIBLE_MONEY_LEFT_KEY, isLeftShow).commit();
+                break;
+            case R.id.main_history_reward:
+                isRightShow = !isRightShow;
+                tv.setText(isRightShow?history_money+"":"****");
+                sp.edit().putBoolean(VISIBLE_MONEY_RIGHT_KEY, isRightShow).commit();
+                break;
         }
     }
 
@@ -483,7 +494,7 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
         } else {
             main_history_reward.setText("0.0");
         }
-        visible(main_history_reward, 1);
+       // visible(main_history_reward);
     }
 
     @Override
@@ -497,12 +508,12 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
             Double t_m = 0.0;
             for (HeoMerchantInfoResponse i_m : info.getContent()) {
                 if (i_m.getState().equals("0")) {
-                    KLog.v("ResolveAgentOrderInfo"+Double.parseDouble(i_m.getPay_money()));
+                    KLog.v("ResolveAgentOrderInfo" + Double.parseDouble(i_m.getPay_money()));
                     t_m = util.add(t_m, Double.parseDouble(i_m.getPay_money()));
                 }
             }
             today_money = t_m;
-            visible(main_today_reward, 0);
+           // visible(main_today_reward);
         }
     }
 
@@ -517,12 +528,16 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
             Double t_m = 0.00;
             for (HeoMerchantInfoResponse i_m : info.getContent()) {
                 if (i_m.getState().equals("0")) {
-                 //   KLog.v("ResolveAgentOrderInfo"+Double.parseDouble(i_m.getPayoff_money()));
+                    //   KLog.v("ResolveAgentOrderInfo"+Double.parseDouble(i_m.getPayoff_money()));
                     t_m = util.add(t_m, Double.parseDouble(i_m.getPayoff_money()));
                 }
             }
             today_money = t_m;
-            visible(main_today_reward, 0);
+            if (isLeftShow) {
+                main_today_reward.setText(today_money + "");
+            } else {
+                main_today_reward.setText("****");
+            }
         }
     }
 
@@ -543,11 +558,6 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
 
     @Override
     public void ResolveRegisterInfo(HeoCodeResponse info) {
-
-    }
-
-    @Override
-    public void ResolveQcodeInfo(ResponseBody info) {
 
     }
 
@@ -587,14 +597,31 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
     }
 
     @Override
+    public void ResolveResetPasswordInfo(HeoCodeResponse info) {
+
+    }
+
+    @Override
+    public void ResolveSettleInfo(HeoCodeResponse info) {
+
+    }
+
+    @Override
+    public void ResolveSettle(HeoCodeResponse info) {
+
+    }
+
+    @Override
     public void ResolveMerchantInfo(HeoCodeResponse info) {
         hideWaitDialog();
         if (info.getErrcode() == null) {
+
             VToast.toast(getContext(), "网络错误,不能获取商户信息");
             return;
         }
         if (info.getErrcode().equals(SUCCESS)) {
             if (info.getContent() == null && info.getContent().get(0) == null) {
+
                 KLog.v("商户账号无信息");
                 return;
             }
@@ -628,7 +655,7 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
             Constant.user_info.put(Constant.PIC_3, merchant.getImages().getPic_3());
             Constant.user_info.put(Constant.PIC_4, merchant.getImages().getPic_4());
             Constant.user_info.put(Constant.PIC_5, merchant.getImages().getPic_5());
-            listener.updateMerchant();
+
         }
     }
 
@@ -707,23 +734,18 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
             Constant.user_info.put(Constant.PROFIT_BALANCE, info.getContent().get(0).getProfit_balance());
             Constant.user_info.put(Constant.PROFIT_HISTORY, info.getContent().get(0).getProfit_history());
             history_money = Double.parseDouble(Constant.user_info.get(Constant.PROFIT_HISTORY));
-            KLog.v("history_money"+history_money);
-            visible(main_history_reward, 1);
-           // getHistoryProfit();
+            KLog.v("history_money" + history_money);
+            if (isRightShow) {
+                main_history_reward.setText(history_money + "");
+            } else {
+                main_history_reward.setText("****");
+            }
+            // getHistoryProfit();
             getTodayAgentProfit();
         } else {
             Constant.user_info.put(Constant.MY_AGENT_NAME, "");
             Constant.user_info.put(Constant.MY_AGENT_ID, "");
             //  VToast.toast(getContext(), info.getErrmsg());
         }
-    }
-
-
-    public interface IMainListener {
-        void gotoPay();
-
-        void showVerify();
-
-        void updateMerchant();
     }
 }

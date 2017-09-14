@@ -3,6 +3,8 @@ package com.heinsoft.heo.view;
 
 import com.heinsoft.heo.bean.HeoCodeResponse;
 
+import okhttp3.ResponseBody;
+
 /**
  * Info:
  * Created by xiaoyl
@@ -14,6 +16,14 @@ public interface IPayView extends IView{
      * @param info
      */
     void ResolvePayInfo(HeoCodeResponse info);
+    /**
+     * @param info
+     */
+    void ResolveQuickPayInfo(ResponseBody info);
+    /**
+     * @param info
+     */
+    void ResolveQuickPayConfirmInfo(ResponseBody info);
     /**
      * @param info
      */

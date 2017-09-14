@@ -45,6 +45,15 @@ public class HeoCodeResponse {
 
     String batch_no;
     String usefulcode;
+    SettleInfo info;
+
+    public SettleInfo getInfo() {
+        return info;
+    }
+
+    public void setInfo(SettleInfo info) {
+        this.info = info;
+    }
 
     public String getAllot_time() {
         return allot_time;
@@ -258,6 +267,9 @@ public class HeoCodeResponse {
     public String toString() {
         if(content!=null && content.get(0)!=null) {
             return "errcode:" + errcode + "errmsg:" + errmsg + "merchant_id:" + merchant_id + "name:" + name + "username" + username + "content" + content.get(0).toString();
+        }
+        if(info !=null){
+            return "errcode:" + errcode + "errmsg:" + errmsg + "getStatus:" + info.getStatus() + "getMerchant_id:" + info.getMerchant_id() + "getFixed_qrcode:" + info.getFixed_qrcode();
         }
         return "errcode:" + errcode + "errmsg:" + errmsg + "merchant_id:" + merchant_id + "name:" + name + "username" + username;
     }

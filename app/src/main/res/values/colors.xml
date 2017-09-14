@@ -25,7 +25,9 @@
     <color name="chutou_pay_back">#F7F2F8</color>
     <color name="chutou_item_txt">#EFEFEF</color>
     <color name="chutou_btn_back">#DF4D1E</color>
-
+    <color name="chutou_activity_back">#22DF4D1E</color>
+    <color name="chutou_alpha">#226A6A6A</color>
+    <color name="chutou_tab2">#F4543F</color>
     <color name="low_title">#57beb2</color>
     <color name="software_textColor_selected">#FF1C94EA</color>
     <color name="software_textColor_unselected">#FFDCE0DF</color>
@@ -79,6 +81,7 @@
     <color name="chutou_btn_select">#DC753A</color> <!--金色 -->
     <color name="chutou_text_back">#AFAFAD</color> <!--金色 -->
     <color name="chutou_btn">#5A5A5A</color> <!--金色 -->
+    <color name="chutou_sep">#8e8e8e</color>
     <color name="pink">#FFC0CB</color> <!--粉红色 -->
     <color name="lightpink">#FFB6C1</color> <!--亮粉红色 -->
     <color name="orange">#FFA500</color> <!--橙色 -->
@@ -125,6 +128,7 @@
     <color name="lightgrey">#D3D3D3</color> <!--亮灰色 -->
     <color name="tan">#D2B48C</color> <!--茶色 -->
     <color name="chocolate">#D2691E</color> <!--巧可力色 -->
+    <color name="chocolate_tran">#33D2691E</color> <!--巧可力色 -->
     <color name="chocolate_trans">#99D2691E</color> <!--巧可力色 -->
     <color name="peru">#CD853F</color> <!--秘鲁色 -->
     <color name="indianred">#CD5C5C</color> <!--印第安红 -->

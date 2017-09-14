@@ -11,6 +11,8 @@ import com.heinsoft.heo.model.converter.CustomGsonConverter;
 import com.heinsoft.heo.util.Constant;
 import com.heinsoft.heo.view.IAgentView;
 import com.heinsoft.heo.view.IInviteView;
+import com.heinsoft.heo.view.IMerchantView;
+import com.heinsoft.heo.view.IMessageView;
 import com.heinsoft.heo.view.IPayView;
 import com.heinsoft.heo.view.IUserEditView;
 import com.heinsoft.heo.view.IUserView;
@@ -32,6 +34,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import okhttp3.logging.HttpLoggingInterceptor;
 import okio.Buffer;
 import okio.BufferedSource;
 import retrofit2.Retrofit;
@@ -65,10 +68,10 @@ public class QueryPresent implements IRequestPresent {
         context = context_;
     }
 
-    public static  QueryPresent getInstance(Context context) {
+    public static QueryPresent getInstance(Context context) {
         if (instance == null) {
             synchronized (QueryPresent.class) {
-                if(instance==null) {
+                if (instance == null) {
                     return new QueryPresent(context);
                 }
             }
@@ -116,8 +119,25 @@ public class QueryPresent implements IRequestPresent {
         }
     }
 
+    public void initRetrofitMerchant(String url) {
+        try {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(url)
+                    .client(genericMerchantClient())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .build();
+            iRequestMode = retrofit.create(IRequestMode.class);
+
+
+        } catch (IllegalArgumentException e) {
+            e.fillInStackTrace();
+        }
+    }
+
     /**
      * 添加统一header,超时时间,http日志打印
+     *
      * @return
      */
     public static OkHttpClient genericClient() {
@@ -135,7 +155,40 @@ public class QueryPresent implements IRequestPresent {
                         return chain.proceed(request);
                     }
                 })
-              //  .addInterceptor(logging)
+                //  .addInterceptor(logging)
+                .connectTimeout(Constant.DEFAULT_TIMEOUT, TimeUnit.SECONDS)
+                .writeTimeout(Constant.DEFAULT_TIMEOUT, TimeUnit.SECONDS)
+                .readTimeout(Constant.DEFAULT_TIMEOUT, TimeUnit.SECONDS)
+                .build();
+        return httpClient;
+    }
+
+    /**
+     * 添加统一header,超时时间,http日志打印
+     *
+     * @return
+     */
+    public static OkHttpClient genericMerchantClient() {
+
+        OkHttpClient httpClient = new OkHttpClient.Builder()
+                 .addInterceptor(new Interceptor() {
+                    @Override
+                    public okhttp3.Response intercept(Chain chain) throws IOException {
+                        Request request = chain.request();
+                        Request.Builder requestBuilder = request.newBuilder();
+                        String encode = bodyToString(request.body());
+                        request = requestBuilder.post(RequestBody.create(MediaType.parse("multipart/form-data;charset=UTF-8"),
+                                 URLDecoder.decode(encode,"UTF-8")))
+                                .build();
+                        return chain.proceed(request);
+                    }
+                })
+                .addNetworkInterceptor(
+                        new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS))
+                .addNetworkInterceptor(
+                        new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
+                .addNetworkInterceptor(
+                        new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .connectTimeout(Constant.DEFAULT_TIMEOUT, TimeUnit.SECONDS)
                 .writeTimeout(Constant.DEFAULT_TIMEOUT, TimeUnit.SECONDS)
                 .readTimeout(Constant.DEFAULT_TIMEOUT, TimeUnit.SECONDS)
@@ -162,15 +215,15 @@ public class QueryPresent implements IRequestPresent {
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(url)
                     .addConverterFactory(CustomGsonConverter.create())
-                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create()).build();
-                  /*  .client(new OkHttpClient.Builder()
-//                            .addNetworkInterceptor(
-//                                    new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS))
-//                            .addNetworkInterceptor(
-//                                    new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
-//                            .addNetworkInterceptor(
-//                                    new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build())
-                    .build();*/
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .client(new OkHttpClient.Builder()
+                            .addNetworkInterceptor(
+                                    new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS))
+                            .addNetworkInterceptor(
+                                    new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
+                            .addNetworkInterceptor(
+                                    new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build())
+                    .build();
             iRequestMode = retrofit.create(IRequestMode.class);
 
         } catch (IllegalArgumentException e) {
@@ -180,7 +233,7 @@ public class QueryPresent implements IRequestPresent {
 
 
     @Override
-    public void QueryRegister(HashMap<String,String> stringA) {
+    public void QueryRegister(HashMap<String, String> stringA) {
 
         iRequestMode.QueryRegister(Constant.AID,
                 stringA.get(Constant.SIGN),
@@ -239,12 +292,12 @@ public class QueryPresent implements IRequestPresent {
 
     @Override
     public void QueryCode(String mobile, String msgid, String msg) {
-        Map<String ,String > sendParams = new HashMap<>();
-        sendParams.put("uid",Constant.MESSAGE_USER_NAME);
-        sendParams.put("psw",Constant.MESSAGE_PASSWORD);
-        sendParams.put("mobiles",mobile);
-        sendParams.put("msgid",msgid);
-        sendParams.put("msg",msg);
+        Map<String, String> sendParams = new HashMap<>();
+        sendParams.put("uid", Constant.MESSAGE_USER_NAME);
+        sendParams.put("psw", Constant.MESSAGE_PASSWORD);
+        sendParams.put("mobiles", mobile);
+        sendParams.put("msgid", msgid);
+        sendParams.put("msg", msg);
         iRequestMode.QueryCode(sendParams)
                 .onErrorReturn(s -> new ResponseBody() {
                     @Override
@@ -268,6 +321,30 @@ public class QueryPresent implements IRequestPresent {
     }
 
     @Override
+    public void QueryMessage() {
+        iRequestMode.QueryMessage()
+                .onErrorReturn(s -> new ResponseBody() {
+                    @Override
+                    public MediaType contentType() {
+                        return null;
+                    }
+
+                    @Override
+                    public long contentLength() {
+                        return 0;
+                    }
+
+                    @Override
+                    public BufferedSource source() {
+                        return null;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IMessageView) iView).ResolveMessageInfo(s));
+    }
+
+    @Override
     public void QueryPay(String aid, String sign, String merchant_id, String pay_money, int pay_type, int trade_type) {
         iRequestMode.QueryPay(aid, sign, merchant_id, pay_money, pay_type, trade_type)
                 .onErrorReturn(s -> new HeoCodeResponse())
@@ -277,17 +354,65 @@ public class QueryPresent implements IRequestPresent {
     }
 
     @Override
+    public void QueryQuickPay(String aid, String sign, String merchant_id, String pay_money, String bank_account, String mobile, String name, String id_card, String cvv2, String vd, String trantp) {
+        iRequestMode.QueryQuickPay(aid, sign, merchant_id, pay_money, bank_account, mobile, name, id_card, cvv2, vd, trantp)
+                .onErrorReturn(s -> new ResponseBody() {
+                    @Override
+                    public MediaType contentType() {
+                        return null;
+                    }
+
+                    @Override
+                    public long contentLength() {
+                        return 0;
+                    }
+
+                    @Override
+                    public BufferedSource source() {
+                        return null;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IPayView) iView).ResolveQuickPayInfo(s));
+    }
+
+    @Override
+    public void QueryQuickPayConfirm(String aid, String sign, String merchant_id, String order_id, String orderNo, String smCode) {
+        iRequestMode.QueryQuickPayConfirm(aid, sign, merchant_id, order_id, orderNo, smCode)
+                .onErrorReturn(s -> new ResponseBody() {
+                    @Override
+                    public MediaType contentType() {
+                        return null;
+                    }
+
+                    @Override
+                    public long contentLength() {
+                        return 0;
+                    }
+
+                    @Override
+                    public BufferedSource source() {
+                        return null;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IPayView) iView).ResolveQuickPayConfirmInfo(s));
+    }
+
+    @Override
     public void QueryMerchant(String aid, String sign, String merchant_id) {
         iRequestMode.QueryMerchantID(aid, sign, merchant_id)
                 .onErrorReturn(s -> new HeoCodeResponse())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> ((IUserView) iView).ResolveMerchantInfo(s));
+                .subscribe(s -> ((IMerchantView) iView).ResolveMerchantInfo(s));
     }
 
     @Override
     public void QueryProfit(String aid, String sign, String agent_id, String date_start, String date_end) {
-        iRequestMode.QueryProfit(aid, sign, agent_id,date_start,date_end)
+        iRequestMode.QueryProfit(aid, sign, agent_id, date_start, date_end)
                 .onErrorReturn(s -> new HeoCodeResponse())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -301,6 +426,53 @@ public class QueryPresent implements IRequestPresent {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> ((IUserEditView) iView).ResolveEditMerchantInfo(s));
+    }
+
+    @Override
+    public void QuerySettle(String aid, String sign, String merchant_id, String person_type, String phone, String email, String name, String inst, String address, String bus_lic, String sto_pic, String idcard_face, String idcard_back, String bank_card_face, String bank_card_back, String truename, String idcard_no, String bank_card_no, String bank_card_name, String bank_card_type, String bank_name, String bank_branch, String bankfirm) {
+
+        HashMap<String,String > map = new HashMap<>();
+        map.put("aid",aid);
+        map.put("sign",sign);
+        map.put("merchant_id",merchant_id);
+        map.put("person_type",person_type);
+        map.put("phone",phone);
+        map.put("email",email);
+        map.put("name",name);
+        map.put("inst",inst);
+        map.put("address",address);
+        if(bus_lic!=null) {
+            map.put("bus_lic",bus_lic);
+            map.put("sto_pic",sto_pic);
+        }
+        map.put("idcard_face",idcard_face);
+        map.put("idcard_back", idcard_back);
+        map.put("bank_card_face",bank_card_face);
+        map.put("bank_card_back",bank_card_back);
+        map.put("truename",truename);
+        map.put("idcard_no",idcard_no);
+        map.put("bank_card_no",bank_card_no);
+        map.put("bank_card_name",bank_card_name);
+        map.put("bank_card_type",bank_card_type);
+        map.put("bank_name",bank_name);
+        map.put("bank_branch",bank_branch);
+        map.put("bankfirm",bankfirm);
+
+
+        iRequestMode.QuerySettle(map)
+                .onErrorReturn(s -> new HeoCodeResponse())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IMerchantView) iView).ResolveSettle(s));
+    }
+
+    @Override
+    public void QuerySettleInfo(String aid, String sign, String merchant_id) {
+        iRequestMode.QuerySettleInfo(aid, sign, merchant_id)
+                .onErrorReturn(s -> new HeoCodeResponse())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IMerchantView) iView).ResolveSettleInfo(s));
     }
 
     @Override
@@ -332,7 +504,7 @@ public class QueryPresent implements IRequestPresent {
 
     @Override
     public void QueryBankBranch(String aid, String sign, String bankname) {
-        iRequestMode.QueryBankBranch(aid, sign,bankname)
+        iRequestMode.QueryBankBranch(aid, sign, bankname)
                 .onErrorReturn(s -> new HeoCodeResponse())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -341,7 +513,7 @@ public class QueryPresent implements IRequestPresent {
 
     @Override
     public void QueryInviteCode(String aid, String sign, String referral_code) {
-        iRequestMode.QueryInviteCode(aid, sign,referral_code)
+        iRequestMode.QueryInviteCode(aid, sign, referral_code)
                 .onErrorReturn(s -> new HeoCodeObjResponse())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -350,7 +522,7 @@ public class QueryPresent implements IRequestPresent {
 
     @Override
     public void QueryUsefullInviteCode(String aid, String sign, String agent_id) {
-        iRequestMode.QueryUserfullInviteCode(aid, sign,agent_id)
+        iRequestMode.QueryUserfullInviteCode(aid, sign, agent_id)
                 .onErrorReturn(s -> new HeoCodeResponse())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -359,7 +531,7 @@ public class QueryPresent implements IRequestPresent {
 
     @Override
     public void QueryObtainInviteCode(String aid, String sign, String agent_id, String num) {
-        iRequestMode.QueryObtainInviteCode(aid, sign,agent_id,num)
+        iRequestMode.QueryObtainInviteCode(aid, sign, agent_id, num)
                 .onErrorReturn(s -> new HeoCodeResponse())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -376,8 +548,8 @@ public class QueryPresent implements IRequestPresent {
     }
 
     @Override
-    public void QueryAddAgent(String aid, String sign, String parent_id, String phone,String agent_name, String contact, String province, String city, String rate, String bank, String sub_branch, String bank_account, String bank_account_name, String bankfirm, String account, String password) {
-        iRequestMode.QueryAddAgent(aid, sign, parent_id, phone, agent_name,contact, province, city, rate, bank, sub_branch, bank_account, bank_account_name, bankfirm, account, password)
+    public void QueryAddAgent(String aid, String sign, String parent_id, String phone, String agent_name, String contact, String province, String city, String rate, String bank, String sub_branch, String bank_account, String bank_account_name, String bankfirm, String account, String password) {
+        iRequestMode.QueryAddAgent(aid, sign, parent_id, phone, agent_name, contact, province, city, rate, bank, sub_branch, bank_account, bank_account_name, bankfirm, account, password)
                 .onErrorReturn(s -> new HeoCodeResponse())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -421,7 +593,7 @@ public class QueryPresent implements IRequestPresent {
     }
 
     @Override
-    public void QueryMerchantOrder(String aid, String sign, String merchant_id,  String date_start, String date_end) {
+    public void QueryMerchantOrder(String aid, String sign, String merchant_id, String date_start, String date_end) {
         iRequestMode.QueryMerchantOrder(aid, sign, merchant_id, date_start, date_end)
                 .onErrorReturn(s -> new HeoCodeResponse())
                 .subscribeOn(Schedulers.io())
@@ -429,29 +601,6 @@ public class QueryPresent implements IRequestPresent {
                 .subscribe(s -> ((IPayView) iView).ResolveMerchantOrderInfo(s));
     }
 
-    @Override
-    public void QueryQcode(String mobile) {
-        iRequestMode.QueryQcode(mobile)
-                .onErrorReturn(s -> new ResponseBody() {
-                    @Override
-                    public MediaType contentType() {
-                        return null;
-                    }
-
-                    @Override
-                    public long contentLength() {
-                        return 0;
-                    }
-
-                    @Override
-                    public BufferedSource source() {
-                        return null;
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> ((IUserView) iView).ResolveQcodeInfo(s));
-    }
 
     @Override
     public void QueryVerify(String mobile) {
@@ -466,7 +615,6 @@ public class QueryPresent implements IRequestPresent {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> ((IUserView) iView).ResolveLoginInfo(s));
     }
-
 
 
     @Override
@@ -497,7 +645,6 @@ public class QueryPresent implements IRequestPresent {
     }
 
 
-
     @Override
     public void QueryCodeVerify(String mobile, String code) {
         iRequestMode.QueryCodeVerify(mobile, code)
@@ -516,5 +663,13 @@ public class QueryPresent implements IRequestPresent {
                 .subscribe(s -> ((IUserView) iView).ResolvePhoneChangeInfo(s));
     }
 
+    @Override
+    public void QueryResetPassword(String aid, String sign, String account, String newpass) {
+        iRequestMode.QueryResetPassword(aid, sign, account, newpass)
+                .onErrorReturn(s -> new HeoCodeResponse())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IUserView) iView).ResolveResetPasswordInfo(s));
+    }
 
 }
