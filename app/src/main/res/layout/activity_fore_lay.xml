@@ -90,36 +90,36 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <RelativeLayout
+            <FrameLayout
                 android:id="@+id/main_message_lay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="3dp"
-                android:orientation="horizontal"
-                android:visibility="gone">
 
-                <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/main_message_iv"
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginStart="32dp"
-                    android:src="@drawable/message"
-                    app:civ_border_color="@color/royalblue"
-                    app:civ_border_overlay="false"
-                    app:civ_border_width="2dp"
-                    app:civ_fill_color="@color/royalblue" />
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center"
+
+                    android:src="@drawable/message_ico" />
 
                 <TextView
-                    android:id="@+id/main_message_unread_iv"
-                    android:layout_width="5dp"
-                    android:layout_height="5dp"
-                    android:layout_toRightOf="@id/main_message_iv"
-                    android:background="@color/red" />
-            </RelativeLayout>
+                    android:id="@+id/main_message_tv"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_gravity="top|right"
+                    android:background="@drawable/message_count_bg"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:text="0"
+                    android:textColor="@color/chutou_txt"
+                    android:textSize="12sp" />
+            </FrameLayout>
 
         </RelativeLayout>
 
@@ -155,7 +155,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:text="提额"
+                    android:text="还款"
                     android:textColor="@color/chutou_btn"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -278,15 +278,25 @@
             android:layout_alignWithParentIfMissing="true"
             android:background="#DDDDDD" />
 
-        <FrameLayout
-            android:id="@+id/fragment_container"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_above="@id/main_bottom_lay"
-            android:layout_alignWithParentIfMissing="true"
-            android:layout_below="@id/main_header_lay"
+            android:layout_below="@id/main_header_lay">
 
-            />
+            <FrameLayout
+                android:id="@+id/fragment_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true" />
+
+            <View
+                android:id="@+id/toolbar_shadow"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="@drawable/toolbar_shadow" />
+        </RelativeLayout>
     </RelativeLayout>
 
 </RelativeLayout>

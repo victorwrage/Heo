@@ -22,10 +22,7 @@ public interface IUserView extends IView{
      */
     void ResolveRegisterInfo(HeoCodeResponse info);
 
-    /**
-     * @param info
-     */
-    void ResolveQcodeInfo(ResponseBody info);
+
     /**
      * @param info
      */
@@ -54,8 +51,10 @@ public interface IUserView extends IView{
      * @param info
      */
     void ResolvePhoneChangeInfo(HeoCodeResponse info);
+
     /**
      * @param info
      */
-    void ResolveMerchantInfo(HeoCodeResponse info);
+    void ResolveResetPasswordInfo(HeoCodeResponse info);
+
 }

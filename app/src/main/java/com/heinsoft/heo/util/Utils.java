@@ -33,6 +33,7 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.socks.library.KLog;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -370,10 +371,13 @@ public class Utils {
     }
 
     public boolean isEmail(String strEmail) {
-        String strPattern = "^[a-zA-Z][\\w\\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\\w\\.-]*[a-zA-Z0-9]\\.[a-zA-Z][a-zA-Z\\.]*[a-zA-Z]$";
-        Pattern p = Pattern.compile(strPattern);
-        Matcher m = p.matcher(strEmail);
-        return m.matches();
+        String strPattern = "^[a-zA-Z0-9][\\w\\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\\w\\.-]*[a-zA-Z0-9]\\.[a-zA-Z][a-zA-Z\\.]*[a-zA-Z]$";
+        if (TextUtils.isEmpty(strPattern)) {
+            return false;
+        } else {
+            return strEmail.matches(strPattern);
+        }
+
     }
 
     public String getCode(int length) {
@@ -417,9 +421,31 @@ public class Utils {
         }
         sb.append("&key=");
         sb.append(Constant.PUBLIC_KEY);
-        KLog.v(sb.toString());
-        KLog.v(getMD5(sb.toString()));
+
         return getMD5(sb.toString());
+    }
+
+    public String MD5_Encode(String string){
+        byte[] hash;
+
+        try {
+            hash = MessageDigest.getInstance("MD5").digest(string.getBytes("UTF-8"));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        StringBuilder hex = new StringBuilder(hash.length * 2);
+        for (byte b : hash) {
+            if ((b & 0xFF) < 0x10)
+                hex.append("0");
+            hex.append(Integer.toHexString(b & 0xFF));
+        }
+
+        return hex.toString();
     }
 
     /**
@@ -531,10 +557,21 @@ public class Utils {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        KLog.d("前"+distanceDay+"天==" + dft.format(endDate));
         return dft.format(endDate);
     }
 
+    /**
+     * 通过Base32将Bitmap转换成Base64字符串
+     * @param bit
+     * @return
+     */
+    public String Bitmap2StrByBase64(Bitmap bit){
+        ByteArrayOutputStream bos=new ByteArrayOutputStream();
+        bit.compress(Bitmap.CompressFormat.JPEG, 80, bos);//参数100表示不压缩
+        byte[] bytes=bos.toByteArray();
+
+        return Base64.encodeToString(bytes, Base64.DEFAULT);
+    }
 
     public File getSaveFile(Context context) {
 
@@ -636,7 +673,6 @@ public class Utils {
             MessageDigest md5 = MessageDigest.getInstance("MD5");
             md5.update(info.getBytes("UTF-8"));
             byte[] encryption = md5.digest();
-
             StringBuffer strBuf = new StringBuffer();
             for (int i = 0; i < encryption.length; i++)
             {

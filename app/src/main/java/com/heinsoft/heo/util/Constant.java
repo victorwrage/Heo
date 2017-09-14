@@ -1,5 +1,8 @@
 package com.heinsoft.heo.util;
 
+import com.heinsoft.heo.bean.MessageBean;
+
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -12,7 +15,8 @@ public class Constant {
 
     public static final String URL_BAIBAO = "http://www.o2obaibao.com/bsystem/";//百宝
     public static final String CONSTANT_MERCHANT_ID = "617061910264433";//
-    public static final String URL_MESSAGE = "http://c.kf10000.com/";//短信
+    public static final String URL_MESSAGE = "http://202.104.149.61/";//短信
+   // public static final String URL_MESSAGE = "http://c.kf10000.com/";//短信
     public static final String PUBLIC_KEY = "z4sgErHeEww5uwhTrjF6kM5qdKjpifQg6bp2iRAumnvRx7GV57laelZmX1e405QD";//公钥
     public static final String AID = "17060518292214";//AID
 
@@ -23,11 +27,13 @@ public class Constant {
 
 
     public static final String MESSAGE_USER_NAME = "5234TSGF2";//账号
-    public static  String MESSAGE_PASSWORD = "852741";//密码
+    public static final String USER_INFO_REMEMBER = "remember";
+ public static final String USER_INFO_AUTO_LOGIN = "auto_login";
+ public static  String MESSAGE_PASSWORD = "852741";//密码
 
     public static  String TOP_AGENT_ID = "495687";//顶级代理商ID
 
-    public static final String MESSAGE_CONTENT_PREFIX = "。您正在使用锄头信用，请勿向任何人提供您收到的验证码！";//短信内容
+    public static final String MESSAGE_CONTENT_PREFIX = "。如非本人操作,请忽略本短信";//短信内容
     public static  String MESSAGE_UPDATE_TIP = "";//
 
     public static  String MESSAGE_CODE = "";	//生成的验证码
@@ -40,7 +46,7 @@ public class Constant {
     public static final int MESSAGE_SEND_LIMIT = MESSAGE_SEND_TOO_FREQUENCY+1;	//限制发送
 
 
-    public static final int DEFAULT_TIMEOUT = 20;//超时时间(S)
+    public static final int DEFAULT_TIMEOUT = 100;//超时时间(S)
 
     public static final int DEFAULT_MESSAGE_TIMEOUT = 120;//短信验证码超时时间(S)
 
@@ -61,9 +67,11 @@ public class Constant {
     public static final String USER_INFO_EMAIL_STATUS = "email_status";//缓存
     public static final String USER_INFO_ISAUTH = "is_auth";//缓存
     public static final String USER_INFO_USER_NAME = "user_name";//缓存
+    public static final String USER_INFO_USERNAME = "username";//缓存
     public static final String USER_INFO_SHOPPER_ID = "shopper_id";//缓存
     public static final String USER_INFO_SESSION_ID = "user_session";//缓存
     public static final String USER_INFO_PW = "user_pw";//缓存
+    public static final String USER_INFO_PASSWORD = "password";//缓存
     public static final String USER_INFO_INVITE_CODE = "invite_code";//缓存
 
     public static final int FRAGMENT_CLEAR_DATE = 1000;//重新加载数据
@@ -103,10 +111,16 @@ public class Constant {
     public static final String BANKFIRM = "bankfirm";
     public static final String ACCOUNT = "account";
     public static final String PASSWORD = "password";
+   public static final String NEWPASSWORD = "newpass";
     public static final String PIC_1 = "pic_1";
     public static final String PIC_2 = "pic_2";
     public static final String PIC_3 = "pic_3";
     public static final String PIC_4 = "pic_4";
     public static final String PIC_5 = "pic_5";
+
+   public static ArrayList<MessageBean> message;
+   public static String ERRCODE = "errcode";
+   public static String ERRMSG = "errmsg";
+
 
 }

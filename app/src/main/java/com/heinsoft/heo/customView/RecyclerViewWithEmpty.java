@@ -1,10 +1,10 @@
 package com.heinsoft.heo.customView;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
-import io.github.luckyandyzhang.cleverrecyclerview.CleverRecyclerView;
 
 /**
  * Info:
@@ -12,7 +12,7 @@ import io.github.luckyandyzhang.cleverrecyclerview.CleverRecyclerView;
  * 创建时间:2017/5/24 16:43
  */
 
-public class RecyclerViewWithEmpty extends CleverRecyclerView {
+public class RecyclerViewWithEmpty extends RecyclerView {
     private View emptyView;
     final private AdapterDataObserver observer = new AdapterDataObserver() {
         @Override

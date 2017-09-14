@@ -1,17 +1,21 @@
 package com.heinsoft.heo.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.heinsoft.heo.R;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
+
+import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -23,23 +27,18 @@ import butterknife.ButterKnife;
 public class FragmentWebview extends BaseFragment   {
     private String title = "";
 
-    IFragmentWebviewListener listener1;
     String url = "http://www.baidu.com";
     @Bind(R.id.tbsContent)
     com.tencent.smtt.sdk.WebView tbsContent;
     @Bind(R.id.empty_lay)
     RelativeLayout empty_lay;
 
+    @Bind(R.id.header_btn_lay)
+    LinearLayout header_btn_lay;
+    @Bind(R.id.header_title)
+    TextView header_title;
 
-    @Override
-    public void onAttach(Context context) {
-        try {
-            listener1 = (IFragmentWebviewListener) context;
-        } catch (Exception e) {
-            e.fillInStackTrace();
-        }
-        super.onAttach(context);
-    }
+
 
     @Nullable
     @Override
@@ -58,8 +57,13 @@ public class FragmentWebview extends BaseFragment   {
     public void loadUrl(String url){
         this.url = url;
     }
-    private void refreshView() {
 
+    public void setTitle(String t){
+        title = t;
+    }
+    private void refreshView() {
+        header_title.setText(title);
+        RxView.clicks(header_btn_lay).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> Back());
         tbsContent.loadUrl(url);
         WebSettings webSettings = tbsContent.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -86,25 +90,14 @@ public class FragmentWebview extends BaseFragment   {
         tbsContent.destroy();
     }
 
-    public boolean canBack() {
-        return tbsContent.canGoBack();
-    }
-
-    public void back() {
+    @Override
+    public void Back() {
         if(tbsContent.canGoBack()) {
             tbsContent.goBack();
+        }else{
+            super.Back();
+            listener.gotoMain();
         }
     }
 
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    public interface IFragmentWebviewListener {
-
-        void fragmentWebviewFinished();
-
-    }
 }

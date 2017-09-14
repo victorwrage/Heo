@@ -1,152 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/chutou_pay_back"
-    android:orientation="vertical">
+    android:background="@color/white">
 
     <include layout="@layout/header_lay" />
 
-    <RelativeLayout
-        android:id="@+id/pay_step_1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="bottom"
-        android:visibility="visible">
 
-        <LinearLayout
-            android:id="@+id/cash_lay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="10dp"
-            android:gravity="center|left"
-            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="金额"
-                android:textColor="@color/chutou_check_txt"
-                android:textSize="20sp" />
 
-            <TextView
-                android:id="@+id/pay_cash_tv"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="10dp"
-                android:background="@color/chutou_item_txt"
-                android:gravity="center|left"
-                android:paddingLeft="15dp"
-                android:text="请输入金额"
-                android:textColor="@color/chutou_btn"
-                android:textSize="20sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/type_lay"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_below="@id/cash_lay"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp"
-            android:gravity="center|left"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="通道"
-                android:textColor="@color/chutou_check_txt"
-                android:textSize="22sp" />
-
-            <Spinner
-                android:id="@+id/pay_tunnel_cs"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="5dp"
-                android:background="@color/chutou_item_txt"
-                android:paddingBottom="10dp"
-                android:paddingLeft="15dp"
-                android:pointerIcon="arrow"
-                android:textColor="@color/chutou_text_back" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/type_lay"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:layout_marginTop="30dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="扫码费率"
-                android:textColor="@color/chutou_check_txt" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="T0 0.38+4"
-                android:textColor="@color/chutou_txt" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="T1 0.38"
-                android:textColor="@color/chutou_txt" />
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/pay_qcode_iv"
-            android:layout_width="160dp"
-            android:layout_height="160dp"
-            android:layout_below="@id/type_lay"
-            android:layout_centerHorizontal="true"
-            android:visibility="gone" />
-
-        <LinearLayout
-            android:id="@+id/pay_generate_qcode"
-            android:layout_width="200dp"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/big_btn_backgroud"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
-                android:layout_marginRight="5dp"
-                android:src="@drawable/gener_qcode" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="生成支付二维码"
-                android:textColor="@color/white" />
-        </LinearLayout>
-
-    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/pay_step_2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#4169E1"
+        android:layout_marginTop="45dp"
         android:gravity="center|top"
         android:orientation="vertical"
         android:visibility="gone">
@@ -190,4 +59,245 @@
                 android:textSize="18sp" />
         </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="45dp">
+
+        <LinearLayout
+            android:id="@+id/pay_step_1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center|top"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:id="@+id/cash_lay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center|left"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="金额"
+                    android:textColor="@color/chutou_check_txt"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/pay_cash_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/chutou_item_txt"
+                    android:gravity="center|left"
+                    android:paddingLeft="15dp"
+                    android:text="0"
+                    android:textColor="@color/chutou_btn"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/type_lay"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_below="@id/cash_lay"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp"
+                android:gravity="center|left"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="通道"
+                    android:textColor="@color/chutou_check_txt"
+                    android:textSize="20sp" />
+
+                <Spinner
+                    android:id="@+id/pay_tunnel_cs"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@color/chutou_item_txt"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="15dp"
+                    android:pointerIcon="arrow"
+                    android:textColor="@color/chutou_text_back" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/type_lay"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/pay_quick_pay_extra"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="10dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:gravity="center|left"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_marginTop="5dp"
+                            android:background="@color/chutou_alpha" />
+
+                        <TextView
+                            android:id="@+id/textView4"
+                            android:layout_width="80dp"
+                            android:layout_height="match_parent"
+                            android:text="卡CVN2"
+                            android:textColor="@color/chutou_check_txt"
+                            android:textSize="20sp" />
+
+
+                        <EditText
+                            android:id="@+id/pay_cvn2_et"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginTop="5dp"
+                            android:background="@color/chutou_item_txt"
+                            android:hint="请输入信用卡的3位有效数"
+                            android:imeOptions="actionNext"
+                            android:inputType="phone"
+                            android:maxLines="1"
+                            android:maxLength="3"
+                            android:padding="5dp"
+                            android:singleLine="true"
+                            android:text="" />
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="80dp"
+                            android:layout_height="match_parent"
+                            android:text="卡有效期"
+                            android:textColor="@color/chutou_check_txt"
+                            android:textSize="20sp" />
+
+                        <EditText
+                            android:id="@+id/pay_available_et"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginTop="5dp"
+                            android:background="@color/chutou_item_txt"
+                            android:hint="请输入信用卡有效期(年月)"
+                            android:imeOptions="actionDone"
+                            android:inputType="date"
+                            android:maxLines="1"
+                            android:padding="5dp"
+                            android:singleLine="true"
+                            android:text="" />
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="30dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="扫码费率"
+                        android:textColor="@color/chutou_check_txt" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="T0 0.38+4"
+                        android:textColor="@color/chutou_txt" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="T1 0.38"
+                        android:textColor="@color/chutou_txt" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <ImageView
+                android:id="@+id/pay_qcode_iv"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:layout_below="@id/type_lay"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/pay_generate_qcode"
+                android:layout_width="200dp"
+                android:layout_height="40dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
+
+                android:background="@drawable/big_btn_backgroud"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/gener_qcode"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/pay_btn_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="生成支付二维码"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+    </ScrollView>
+</RelativeLayout>

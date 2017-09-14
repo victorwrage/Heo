@@ -1,6 +1,5 @@
 package com.heinsoft.heo.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,10 +8,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.jakewharton.rxbinding2.view.RxView;
 import com.heinsoft.heo.R;
 import com.heinsoft.heo.present.QueryPresent;
 import com.heinsoft.heo.util.Utils;
+import com.jakewharton.rxbinding2.view.RxView;
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,8 +19,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class FragmentSetting extends BaseFragment {
-    private static final String COOKIE_KEY = "cookie";
-	ISettingListtener listtener;
+
 	@Bind(R.id.header_btn)
 	ImageView header_btn;
 	@Bind(R.id.header_title)
@@ -56,7 +54,7 @@ public class FragmentSetting extends BaseFragment {
 
 		util = Utils.getInstance();
 		present = QueryPresent.getInstance(getActivity());
-		RxView.clicks(header_btn).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> listtener.finishSetting());
+		RxView.clicks(header_btn).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> listener.gotoMain());
 		RxView.clicks(setting_add_lay).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> address());
 
 		RxView.clicks(setting_user_update_lay).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> userUpdate());
@@ -89,25 +87,4 @@ public class FragmentSetting extends BaseFragment {
 	private void address() {
 	}
 
-
-	@Override
-	public void onAttach(Context context) {
-		super.onAttach(context);
-		try {
-			listtener = (ISettingListtener) context;
-		}catch(Exception e){
-			e.fillInStackTrace();
-		}
-	}
-
-
-	/**
-	 *
-	 */
-	public  interface ISettingListtener {
-		/**
-		 */
-       void finishSetting();
-
-	}
 }

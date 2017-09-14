@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:id="@+id/register__activity"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="45dp"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:id="@+id/register_step1_lay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:scaleType="centerInside"
+                android:src="@drawable/logo"
+                android:visibility="gone" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/layer_list"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:paddingBottom="5dp"
+                    android:src="@drawable/phone_icon" />
+
+                <EditText
+                    android:id="@+id/register_user_et"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:gravity="center|left"
+                    android:hint="请输入手机号"
+                    android:inputType="phone"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:textColorHint="@color/chutou_check_txt" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/layer_list"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="bottom|left"
+                    android:paddingBottom="5dp"
+                    android:src="@drawable/password_icon" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/register_password_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_weight="1"
+                        android:background="#00000000"
+                        android:drawableLeft="@color/transparent"
+                        android:gravity="center|left"
+                        android:hint="请输入登录密码"
+                        android:inputType="textPassword"
+                        android:lines="1"
+                        android:maxLines="1"
+                        android:textColorHint="@color/chutou_check_txt" />
+
+                    <CheckBox
+                        android:id="@+id/register_show_iv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center|right"
+                        android:layout_gravity="center|right"
+                        android:button="@drawable/checkbox_pw_visible"
+                        android:visibility="visible" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/layer_list"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:paddingBottom="5dp"
+                    android:src="@drawable/phone_icon" />
+
+                <EditText
+                    android:id="@+id/register_invite_et"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:gravity="center|left"
+                    android:hint="请输入推广号(选填)"
+
+                    android:inputType="phone"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:textColorHint="@color/chutou_check_txt" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/register_agree_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:button="@drawable/checkbox"
+                    android:checked="true"
+                    android:drawablePadding="10dp"
+                    android:text="我已阅读并同意"
+                    android:textColor="@color/chutou_check_txt"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/register_protocol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/chutou_txt"
+                    android:text="《注册协议》"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/register_step1_btn"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/big_btn_backgroud"
+                android:text="下一步"
+                android:textColor="@color/white" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/register_step2_lay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            android:gravity="center|left"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/register_tip_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="验证码已发送至您的手机133****5379"
+                android:textColor="@color/chutou_check_txt"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/layer_list"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:paddingBottom="5dp"
+                    android:src="@drawable/phone_icon" />
+
+                <EditText
+                    android:id="@+id/register_code_et"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:gravity="center|left"
+                    android:hint="请输入验证码"
+                    android:inputType="number"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:textColorHint="@color/chutou_check_txt" />
+                <ImageView
+                    android:layout_width="1dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:background="@color/chutou_check_txt"/>
+                <TextView
+                    android:id="@+id/register_code_again"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:textColor="@color/chutou_check_txt"
+                    android:textSize="14sp"
+                    android:text="(59)重新获取"
+                    android:layout_weight="2"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/register_step2_btn"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/big_btn_backgroud"
+                android:text="注册"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+    <include
+        android:id="@+id/register_header"
+        layout="@layout/header_lay"
+        android:visibility="visible" />
+</RelativeLayout>

@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.heinsoft.heo.view.IFragmentActivity;
 import com.heinsoft.heo.util.VToast;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.heinsoft.heo.R;
@@ -34,7 +35,7 @@ import butterknife.ButterKnife;
  * @date: 2013-07-20 下午6:38:07
  */
 public class DialogFragmentQcode extends DialogFragment {
-    private IQcodeListener callBack;
+    private IFragmentActivity listener;
 
 
     @Bind(R.id.my_qcode_shut_tv)
@@ -69,7 +70,7 @@ public class DialogFragmentQcode extends DialogFragment {
     @Override
     public void onAttach(Context activity) {
         try {
-            callBack = (IQcodeListener) activity;
+            listener = (IFragmentActivity) activity;
         } catch (ClassCastException e) {
 
         }
@@ -95,10 +96,7 @@ public class DialogFragmentQcode extends DialogFragment {
         return view;
     }
 
-    private void later() {
-        callBack.laterRate();
-        dismiss();
-    }
+
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -126,11 +124,4 @@ public class DialogFragmentQcode extends DialogFragment {
         qcode = bitmap;
     }
 
-
-    /**
-     *
-     */
-    public interface IQcodeListener {
-        void laterRate();
-    }
 }
