@@ -261,7 +261,6 @@ public class FragmentPay extends BaseFragment implements IPayView {
         String sign1 = util.getSign(StringA1);
         StringA1.put(Constant.SIGN, sign1);
         present.QueryPay(Constant.AID, sign1, merchant_id, pay_cash_tv.getText().toString(), pay_t, trade_t);
-
     }
 
     @Override
