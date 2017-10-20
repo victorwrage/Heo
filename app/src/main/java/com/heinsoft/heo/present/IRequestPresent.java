@@ -16,11 +16,16 @@ public interface IRequestPresent {
     void QueryMessage();
     void QueryPay(String aid, String sign,String merchant_id,  String pay_money, int pay_type,int trade_type);
 
-    void QueryQuickPay(String aid, String sign,String merchant_id,  String pay_money,String bank_account,String mobile,String
-            name, String id_card, String cvv2, String vd, String trantp);
+    void QueryScoreQuickPay(String aid, String sign,String merchant_id,  String pay_money,String bank_account,String phone,String
+            true_name, String id_card, String cvv2, String indate, String trantp);
 
-    void QueryQuickPayConfirm(String aid, String sign,String merchant_id,  String order_id,String orderNo,String smCode);
+    void QueryScoreQuickPayConfirm(String aid, String sign,String account, String system_orderId,String orderId,String smsCode,String bank_account,String pay_money,String trantp,String extact);
 
+    void QueryQuickPay(String aid,String sign,String merchant_id,String pay_money,String bank_account,String mobile,String name,String id_card,String cvv2,String vd,String trantp);
+
+    void QueryOpenCredit(String aid,String sign,String bank_account,String trantp,String merchant);
+
+    void QueryQuickPayConfirm(String aid,String sign,String merchant_id,String order_id,String orderNo,String smCode);
 
     void QueryMerchant(String aid, String sign,String merchant_id);
     void QueryProfit(String aid, String sign,String agent_id,String date_start,String date_end);
@@ -63,6 +68,8 @@ public interface IRequestPresent {
     void QueryAgentProfit(String aid,String sign,String agent_id,String date_start,String date_end);
     void QueryAgentWithDraw(String aid,String sign,String agent_id,String money);
     void QueryMerchantOrder(String aid,String sign,String merchant_id,String date_start,String date_end);
+
+
 
 
 

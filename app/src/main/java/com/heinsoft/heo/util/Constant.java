@@ -1,5 +1,7 @@
 package com.heinsoft.heo.util;
 
+import android.util.Log;
+
 import com.heinsoft.heo.bean.MessageBean;
 
 import java.util.ArrayList;
@@ -74,6 +76,7 @@ public class Constant {
     public static final String USER_INFO_PASSWORD = "password";//缓存
     public static final String USER_INFO_INVITE_CODE = "invite_code";//缓存
 
+
     public static final int FRAGMENT_CLEAR_DATE = 1000;//重新加载数据
 
     /**---------------数据提交字段集合----------------- **/
@@ -117,10 +120,12 @@ public class Constant {
     public static final String PIC_3 = "pic_3";
     public static final String PIC_4 = "pic_4";
     public static final String PIC_5 = "pic_5";
+    public  static final String TRANTP="trantp";
 
    public static ArrayList<MessageBean> message;
    public static String ERRCODE = "errcode";
    public static String ERRMSG = "errmsg";
+    public static String URL="url";
 
 
 }

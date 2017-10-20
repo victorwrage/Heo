@@ -3,9 +3,11 @@ package com.heinsoft.heo.fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +37,7 @@ import com.youth.banner.BannerConfig;
 import com.youth.banner.Transformer;
 import com.youth.banner.listener.OnBannerListener;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -158,7 +161,7 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
         shareIntent.putExtra(Intent.EXTRA_TEXT, Constant.user_info.get(Constant.NAME) + " 邀请你体验【锄头信用】，邀请码为:" + invite_arr[0]
-                + "\r\n下载地址:http://t.cn/RKIEb8h");
+                + "\r\n下载地址:http://wdt.qianhaiwei.com/Project/BeforeSea/hoe/ctAppRe.html?recode="+invite_arr[0]);
         shareIntent.setType("text/plain");
 
         startActivity(Intent.createChooser(shareIntent, "分享邀请码"));
@@ -223,7 +226,6 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
     protected void cancel(int type, DialogInterface dia) {
         super.cancel(type, dia);
     }
-
 
     @Override
     public void RefreshState() {
@@ -451,7 +453,22 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
     }
 
     @Override
+    public void ResolveScoreQuickPayInfo(ResponseBody info) {
+
+    }
+
+    @Override
+    public void ResolveScoreQuickPayConfirmInfo(ResponseBody info) {
+
+    }
+
+    @Override
     public void ResolveQuickPayInfo(ResponseBody info) {
+
+    }
+
+    @Override
+    public void ResolveOpenCreditInfo(ResponseBody info) {
 
     }
 

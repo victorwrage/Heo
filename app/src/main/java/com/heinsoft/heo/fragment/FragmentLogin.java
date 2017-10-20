@@ -10,6 +10,7 @@ import android.text.Selection;
 import android.text.Spannable;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.heinsoft.heo.R;
 import com.heinsoft.heo.bean.HeoCodeResponse;
 import com.heinsoft.heo.bean.HeoMerchantInfoResponse;
@@ -381,7 +383,6 @@ public class FragmentLogin extends BaseFragment implements IUserView, IMerchantV
                 return;
             }
             HeoMerchantInfoResponse merchant = info.getContent().get(0);
-
             Constant.user_info.put(Constant.AGENT_ID, merchant.getAgent_id());
             String sta = merchant.getState();
             Constant.user_info.put(Constant.USER_INFO_ISAUTH, sta == null ? "0" : sta);

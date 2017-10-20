@@ -3,6 +3,8 @@ package com.heinsoft.heo.view;
 
 import com.heinsoft.heo.bean.HeoCodeResponse;
 
+import org.json.JSONException;
+
 import okhttp3.ResponseBody;
 
 /**
@@ -19,7 +21,19 @@ public interface IPayView extends IView{
     /**
      * @param info
      */
+    void ResolveScoreQuickPayInfo(ResponseBody info);
+    /**
+     * @param info
+     */
+    void ResolveScoreQuickPayConfirmInfo(ResponseBody info);
+    /**
+     * @param info
+     */
     void ResolveQuickPayInfo(ResponseBody info);
+    /**
+     * @param info
+     */
+    void ResolveOpenCreditInfo(ResponseBody info);
     /**
      * @param info
      */

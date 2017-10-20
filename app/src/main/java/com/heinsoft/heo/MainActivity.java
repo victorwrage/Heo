@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -312,6 +313,7 @@ public class MainActivity extends BaseActivity implements IFragmentActivity, IMe
 
 
     private void gotoPage(int pageId) {
+        Log.v("gotoPage",pageId+"");
 
         if (cur_page == pageId) {
             return;
@@ -369,6 +371,10 @@ public class MainActivity extends BaseActivity implements IFragmentActivity, IMe
         if (curFragment instanceof FragmentWebview && pageId != 9) {
             ft.remove(curFragment);
             fragment2 = null;
+        }
+        if (curFragment instanceof FragmentPay && pageId==5){
+            ft.remove(curFragment);
+            fragment3=null;
         }
         switch (pageId) {
             case 0:
@@ -452,17 +458,20 @@ public class MainActivity extends BaseActivity implements IFragmentActivity, IMe
 
                 break;
             case 5:
+                Log.v("Heo","33");
                 if (!isVerify()) return;
 
                 if (fragment3 == null) {
                     fragment3 = new FragmentPay();
                     ft.add(R.id.fragment_container, fragment3, PAGE_3);
                 } else {
+                    Log.v("Heo","22");
                     fragment3.RefreshState();
                 }
                 curFragment = fragment3;
                 main_header_lay.setVisibility(View.GONE);
                 main_bottom_lay.setVisibility(View.GONE);
+                Log.v("Heo","11");
                 ft.show(fragment3);
                 break;
 
@@ -554,16 +563,34 @@ public class MainActivity extends BaseActivity implements IFragmentActivity, IMe
                 ft.show(fragment8);
                 break;
             case 13:
-                if (fragment9 == null) {
-                    fragment9 = new FragmentRepayment();
-                    ft.add(R.id.fragment_container, fragment9, PAGE_9);
+//                if (fragment9 == null) {
+//                    fragment9 = new FragmentRepayment();
+//                    ft.add(R.id.fragment_container, fragment9, PAGE_9);
+//                } else {
+//                    fragment9.RefreshState();
+//                }
+//                curFragment = fragment9;
+//                main_header_lay.setVisibility(View.GONE);
+//                main_bottom_lay.setVisibility(View.GONE);
+//                ft.show(fragment9);
+
+                if (!isVerify()) return;
+                main_withdraw_cv.setImageDrawable(getResources().getDrawable(R.drawable.up_rank_select));
+                main_withdraw_tv.setTextColor(getResources().getColor(R.color.chutou_select));
+                if (fragment2 == null) {
+                    fragment2 = new FragmentWebview();
+                    fragment2.setTitle("一键提额");
+                    ft.add(R.id.fragment_container, fragment2, PAGE_2);
                 } else {
-                    fragment9.RefreshState();
+                    fragment2.setTitle("一键提额");
+                    fragment2.RefreshState();
                 }
-                curFragment = fragment9;
+                curFragment = fragment2;
                 main_header_lay.setVisibility(View.GONE);
-                main_bottom_lay.setVisibility(View.GONE);
-                ft.show(fragment9);
+                main_bottom_lay.setVisibility(View.VISIBLE);
+                ft.show(fragment2);
+                fragment2.loadUrl("https://m.rong360.com/credit/article");
+
                 break;
             case 14:
                 if (fragment10 == null) {
@@ -609,6 +636,9 @@ public class MainActivity extends BaseActivity implements IFragmentActivity, IMe
 
     @Override
     public void gotoPay() {
+        if (curFragment instanceof FragmentPay){
+            cur_page=-1;
+        }
         super.gotoPay();
         gotoPage(5);
     }
