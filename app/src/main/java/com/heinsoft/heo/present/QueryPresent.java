@@ -3,6 +3,7 @@ package com.heinsoft.heo.present;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
 import com.heinsoft.heo.bean.HeoCodeObjResponse;
 import com.heinsoft.heo.bean.HeoCodeResponse;
@@ -21,6 +22,8 @@ import com.heinsoft.heo.view.IView;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +40,7 @@ import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import okio.Buffer;
 import okio.BufferedSource;
+import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -86,7 +90,7 @@ public class QueryPresent implements IRequestPresent {
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(url)
                         .client(client)
-                        // .addConverterFactory(Xm.create())
+                       //  .addConverterFactory(Xm.create())
                         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                         .build();
                 iRequestMode = retrofit.create(IRequestMode.class);
@@ -353,6 +357,56 @@ public class QueryPresent implements IRequestPresent {
                 .subscribe(s -> ((IPayView) iView).ResolvePayInfo(s));
     }
 
+
+
+    @Override
+    public void QueryScoreQuickPay(String aid, String sign, String merchant_id, String pay_money, String bank_account, String phone, String true_name, String id_card, String cvv2, String indate, String trantp) {
+        iRequestMode.QueryScoreQuickPay(aid, sign, merchant_id, pay_money, bank_account, phone, true_name, id_card, cvv2, indate, trantp)
+                .onErrorReturn(s -> new ResponseBody() {
+                    @Override
+                    public MediaType contentType() {
+                        return null;
+                    }
+
+                    @Override
+                    public long contentLength() {
+                        return 0;
+                    }
+
+                    @Override
+                    public BufferedSource source() {
+                        return null;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IPayView) iView).ResolveScoreQuickPayInfo(s));
+    }
+
+    @Override
+    public void QueryScoreQuickPayConfirm(String aid, String sign, String account, String system_orderId, String orderId, String smsCode, String bank_account, String pay_money, String tranTp,String extact) {
+        iRequestMode.QueryScoreQuickPayConfirm(aid, sign, account, system_orderId, orderId, smsCode, bank_account, pay_money, tranTp,extact)
+                .onErrorReturn(s -> new ResponseBody() {
+                    @Override
+                    public MediaType contentType() {
+                        return null;
+                    }
+
+                    @Override
+                    public long contentLength() {
+                        return 0;
+                    }
+
+                    @Override
+                    public BufferedSource source() {
+                        return null;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IPayView) iView).ResolveScoreQuickPayConfirmInfo(s));
+    }
+
     @Override
     public void QueryQuickPay(String aid, String sign, String merchant_id, String pay_money, String bank_account, String mobile, String name, String id_card, String cvv2, String vd, String trantp) {
         iRequestMode.QueryQuickPay(aid, sign, merchant_id, pay_money, bank_account, mobile, name, id_card, cvv2, vd, trantp)
@@ -375,6 +429,30 @@ public class QueryPresent implements IRequestPresent {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> ((IPayView) iView).ResolveQuickPayInfo(s));
+    }
+
+    @Override
+    public void QueryOpenCredit(String aid, String sign, String bank_account, String trantp, String merchant) {
+        iRequestMode.QueryOpenCredit(aid, sign, bank_account, trantp, merchant)
+                .onErrorReturn(s ->new ResponseBody() {
+                    @Override
+                    public MediaType contentType() {
+                        return null;
+                    }
+
+                    @Override
+                    public long contentLength() {
+                        return 0;
+                    }
+
+                    @Override
+                    public BufferedSource source() {
+                        return null;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s ->((IPayView) iView).ResolveOpenCreditInfo(s));
     }
 
     @Override

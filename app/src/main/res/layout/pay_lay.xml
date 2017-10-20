@@ -8,8 +8,6 @@
 
 
 
-
-
     <LinearLayout
         android:id="@+id/pay_step_2"
         android:layout_width="match_parent"
@@ -148,32 +146,31 @@
                     android:id="@+id/pay_quick_pay_extra"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="10dp"
                     android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/chutou_alpha" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
 
-                        android:gravity="center|left"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginBottom="5dp"
-                            android:layout_marginTop="5dp"
-                            android:background="@color/chutou_alpha" />
+                        android:gravity="center"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:id="@+id/textView4"
                             android:layout_width="80dp"
                             android:layout_height="match_parent"
+                            android:gravity="center"
                             android:text="卡CVN2"
+                            android:lines="1"
                             android:textColor="@color/chutou_check_txt"
                             android:textSize="20sp" />
-
 
                         <EditText
                             android:id="@+id/pay_cvn2_et"
@@ -198,11 +195,12 @@
                         android:layout_height="wrap_content"
 
                         android:layout_marginTop="20dp"
-                        android:orientation="vertical">
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="80dp"
                             android:layout_height="match_parent"
+                            android:gravity="center"
                             android:text="卡有效期"
                             android:textColor="@color/chutou_check_txt"
                             android:textSize="20sp" />
@@ -214,7 +212,8 @@
                             android:layout_marginRight="10dp"
                             android:layout_marginTop="5dp"
                             android:background="@color/chutou_item_txt"
-                            android:hint="请输入信用卡有效期(年月)"
+                            android:hint="请输入卡有效期(年月,如2202)"
+                            android:textSize="16sp"
                             android:imeOptions="actionDone"
                             android:inputType="date"
                             android:maxLines="1"
@@ -223,10 +222,137 @@
                             android:text="" />
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="80dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="银行卡号"
+                            android:textColor="@color/chutou_check_txt"
+                            android:textSize="20sp" />
+
+                        <EditText
+                            android:id="@+id/bank_account_et"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginTop="5dp"
+                            android:background="@color/chutou_item_txt"
+                            android:hint="请输入银行卡号"
+                            android:imeOptions="actionDone"
+                            android:inputType="number"
+                            android:maxLines="1"
+                            android:padding="5dp"
+                            android:singleLine="true"
+                            android:text="" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="80dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="手机号"
+                            android:textColor="@color/chutou_check_txt"
+                            android:textSize="20sp" />
+
+                        <EditText
+                            android:id="@+id/pay_mobile_et"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginTop="5dp"
+                            android:background="@color/chutou_item_txt"
+                            android:hint="请输入银行卡绑定的手机号"
+                            android:imeOptions="actionDone"
+                            android:inputType="phone"
+                            android:maxLines="1"
+                            android:padding="5dp"
+                            android:singleLine="true"
+                            android:text="" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="80dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="持卡人姓名"
+                            android:textColor="@color/chutou_check_txt"
+                            android:textSize="20sp" />
+
+                        <EditText
+                            android:id="@+id/pay_name_et"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginTop="5dp"
+                            android:background="@color/chutou_item_txt"
+                            android:hint="请输入银行卡绑定的姓名"
+                            android:imeOptions="actionDone"
+                            android:inputType="text"
+                            android:maxLines="1"
+                            android:padding="5dp"
+                            android:singleLine="true"
+                            android:text="" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="80dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="身份证号"
+                            android:textColor="@color/chutou_check_txt"
+                            android:textSize="20sp" />
+
+                        <EditText
+                            android:id="@+id/pay_id_et"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginTop="5dp"
+                            android:background="@color/chutou_item_txt"
+                            android:hint="请输入银行卡绑定的身份证"
+                            android:imeOptions="actionDone"
+                            android:inputType="number"
+                            android:maxLines="1"
+                            android:padding="5dp"
+                            android:singleLine="true"
+                            android:text="" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/scan_code_payment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
@@ -298,6 +424,11 @@
             </LinearLayout>
         </LinearLayout>
 
-
     </ScrollView>
+
+    <FrameLayout
+        android:id="@+id/open_pay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"></FrameLayout>
 </RelativeLayout>

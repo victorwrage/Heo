@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,8 @@ public abstract class BaseFragment extends Fragment {
 
     protected ArrayList<String> pay_types = new ArrayList<>();
     protected final static String SUCCESS = "0";
+    protected final static int ERROR_REGISTER=10003;
+    protected final static int QUERY_ELSE=1;
 
     protected ArrayAdapter<String> bankAdapter;
     protected ArrayAdapter<String> proviceAdapter;
@@ -74,8 +77,10 @@ public abstract class BaseFragment extends Fragment {
         pay_types.add("支付宝T1");
         pay_types.add("微信T0");
         pay_types.add("微信T1");
-        pay_types.add("快捷支付T0");
-        pay_types.add("快捷支付T1");
+        pay_types.add("有积分快捷支付T0");
+        pay_types.add("有积分快捷支付T1");
+        pay_types.add("无积分快捷支付T0");
+        pay_types.add("无积分快捷支付T1");
         executor = Executors.newSingleThreadExecutor();
     }
 
@@ -152,7 +157,6 @@ public abstract class BaseFragment extends Fragment {
         dialog.dismiss();
     }
 
-
     protected void showPopupWindow2(int ids) {
         if (popupWindowVerify == null) {
             popupWindowVerify = new PopupWindow(popupWindowViewVerify, ViewGroup.LayoutParams.MATCH_PARENT,
@@ -167,7 +171,7 @@ public abstract class BaseFragment extends Fragment {
         initVerifyView();
         popupWindowVerify.showAtLocation(View.inflate(getContext(), ids, null),
                 Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
-
+        popupWindowVerify.setOutsideTouchable(true);
     }
 
     private void initVerifyView() {
@@ -217,6 +221,7 @@ public abstract class BaseFragment extends Fragment {
         WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
         lp.alpha = v;
         getActivity().getWindow().setAttributes(lp);
+
     }
 
     protected void textBtn2(char paramChar) {

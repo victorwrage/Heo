@@ -194,13 +194,28 @@ public class RequestModelImpl implements IRequestMode {
     }
 
     @Override
+    public Flowable<ResponseBody> QueryScoreQuickPay(@Query("aid") String aid, @Query("sign") String sign, @Query("merchant_id") String merchant_id, @Query("pay_money") String pay_money, @Query("bank_account") String bank_account, @Query("phone") String phone, @Query("true_name") String true_name, @Query("id_card") String id_card, @Query("cvv2") String cvv2, @Query("indate") String indate, @Query("trantp") String trantp) {
+        return iRequestMode.QueryScoreQuickPay(aid, sign, merchant_id, pay_money, bank_account, phone, true_name, id_card, cvv2, indate, trantp);
+    }
+
+    @Override
+    public Flowable<ResponseBody> QueryScoreQuickPayConfirm(@Query("aid") String aid, @Query("sign") String sign, @Query("account") String account, @Query("system_orderId") String system_orderId, @Query("orderId") String orderId, @Query("smsCode") String smsCode, @Query("bank_account") String bank_account, @Query("pay_money") String pay_money, @Query("trantp") String trantp,@Query("extact") String extact) {
+        return iRequestMode.QueryScoreQuickPayConfirm(aid, sign, account, system_orderId, orderId, smsCode, bank_account,pay_money,trantp,extact );
+    }
+
+    @Override
     public Flowable<ResponseBody> QueryQuickPay(@Query("aid") String aid, @Query("sign") String sign, @Query("merchant_id") String merchant_id, @Query("pay_money") String pay_money, @Query("bank_account") String bank_account, @Query("mobile") String mobile, @Query("name") String name, @Query("id_card") String id_card, @Query("cvv2") String cvv2, @Query("vd") String vd, @Query("trantp") String trantp) {
-        return iRequestMode.QueryQuickPay(aid, sign, merchant_id, pay_money, bank_account, mobile, name, id_card, cvv2, vd, trantp);
+        return iRequestMode.QueryQuickPay(aid,sign,merchant_id,pay_money,bank_account,mobile,name,id_card,cvv2,vd,trantp);
+    }
+
+    @Override
+    public Flowable<ResponseBody> QueryOpenCredit(@Query("aid") String aid, @Query("sign") String sign, @Query("bank_account") String bank_account, @Query("trantp") String trantp, @Query("merchant_id") String merchant_id) {
+        return iRequestMode.QueryOpenCredit(aid, sign, bank_account, trantp, merchant_id);
     }
 
     @Override
     public Flowable<ResponseBody> QueryQuickPayConfirm(@Query("aid") String aid, @Query("sign") String sign, @Query("merchant_id") String merchant_id, @Query("order_id") String order_id, @Query("orderNo") String orderNo, @Query("smCode") String smCode) {
-        return iRequestMode.QueryQuickPayConfirm(aid, sign, merchant_id, order_id, orderNo, smCode);
+        return iRequestMode.QueryQuickPayConfirm(aid,sign,merchant_id,order_id,orderNo,smCode);
     }
 
     @Override

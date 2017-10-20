@@ -193,7 +193,22 @@ public class FragmentRepayment extends BaseFragment implements IPayView, CardIte
     }
 
     @Override
+    public void ResolveScoreQuickPayInfo(ResponseBody info) {
+
+    }
+
+    @Override
+    public void ResolveScoreQuickPayConfirmInfo(ResponseBody info) {
+
+    }
+
+    @Override
     public void ResolveQuickPayInfo(ResponseBody info) {
+
+    }
+
+    @Override
+    public void ResolveOpenCreditInfo(ResponseBody info) {
 
     }
 

@@ -18,19 +18,19 @@ android {
         android_studio_app {
             keyAlias 'key0'
             keyPassword 'chutou'
-            storeFile file('H:\\work\\Heo\\chutou.jks')
+            storeFile file('D:\\chris\\keys\\chutou.jks')
             storePassword 'zdvchutou2017'
         }
     }
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
         applicationId "com.heinsoft.heo"
         minSdkVersion 17
         targetSdkVersion 17
-        versionCode 16
-        versionName "v1.016"
+        versionCode 21
+        versionName "v1.021"
         multiDexEnabled true
         ndk {
             //选择要添加的对应cpu类型的.so库。

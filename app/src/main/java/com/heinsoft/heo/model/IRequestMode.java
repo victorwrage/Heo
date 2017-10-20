@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.reactivex.Flowable;
+import io.reactivex.internal.operators.flowable.FlowableElementAt;
 import okhttp3.ResponseBody;
 import retrofit2.http.Field;
 import retrofit2.http.FieldMap;
@@ -201,14 +202,24 @@ public interface IRequestMode {
     Flowable<HeoCodeResponse> QueryPay(@Query("aid") String aid, @Query("sign") String sign, @Query("merchant_id") String merchant_id, @Query("pay_money") String pay_money,
                                        @Query("pay_type") int pay_type, @Query("trade_type") int trade_type);
 
+    @GET("index.php?g=Api&m=Pay&a=prepay_score")
+    Flowable<ResponseBody> QueryScoreQuickPay(@Query("aid") String aid, @Query("sign") String sign, @Query("merchant_id") String merchant_id, @Query("pay_money") String pay_money,@Query("bank_account") String bank_account ,
+                                            @Query("phone") String mobile , @Query("true_name") String name ,@Query("id_card") String id_card ,@Query("cvv2") String cvv2 ,@Query("indate") String vd ,@Query("trantp") String trantp);
+
+
+
+    @GET("index.php?g=Api&m=Pay&a=surepay_score")
+    Flowable<ResponseBody> QueryScoreQuickPayConfirm(@Query("aid") String aid, @Query("sign") String sign, @Query("account") String account, @Query("system_orderId") String system_orderId,@Query("orderId") String orderId ,
+                                            @Query("smsCode") String smsCode,@Query("bank_account") String bank_account,@Query("pay_money") String pay_money,@Query("trantp") String trantp,@Query("extact") String extact);
+
     @GET("index.php?g=Api&m=Pay&a=prepay")
-    Flowable<ResponseBody> QueryQuickPay(@Query("aid") String aid, @Query("sign") String sign, @Query("merchant_id") String merchant_id, @Query("pay_money") String pay_money,@Query("bank_account") String bank_account ,
-                                            @Query("mobile") String mobile , @Query("name") String name ,@Query("id_card") String id_card ,@Query("cvv2") String cvv2 ,@Query("vd") String vd ,@Query("trantp") String trantp);
-
+    Flowable<ResponseBody> QueryQuickPay(@Query("aid") String aid,@Query("sign") String sign,@Query("merchant_id") String merchant_id,@Query("pay_money") String pay_money,@Query("bank_account") String bank_account,
+                                         @Query("mobile") String mobile,@Query("name") String name,@Query("id_card") String id_card,@Query("cvv2") String cvv2,@Query("vd") String vd,@Query("trantp") String trantp);
+    @GET("index.php?g=Api&m=Pay&a=openPay")
+    Flowable<ResponseBody> QueryOpenCredit(@Query("aid") String aid,@Query("sign") String sign,@Query("bank_account") String bank_account,@Query("trantp") String trantp,@Query("merchant_id") String merchant_id);
     @GET("index.php?g=Api&m=Pay&a=surepay")
-    Flowable<ResponseBody> QueryQuickPayConfirm(@Query("aid") String aid, @Query("sign") String sign, @Query("merchant_id") String merchant_id, @Query("order_id") String order_id,@Query("orderNo") String orderNo ,
-                                            @Query("smCode") String smCode);
-
+    Flowable<ResponseBody> QueryQuickPayConfirm(@Query("aid") String aid,@Query("sign") String sign,@Query("merchant_id") String merchant_id,
+                                            @Query("order_id") String order_id,@Query("orderNo") String orderNo,@Query("smCode") String smCode);
 
     @FormUrlEncoded
     @POST("index.php?g=Api&m=Merchant&a=resetpass")
