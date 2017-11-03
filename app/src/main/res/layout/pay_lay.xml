@@ -341,7 +341,7 @@
                             android:background="@color/chutou_item_txt"
                             android:hint="请输入银行卡绑定的身份证"
                             android:imeOptions="actionDone"
-                            android:inputType="number"
+                            android:inputType="text"
                             android:maxLines="1"
                             android:padding="5dp"
                             android:singleLine="true"

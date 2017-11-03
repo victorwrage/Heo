@@ -135,7 +135,7 @@ public class FragmentRepayment extends BaseFragment implements IPayView, CardIte
         //    RxView.clicks(empty_iv).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> emptyClick());
         } else {
           //  message_empty.setEnabled(false);
-            empty_iv.setImageResource(R.drawable.smile);
+            empty_iv.setImageResource(R.drawable.null_ico);
             empty_tv.setText("暂无信用卡");
         }
     }
