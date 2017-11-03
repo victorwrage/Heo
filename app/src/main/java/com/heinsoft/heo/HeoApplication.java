@@ -10,7 +10,6 @@ import com.heinsoft.heo.bean.DaoMaster;
 import com.heinsoft.heo.bean.DaoSession;
 import com.heinsoft.heo.bean.MessageBeanDao;
 
-
 import org.greenrobot.greendao.database.Database;
 
 import cat.ereza.customactivityoncrash.config.CaocConfig;

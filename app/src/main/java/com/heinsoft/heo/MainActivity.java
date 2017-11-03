@@ -28,6 +28,7 @@ import com.baidu.ocr.sdk.exception.OCRError;
 import com.baidu.ocr.sdk.model.AccessToken;
 import com.baidu.ocr.ui.camera.CameraActivity;
 import com.google.gson.Gson;
+
 import com.heinsoft.heo.activity.BaseActivity;
 import com.heinsoft.heo.bean.MessageBean;
 import com.heinsoft.heo.bean.MessageBeanDao;
@@ -41,15 +42,14 @@ import com.heinsoft.heo.fragment.FragmentMessage;
 import com.heinsoft.heo.fragment.FragmentPay;
 import com.heinsoft.heo.fragment.FragmentRecord;
 import com.heinsoft.heo.fragment.FragmentRegister;
-import com.heinsoft.heo.fragment.FragmentRepayment;
 import com.heinsoft.heo.fragment.FragmentSettle;
 import com.heinsoft.heo.fragment.FragmentVerify;
 import com.heinsoft.heo.fragment.FragmentWebview;
-import com.heinsoft.heo.view.IFragmentActivity;
 import com.heinsoft.heo.present.QueryPresent;
 import com.heinsoft.heo.util.Constant;
 import com.heinsoft.heo.util.Utils;
 import com.heinsoft.heo.util.VToast;
+import com.heinsoft.heo.view.IFragmentActivity;
 import com.heinsoft.heo.view.IMessageView;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.socks.library.KLog;
@@ -171,6 +171,7 @@ public class MainActivity extends BaseActivity implements IFragmentActivity, IMe
     @Override
     protected void onDestroy() {
         super.onDestroy();
+      // ImmersionBar.with(this).destroy();
         unregisterReceiver(receiver_redirect);
         OCR.getInstance().release();
     }
@@ -279,6 +280,8 @@ public class MainActivity extends BaseActivity implements IFragmentActivity, IMe
     }
 
     private void initView() {
+
+
         main_header_lay.setVisibility(View.GONE);
         main_bottom_lay.setVisibility(View.GONE);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -609,6 +612,11 @@ public class MainActivity extends BaseActivity implements IFragmentActivity, IMe
         ft.commitNowAllowingStateLoss();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+    }
+
     private void SelectTab() {
         main_mine_cv.setImageDrawable(getResources().getDrawable(R.drawable.mine));
         main_loan_cv.setImageDrawable(getResources().getDrawable(R.drawable.loan));
@@ -782,6 +790,7 @@ public class MainActivity extends BaseActivity implements IFragmentActivity, IMe
 
     @Override
     public void gotoMain() {
+        super.gotoMain();
         if (curFragment instanceof FragmentLogin && Constant.user_info != null) {
             KLog.v(sp.getBoolean(SetAlias, false) + "");
             if (!sp.getBoolean(SetAlias, false)) {
@@ -789,13 +798,13 @@ public class MainActivity extends BaseActivity implements IFragmentActivity, IMe
                 mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_ALIAS, Constant.user_info.get(Constant.MERCHANT_ID)));//设置推送别名
             }
             fetchMessage();
+           // ImmersionBar.with(this).navigationBarColor(R.color.chutou_txt).init();// 顶部任务栏
         }
         if (curFragment instanceof FragmentVerify) {
             fragment1.fetchMerchantInfo();
         }
-        super.gotoMain();
-        gotoPage(1);
 
+        gotoPage(1);
     }
 
     @Override

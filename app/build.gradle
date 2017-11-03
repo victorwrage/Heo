@@ -1,12 +1,6 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'maven'
 apply plugin: 'org.greenrobot.greendao' // apply plugin
-//apply plugin: 'org.greenrobot.greendao'
-
-def releaseTime() {
-    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
-}
 
 repositories {
     maven {
@@ -23,19 +17,25 @@ android {
         }
     }
     compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    buildToolsVersion '26.0.2'
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
         applicationId "com.heinsoft.heo"
         minSdkVersion 17
         targetSdkVersion 17
-        versionCode 21
-        versionName "v1.021"
+        versionCode 22
+        versionName "v1.022"
         multiDexEnabled true
+        flavorDimensions "release"
         ndk {
             //选择要添加的对应cpu类型的.so库。
             abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
             // 还可以添加 'x86', 'x86_64', 'mips', 'mips64'
+        }
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath = true
+            }
         }
         manifestPlaceholders = [
                 JPUSH_PKGNAME : applicationId,
@@ -62,7 +62,6 @@ android {
             shrinkResources false
             signingConfig signingConfigs.debug
         }
-
         release {
             // 不显示Log
             buildConfigField "boolean", "LOG_DEBUG", "false"
@@ -77,28 +76,19 @@ android {
             //签名
             signingConfig signingConfigs.android_studio_app
             applicationVariants.all { variant ->
-                variant.outputs.each { output ->
-                    def outputFile = output.outputFile
-                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
-                        // 输出apk名称为app_v1.0_2015-xx-xx_xxxx.apk
-                        //def fileName = "app_v${defaultConfig.versionName}_${releaseTime()}.apk"
-                   //     def fileName = "app_v${defaultConfig.versionName}_${variant.productFlavors[0].name}.apk"
-                        def fileName = "锄头信用_${defaultConfig.versionName}.apk"
-                        output.outputFile = new File(outputFile.parent, fileName)
-                    }
-                }
+                variant.outputs.all {
+                    // def newApkName = "锄头信用_" + variant.versionName + "(" + variant.versionCode + ")" + ".apk";
+                    //  outputFileName = new File("${project.projectDir}/../outputs/apks/" + variant.name, newApkName);
 
+                    outputFileName = "锄头信用-${variant.versionName}.apk"
+                }
             }
         }
     }
     productFlavors {
-        "offical" {}
-        "360" {}
-        "default" {}
-        yingyongbao {}
-        wandoujia {}
-        baidu {}
-        "91" {}
+        "default" {
+            dimension "release"
+        }
     }
 
     packagingOptions {
@@ -125,6 +115,7 @@ dependencies {
     compile project(':slidingmenu')
     compile project(':ocr_ui_new')
     // compile project(':library_pageIndicator')
+    compile 'com.android.support:multidex:1.0.0'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     compile 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
@@ -137,19 +128,17 @@ dependencies {
     //  compile 'com.squareup.okhttp3:logging-interceptor:2.4.1'
     compile 'com.android.support:cardview-v7:25.3.1'
     compile 'com.android.support:recyclerview-v7:25.3.1'
-    compile 'com.github.luckyandyzhang:CleverRecyclerView:1.0.0'
+    // compile 'com.github.luckyandyzhang:CleverRecyclerView:1.0.0'
     compile 'com.github.gabrielemariotti.recyclerview:recyclerview-animators:0.3.0-SNAPSHOT@aar'
-
     //greendao依赖
     compile 'org.greenrobot:greendao:3.2.2'
     compile 'net.zetetic:android-database-sqlcipher:3.5.2'
-    compile 'com.android.support:multidex:1.0.0'
     compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v2.0.0'
     //
-
-    compile 'cn.jiguang.sdk:jpush:3.0.5'  // 此处以JPush 3.0.5 版本为例。
-    compile 'cn.jiguang.sdk:jcore:1.1.2'  // 此处以JCore 1.1.2 版本为例。
-
+    compile 'cn.jiguang.sdk:jpush:3.0.5'
+    // 此处以JPush 3.0.5 版本为例。
+    compile 'cn.jiguang.sdk:jcore:1.1.2'
+    // 此处以JCore 1.1.2 版本为例。
     compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     //轮播
@@ -165,14 +154,10 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'cat.ereza:customactivityoncrash:2.1.0'
     compile 'liji.library.dev:citypickerview:1.1.0'
-
     compile 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
-
-    compile ('com.afollestad.material-dialogs:core:0.9.4.7'){
+    compile('com.afollestad.material-dialogs:core:0.9.4.7') {
         exclude group: 'com.android.support'
     }
-
-
-
     compile 'com.alibaba:fastjson:1.1.55.android'
+    // compile 'com.gyf.barlibrary:barlibrary:2.3.0'
 }

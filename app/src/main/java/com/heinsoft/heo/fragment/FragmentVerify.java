@@ -1557,8 +1557,6 @@ public class FragmentVerify extends BaseFragment implements IUserView, IVerifyVi
         }
     }
 
-
-
     @Override
     public void ResolveInviteInfo(HeoCodeObjResponse info) {
         KLog.v(info.toString());

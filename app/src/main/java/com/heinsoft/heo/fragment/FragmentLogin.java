@@ -10,7 +10,6 @@ import android.text.Selection;
 import android.text.Spannable;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.heinsoft.heo.R;
 import com.heinsoft.heo.bean.HeoCodeResponse;
 import com.heinsoft.heo.bean.HeoMerchantInfoResponse;
@@ -172,6 +170,11 @@ public class FragmentLogin extends BaseFragment implements IUserView, IMerchantV
         login_auto_btn.setOnCheckedChangeListener((compoundButton, b) -> {
             if (b) {
                 login_remember_btn.setChecked(true);
+            }
+        });
+        login_remember_btn.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (!b) {
+                login_auto_btn.setChecked(false);
             }
         });
         AutoLogin();

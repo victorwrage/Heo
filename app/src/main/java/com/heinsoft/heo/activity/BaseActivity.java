@@ -14,7 +14,6 @@ import com.heinsoft.heo.fragment.FragmentLogin;
 import com.heinsoft.heo.fragment.FragmentMain;
 import com.heinsoft.heo.fragment.FragmentMessage;
 import com.heinsoft.heo.fragment.FragmentPay;
-import com.heinsoft.heo.fragment.FragmentPayWebview;
 import com.heinsoft.heo.fragment.FragmentRecord;
 import com.heinsoft.heo.fragment.FragmentRegister;
 import com.heinsoft.heo.fragment.FragmentRepayment;

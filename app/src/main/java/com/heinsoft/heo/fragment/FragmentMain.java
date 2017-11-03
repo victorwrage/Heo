@@ -3,11 +3,9 @@ package com.heinsoft.heo.fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +35,6 @@ import com.youth.banner.BannerConfig;
 import com.youth.banner.Transformer;
 import com.youth.banner.listener.OnBannerListener;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -309,12 +306,14 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
 
         HashMap<String, String> StringA1 = new HashMap<>();
         StringA1.put(Constant.AID_STR, Constant.AID);
-        StringA1.put(Constant.PHONE, Constant.user_info.get(Constant.PHONE));
+      //  StringA1.put(Constant.PHONE, Constant.user_info.get(Constant.PHONE));//2017-10-28 采用登录用户名获取代理商信息
+        StringA1.put(Constant.PHONE, Constant.user_info.get(Constant.USER_INFO_USER_NAME));
 
         String sign1 = util.getSign(StringA1);
         StringA1.put(Constant.SIGN, sign1);
 
         present.initRetrofit(Constant.URL_BAIBAO, false);
+        KLog.v(Constant.AID+"----"+ StringA1.get(Constant.SIGN)+"----"+ StringA1.get(Constant.PHONE));
         present.QueryAgentInfo(Constant.AID, StringA1.get(Constant.SIGN), StringA1.get(Constant.PHONE));
     }
 
@@ -587,6 +586,7 @@ public class FragmentMain extends BaseFragment implements OnBannerListener, IPay
     public void ResolveForgetInfo(HeoCodeResponse info) {
 
     }
+
 
     @Override
     public void ResolveAlterInfo(HeoCodeResponse info) {

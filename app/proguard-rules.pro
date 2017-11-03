@@ -49,6 +49,7 @@
 
 -dontwarn com.squareup.okhttp.**
 
+ -keep class com.gyf.barlibrary.* {*;}
 #-libraryjars libs/BmobStat_v1.1_170114.jar
 #-keep class cn.bmob.v3.statistics.AppStat { *; }
 
