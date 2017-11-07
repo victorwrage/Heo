@@ -21,6 +21,12 @@ public interface IRequestPresent {
 
     void QueryScoreQuickPayConfirm(String aid, String sign,String account, String system_orderId,String orderId,String smsCode,String bank_account,String pay_money,String trantp,String extact);
 
+    void QueryBankName(String aid,String sign);
+
+    void QueryAddCard(String aid,String sign,String merchant_id,String truename,String id_card,String card_account,int card_type,String bank,String phone,String indate,String cvv2);
+
+    void QueryCardPackage(String aid,String sign,String merchant_id);
+
     void QueryQuickPay(String aid,String sign,String merchant_id,String pay_money,String bank_account,String mobile,String name,String id_card,String cvv2,String vd,String trantp);
 
     void QueryOpenCredit(String aid,String sign,String bank_account,String trantp,String merchant);

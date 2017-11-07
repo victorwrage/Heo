@@ -171,7 +171,7 @@ public class MainActivity extends BaseActivity implements IFragmentActivity, IMe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-      // ImmersionBar.with(this).destroy();
+   //     ImmersionBar.with(this).destroy();
         unregisterReceiver(receiver_redirect);
         OCR.getInstance().release();
     }

@@ -18,7 +18,7 @@ public class Constant {
     public static final String URL_BAIBAO = "http://www.o2obaibao.com/bsystem/";//百宝
     public static final String CONSTANT_MERCHANT_ID = "617061910264433";//
     public static final String URL_MESSAGE = "http://202.104.149.61/";//短信
-   // public static final String URL_MESSAGE = "http://c.kf10000.com/";//短信
+    // public static final String URL_MESSAGE = "http://c.kf10000.com/";//短信
     public static final String PUBLIC_KEY = "z4sgErHeEww5uwhTrjF6kM5qdKjpifQg6bp2iRAumnvRx7GV57laelZmX1e405QD";//公钥
     public static final String AID = "17060518292214";//AID
 
@@ -30,22 +30,22 @@ public class Constant {
 
     public static final String MESSAGE_USER_NAME = "5234TSGF2";//账号
     public static final String USER_INFO_REMEMBER = "remember";
- public static final String USER_INFO_AUTO_LOGIN = "auto_login";
- public static  String MESSAGE_PASSWORD = "852741";//密码
+    public static final String USER_INFO_AUTO_LOGIN = "auto_login";
+    public static String MESSAGE_PASSWORD = "852741";//密码
 
-    public static  String TOP_AGENT_ID = "495687";//顶级代理商ID
+    public static String TOP_AGENT_ID = "495687";//顶级代理商ID
 
     public static final String MESSAGE_CONTENT_PREFIX = "。如非本人操作,请忽略本短信";//短信内容
-    public static  String MESSAGE_UPDATE_TIP = "";//
+    public static String MESSAGE_UPDATE_TIP = "";//
 
-    public static  String MESSAGE_CODE = "";	//生成的验证码
-    public static final int MESSAGE_SEND_SUCCESS = 100;	//成功
-    public static final int MESSAGE_SEND_FAIL = MESSAGE_SEND_SUCCESS+1;	//失败
-    public static final int MESSAGE_SEND_PW_ERR = MESSAGE_SEND_FAIL+1;	//密码不对
-    public static final int MESSAGE_SEND_NUM_ERR = MESSAGE_SEND_PW_ERR+1;	//接收号码格式错误
-    public static final int MESSAGE_SEND_CONTENT_ERR = MESSAGE_SEND_NUM_ERR+1;	//敏感内容,会同时返回
-    public static final int MESSAGE_SEND_TOO_FREQUENCY = MESSAGE_SEND_CONTENT_ERR+1;	//频率过快
-    public static final int MESSAGE_SEND_LIMIT = MESSAGE_SEND_TOO_FREQUENCY+1;	//限制发送
+    public static String MESSAGE_CODE = "";    //生成的验证码
+    public static final int MESSAGE_SEND_SUCCESS = 100;    //成功
+    public static final int MESSAGE_SEND_FAIL = MESSAGE_SEND_SUCCESS + 1;    //失败
+    public static final int MESSAGE_SEND_PW_ERR = MESSAGE_SEND_FAIL + 1;    //密码不对
+    public static final int MESSAGE_SEND_NUM_ERR = MESSAGE_SEND_PW_ERR + 1;    //接收号码格式错误
+    public static final int MESSAGE_SEND_CONTENT_ERR = MESSAGE_SEND_NUM_ERR + 1;    //敏感内容,会同时返回
+    public static final int MESSAGE_SEND_TOO_FREQUENCY = MESSAGE_SEND_CONTENT_ERR + 1;    //频率过快
+    public static final int MESSAGE_SEND_LIMIT = MESSAGE_SEND_TOO_FREQUENCY + 1;    //限制发送
 
 
     public static final int DEFAULT_TIMEOUT = 100;//超时时间(S)
@@ -53,7 +53,7 @@ public class Constant {
     public static final int DEFAULT_MESSAGE_TIMEOUT = 120;//短信验证码超时时间(S)
 
 
-    public static Map<String,String> user_info;
+    public static Map<String, String> user_info;
     public static String photo_path;
     public static int photo_idx;
     public static final String USER_INFO_ID = "user_id";//缓存
@@ -79,7 +79,9 @@ public class Constant {
 
     public static final int FRAGMENT_CLEAR_DATE = 1000;//重新加载数据
 
-    /**---------------数据提交字段集合----------------- **/
+    /**
+     * ---------------数据提交字段集合-----------------
+     **/
     public static final String MACHINE_ID = "machine_id";
 
 
@@ -114,18 +116,18 @@ public class Constant {
     public static final String BANKFIRM = "bankfirm";
     public static final String ACCOUNT = "account";
     public static final String PASSWORD = "password";
-   public static final String NEWPASSWORD = "newpass";
+    public static final String NEWPASSWORD = "newpass";
     public static final String PIC_1 = "pic_1";
     public static final String PIC_2 = "pic_2";
     public static final String PIC_3 = "pic_3";
     public static final String PIC_4 = "pic_4";
     public static final String PIC_5 = "pic_5";
-    public  static final String TRANTP="trantp";
+    public static final String TRANTP = "trantp";
 
-   public static ArrayList<MessageBean> message;
-   public static String ERRCODE = "errcode";
-   public static String ERRMSG = "errmsg";
-    public static String URL="url";
-
+    public static ArrayList<MessageBean> message;
+    public static String ERRCODE = "errcode";
+    public static String ERRMSG = "errmsg";
+    public static String URL = "url";
+    public static String CARD_ACCOUNT="card_account";
 
 }

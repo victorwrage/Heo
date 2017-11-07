@@ -214,6 +214,21 @@ public class FragmentRecord extends BaseFragment implements IPayView {
     }
 
     @Override
+    public void ResolveBankName(ResponseBody info) {
+
+    }
+
+    @Override
+    public void ResolveAddCardInfo(ResponseBody info) {
+
+    }
+
+    @Override
+    public void ResolveCardPackageInfo(ResponseBody info) {
+
+    }
+
+    @Override
     public void ResolveQuickPayInfo(ResponseBody info) {
 
     }

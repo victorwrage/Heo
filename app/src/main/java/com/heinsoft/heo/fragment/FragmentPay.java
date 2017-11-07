@@ -7,23 +7,30 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
+import android.icu.text.StringPrepParseException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.ListViewAutoScrollHelper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -31,8 +38,10 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.google.zxing.WriterException;
 import com.heinsoft.heo.R;
+import com.heinsoft.heo.bean.CardBean;
 import com.heinsoft.heo.bean.HeoCodeResponse;
 import com.heinsoft.heo.bean.PreparPayResultBean;
+import com.heinsoft.heo.bean.RecordBean;
 import com.heinsoft.heo.present.QueryPresent;
 import com.heinsoft.heo.util.Constant;
 import com.heinsoft.heo.util.Utils;
@@ -41,16 +50,20 @@ import com.heinsoft.heo.view.IPayView;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.socks.library.KLog;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.reactivex.Flowable;
 import okhttp3.ResponseBody;
 
 public class FragmentPay extends BaseFragment implements IPayView {
@@ -58,14 +71,16 @@ public class FragmentPay extends BaseFragment implements IPayView {
     ImageView header_btn, pay_qcode_iv;
     TextView header_title, pay_set_cash, pay_save_qcode, pay_cash_tv, pay_btn_tv;
     LinearLayout pay_step_2, pay_generate_qcode, header_btn_lay, pay_quick_pay_extra, scan_code_payment;
-    EditText pay_cvn2_et, pay_available_et, bank_account_et, pay_mobile_et, pay_name_et, pay_id_et;
+    EditText pay_cvn2_et, pay_available_et, pay_mobile_et, pay_name_et, pay_id_et;
+    AutoCompleteTextView bank_account_et;
     LinearLayout pay_step_1;
     FrameLayout webview_open;
-    Spinner pay_tunnel_cs;
+    Spinner pay_tunnel_cs,select_bank_account,select_bank_name;
 
     QueryPresent present;
     Utils util;
     SharedPreferences sp;
+    ArrayAdapter<String> adapter;
 
     private final String COOKIE_KEY = "cookie";
 
@@ -114,12 +129,18 @@ public class FragmentPay extends BaseFragment implements IPayView {
     View view;
     private String account, system_orderId, orderId, smsCode, bank_account, pay_money, trantp;
     private String order_id, orderNo;
+    private List<String> lv_data;
+    private List<String> card_data=new ArrayList<>();
+    protected ArrayList<String> bank_names=new ArrayList<>();
+    private int card_type;
+    private String bank_name;
+    private List<RecordBean> records=new ArrayList<>();
+    private boolean isExist=false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.pay_lay, container, false);
-
         return view;
     }
 
@@ -153,11 +174,13 @@ public class FragmentPay extends BaseFragment implements IPayView {
             case 7:
 //                VToast.toast(getContext(),"暂未开通");
                 scoreQuickPay();
+                addCard();
                 break;
             case 8:
             case 9:
 //                VToast.toast(getContext(), "暂未开通");
                 quickPay();
+                addCard();
                 break;
 
         }
@@ -253,6 +276,57 @@ public class FragmentPay extends BaseFragment implements IPayView {
 
         present.QueryScoreQuickPayConfirm(StringA1.get(Constant.AID_STR), StringA1.get(Constant.SIGN), StringA1.get("account"), StringA1.get("system_orderId"),
                 StringA1.get("orderId"), StringA1.get("smsCode"), StringA1.get("bank_account"), StringA1.get("pay_money"), StringA1.get("trantp"), StringA1.get("extact"));
+    }
+
+    private void getBankName(){
+        present.initRetrofit(Constant.URL_BAIBAO,false);
+        HashMap<String,String> StringAl=new HashMap<>();
+        StringAl.put(Constant.AID_STR,Constant.AID);
+        String sign1=util.getSign(StringAl);
+        StringAl.put("sign",sign1);
+        present.QueryBankName(StringAl.get(Constant.AID_STR),StringAl.get("sign"));
+    }
+
+    private void addCard() {
+        for (int i=0;i<card_data.size();i++){
+            if (bank_account_et.getText().toString().equals(card_data.get(i))){
+                KLog.v("isExist="+isExist);
+                isExist=true;
+            }
+        }
+        if (!isExist) {
+            HashMap<String, String> StringAl = new HashMap<>();
+            StringAl.put(Constant.AID_STR, Constant.AID);
+            StringAl.put(Constant.MERCHANT_ID, Constant.user_info.get(Constant.MERCHANT_ID));
+            StringAl.put("truename", pay_name_et.getText().toString());
+            StringAl.put("id_card", pay_id_et.getText().toString());
+            StringAl.put("card_account", bank_account_et.getText().toString());
+            StringAl.put("card_type", card_type + "");
+            StringAl.put("bank", bank_name);
+            StringAl.put("phone", pay_mobile_et.getText().toString());
+            StringAl.put("indate", pay_available_et.getText().toString());
+            StringAl.put("cvv2", pay_cvn2_et.getText().toString());
+            String sign1 = util.getSign(StringAl);
+            StringAl.put("sign", sign1);
+            present.initRetrofit(Constant.URL_BAIBAO, false);
+            KLog.v("id="+StringAl.get(Constant.AID_STR)+"&sign="+ StringAl.get("sign")+"&merchant_id="+ StringAl.get(Constant.MERCHANT_ID)+"&truename="+ StringAl.get("truename")+
+                            "&id_card="+StringAl.get("id_card")+"&card_account="+ StringAl.get("card_account")+"&card_type="+ Integer.parseInt(StringAl.get("card_type")),
+                    "&bank="+StringAl.get("bank")+"&phone="+ StringAl.get("phone")+"&indate="+ StringAl.get("indate")+"&cvv2="+ StringAl.get("cvv2"));
+            present.QueryAddCard(StringAl.get(Constant.AID_STR), StringAl.get("sign"), StringAl.get(Constant.MERCHANT_ID), StringAl.get("truename"),
+                    StringAl.get("id_card"), StringAl.get("card_account"), Integer.parseInt(StringAl.get("card_type")),
+                    StringAl.get("bank"), StringAl.get("phone"), StringAl.get("indate"), StringAl.get("cvv2"));
+        }
+    }
+
+    private void getCardPackage(){
+
+        HashMap<String,String> StringAl=new HashMap<>();
+        StringAl.put(Constant.AID_STR,Constant.AID);
+        StringAl.put(Constant.MERCHANT_ID,Constant.user_info.get(Constant.MERCHANT_ID));
+        String sign1=util.getSign(StringAl);
+        StringAl.put("sign",sign1);
+        present.initRetrofit(Constant.URL_BAIBAO, false);
+        present.QueryCardPackage(StringAl.get(Constant.AID_STR),StringAl.get("sign"),StringAl.get(Constant.MERCHANT_ID));
     }
 
     private void quickPay() {
@@ -409,6 +483,7 @@ public class FragmentPay extends BaseFragment implements IPayView {
         present = QueryPresent.getInstance(getContext());
         present.setView(FragmentPay.this);
         sp = getContext().getSharedPreferences(COOKIE_KEY, Context.MODE_PRIVATE);
+        getBankName();
     }
 
     private void initView() {
@@ -424,14 +499,20 @@ public class FragmentPay extends BaseFragment implements IPayView {
         scan_code_payment = (LinearLayout) view.findViewById(R.id.scan_code_payment);
         pay_cvn2_et = (EditText) view.findViewById(R.id.pay_cvn2_et);
         pay_available_et = (EditText) view.findViewById(R.id.pay_available_et);
-        bank_account_et = (EditText) view.findViewById(R.id.bank_account_et);
+        bank_account_et = (AutoCompleteTextView) view.findViewById(R.id.bank_account_et);
         pay_mobile_et = (EditText) view.findViewById(R.id.pay_mobile_et);
         pay_name_et = (EditText) view.findViewById(R.id.pay_name_et);
         pay_id_et = (EditText) view.findViewById(R.id.pay_id_et);
 
         pay_tunnel_cs = (Spinner) view.findViewById(R.id.pay_tunnel_cs);
+        select_bank_account=(Spinner) view.findViewById(R.id.select_bank_account);
+        select_bank_name=(Spinner) view.findViewById(R.id.select_bank_name);
         bankAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, pay_types);
         bankAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        accountAdapter=new ArrayAdapter<String>(getContext(),android.R.layout.simple_spinner_item,card_types);
+        accountAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        nameAdapter=new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,bank_names);
+        nameAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         pay_tunnel_cs.setAdapter(bankAdapter);
         pay_tunnel_cs.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -460,6 +541,20 @@ public class FragmentPay extends BaseFragment implements IPayView {
 
             }
         });
+        select_bank_account.setAdapter(accountAdapter);
+        select_bank_account.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                card_type=i;
+                KLog.v("card_type="+card_type);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
 
         pay_step_1 = (LinearLayout) view.findViewById(R.id.pay_step_1);
         pay_step_2 = (LinearLayout) view.findViewById(R.id.pay_step_2);
@@ -474,9 +569,11 @@ public class FragmentPay extends BaseFragment implements IPayView {
         RxView.clicks(pay_save_qcode).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> save());
         RxView.clicks(pay_generate_qcode).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> pay());
         RxView.clicks(pay_cash_tv).throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(s -> showPopupWindow());
-
+        getCardPackage();
         String merchant_id = Constant.user_info.get(Constant.USER_INFO_MERCHANT_ID);
         KLog.v("merchant_id" + merchant_id);
+
+
     }
 
     @Override
@@ -564,7 +661,6 @@ public class FragmentPay extends BaseFragment implements IPayView {
     @Override
     protected void confirm(int type, DialogInterface dia) {
         super.confirm(type, dia);
-        Log.v("Heo","type="+type);
         switch (type) {
             case 1:
                 openCredit();
@@ -586,15 +682,6 @@ public class FragmentPay extends BaseFragment implements IPayView {
 
         present.QueryOpenCredit(StringAl.get(Constant.AID_STR),StringAl.get(Constant.SIGN),StringAl.get("bank_account"),
                 StringAl.get("trantp"),StringAl.get(Constant.MERCHANT_ID));
-    }
-
-    private void printTest(HashMap<String, String> string) {
-
-        Log.v("Heo", string.get(Constant.AID_STR));
-        Log.v("Heo", string.get(Constant.SIGN));
-        Log.v("Heo", string.get("bank_account"));
-        Log.v("Heo", string.get("trantp"));
-        Log.v("Heo", string.get(Constant.MERCHANT_ID));
     }
 
     private void showPopupWindow() {
@@ -798,6 +885,122 @@ public class FragmentPay extends BaseFragment implements IPayView {
     }
 
     @Override
+    public void ResolveBankName(ResponseBody info) {
+        if (info.source()==null){
+            return;
+        }
+        JSONObject jsonObject=null;
+        try {
+            String res=info.string();
+            KLog.v(res);
+            jsonObject=new JSONObject(res);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+        if (jsonObject.optInt(Constant.ERRCODE)==0){
+            JSONArray jsonArray=jsonObject.optJSONArray("content");
+            for (int i=0;i<jsonArray.length();i++){
+                JSONObject content=jsonArray.optJSONObject(i);
+                bank_names.add(content.optString("name"));
+            }
+            select_bank_name.setAdapter(nameAdapter);
+            select_bank_name.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    bank_name=bank_names.get(i);
+                    KLog.v("bank_name="+bank_name);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+        } else {
+            VToast.toast(getContext(),jsonObject.optString(Constant.ERRMSG));
+        }
+    }
+
+    @Override
+    public void ResolveAddCardInfo(ResponseBody info) {
+        if (info.source()==null){
+            return;
+        }
+        JSONObject jsonObject=null;
+        try {
+            String res=info.string();
+            KLog.v(res);
+            jsonObject=new JSONObject(res);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+        if (jsonObject.optInt(Constant.ERRCODE)==0){
+
+        } else {
+            VToast.toast(getContext(),jsonObject.optString(Constant.ERRMSG));
+        }
+    }
+
+    @Override
+    public void ResolveCardPackageInfo(ResponseBody info) {
+
+        if (info.source()==null){
+            return;
+        }
+        JSONObject jsonObject=null;
+        try {
+            String res=info.string();
+            KLog.v(res);
+            jsonObject=new JSONObject(res);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        if (jsonObject.optInt(Constant.ERRCODE)==0){
+
+            JSONArray jsonArray=jsonObject.optJSONArray("content");
+            lv_data=new ArrayList<>();
+            for (int i=0;i<jsonArray.length();i++){
+                JSONObject content=jsonArray.optJSONObject(i);
+                lv_data.add(content.optString(Constant.CARD_ACCOUNT)+"("+content.optString(Constant.BANK)+")");
+                card_data.add(content.optString(Constant.CARD_ACCOUNT));
+                RecordBean record=new RecordBean();
+                record.setCard_account(content.optString("card_account"));
+                record.setCvv2(content.optString("cvv2"));
+                record.setIndate(content.optString("indate"));
+                record.setPhone(content.optString("phone"));
+                record.setTruename(content.optString("truename"));
+                record.setId_card(content.optString("id_card"));
+                records.add(record);
+            }
+            adapter=new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,lv_data);
+            bank_account_et.setAdapter(adapter);
+            bank_account_et.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    KLog.v("lv_data="+lv_data.get(0));
+                    KLog.v("lv_data="+card_data.get(0));
+                    bank_account_et.setText(records.get(i).getCard_account());
+                    pay_cvn2_et.setText(records.get(i).getCvv2());
+                    pay_available_et.setText(records.get(i).getIndate());
+                    pay_mobile_et.setText(records.get(i).getPhone());
+                    pay_name_et.setText(records.get(i).getTruename());
+                    pay_id_et.setText(records.get(i).getId_card());
+                }
+            });
+        } else {
+            VToast.toast(getContext(),jsonObject.optString(Constant.ERRMSG));
+        }
+    }
+
+    @Override
     public void ResolveQuickPayInfo(ResponseBody info) {
 
         if (info.source() == null) {
@@ -834,6 +1037,8 @@ public class FragmentPay extends BaseFragment implements IPayView {
 
         hideWaitDialog();
     }
+
+
 
     @Override
     public void ResolveOpenCreditInfo(ResponseBody info) {

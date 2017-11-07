@@ -163,6 +163,95 @@
                         android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/textView"
+                            android:layout_width="80dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="请选择"
+                            android:lines="1"
+                            android:textColor="@color/chutou_check_txt"
+                            android:textSize="20sp" />
+
+                        <Spinner
+                            android:id="@+id/select_bank_account"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginTop="5dp">
+
+                        </Spinner>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/text2"
+                            android:layout_width="80dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="请选择"
+                            android:lines="1"
+                            android:textColor="@color/chutou_check_txt"
+                            android:textSize="20sp" />
+
+                        <Spinner
+                            android:id="@+id/select_bank_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginTop="5dp">
+
+                        </Spinner>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="80dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="银行卡号"
+                            android:textColor="@color/chutou_check_txt"
+                            android:textSize="20sp" />
+
+                        <AutoCompleteTextView
+                            android:id="@+id/bank_account_et"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:dropDownWidth="match_parent"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginTop="5dp"
+                            android:drawableEnd="@drawable/drop_down"
+                            android:background="@color/chutou_item_txt"
+                            android:hint="请输入银行卡号"
+                            android:completionThreshold="1"
+                            android:imeOptions="actionDone"
+                            android:inputType="number"
+                            android:maxLines="1"
+                            android:padding="5dp"
+                            android:singleLine="true"
+                            android:text=""
+                            />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
                             android:id="@+id/textView4"
                             android:layout_width="80dp"
                             android:layout_height="match_parent"
@@ -216,37 +305,6 @@
                             android:textSize="16sp"
                             android:imeOptions="actionDone"
                             android:inputType="date"
-                            android:maxLines="1"
-                            android:padding="5dp"
-                            android:singleLine="true"
-                            android:text="" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-
-                        android:layout_marginTop="20dp"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="80dp"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:text="银行卡号"
-                            android:textColor="@color/chutou_check_txt"
-                            android:textSize="20sp" />
-
-                        <EditText
-                            android:id="@+id/bank_account_et"
-                            android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:layout_marginRight="10dp"
-                            android:layout_marginTop="5dp"
-                            android:background="@color/chutou_item_txt"
-                            android:hint="请输入银行卡号"
-                            android:imeOptions="actionDone"
-                            android:inputType="number"
                             android:maxLines="1"
                             android:padding="5dp"
                             android:singleLine="true"
@@ -341,7 +399,6 @@
                             android:background="@color/chutou_item_txt"
                             android:hint="请输入银行卡绑定的身份证"
                             android:imeOptions="actionDone"
-                            android:inputType="number"
                             android:maxLines="1"
                             android:padding="5dp"
                             android:singleLine="true"

@@ -408,6 +408,79 @@ public class QueryPresent implements IRequestPresent {
     }
 
     @Override
+    public void QueryBankName(String aid, String sign) {
+        iRequestMode.QueryBankName(aid,sign)
+                .onErrorReturn(s ->new ResponseBody() {
+                    @Override
+                    public MediaType contentType() {
+                        return null;
+                    }
+
+                    @Override
+                    public long contentLength() {
+                        return 0;
+                    }
+
+                    @Override
+                    public BufferedSource source() {
+                        return null;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IPayView) iView).ResolveBankName(s));
+
+    }
+
+    @Override
+    public void QueryAddCard(String aid, String sign, String merchant_id, String truename, String id_card, String card_account, int card_type, String bank, String phone, String indate, String cvv2) {
+        iRequestMode.QueryAddCard(aid, sign, merchant_id, truename, id_card, card_account, card_type, bank, phone, indate, cvv2)
+                .onErrorReturn(s ->new ResponseBody() {
+                    @Override
+                    public MediaType contentType() {
+                        return null;
+                    }
+
+                    @Override
+                    public long contentLength() {
+                        return 0;
+                    }
+
+                    @Override
+                    public BufferedSource source() {
+                        return null;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IPayView) iView).ResolveAddCardInfo(s));
+    }
+
+    @Override
+    public void QueryCardPackage(String aid, String sign, String merchant_id) {
+        iRequestMode.QueryCardPackage(aid, sign, merchant_id)
+                .onErrorReturn(s ->new ResponseBody() {
+                    @Override
+                    public MediaType contentType() {
+                        return null;
+                    }
+
+                    @Override
+                    public long contentLength() {
+                        return 0;
+                    }
+
+                    @Override
+                    public BufferedSource source() {
+                        return null;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> ((IPayView) iView).ResolveCardPackageInfo(s));
+    }
+
+    @Override
     public void QueryQuickPay(String aid, String sign, String merchant_id, String pay_money, String bank_account, String mobile, String name, String id_card, String cvv2, String vd, String trantp) {
         iRequestMode.QueryQuickPay(aid, sign, merchant_id, pay_money, bank_account, mobile, name, id_card, cvv2, vd, trantp)
                 .onErrorReturn(s -> new ResponseBody() {
