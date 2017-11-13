@@ -28,7 +28,7 @@ import com.baidu.ocr.sdk.exception.OCRError;
 import com.baidu.ocr.sdk.model.AccessToken;
 import com.baidu.ocr.ui.camera.CameraActivity;
 import com.google.gson.Gson;
-import com.gyf.barlibrary.ImmersionBar;
+
 import com.heinsoft.heo.activity.BaseActivity;
 import com.heinsoft.heo.bean.MessageBean;
 import com.heinsoft.heo.bean.MessageBeanDao;
@@ -171,7 +171,7 @@ public class MainActivity extends BaseActivity implements IFragmentActivity, IMe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ImmersionBar.with(this).destroy();
+   //     ImmersionBar.with(this).destroy();
         unregisterReceiver(receiver_redirect);
         OCR.getInstance().release();
     }
@@ -798,7 +798,7 @@ public class MainActivity extends BaseActivity implements IFragmentActivity, IMe
                 mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_ALIAS, Constant.user_info.get(Constant.MERCHANT_ID)));//设置推送别名
             }
             fetchMessage();
-            ImmersionBar.with(this).barColor(R.color.chutou_txt).init();// 顶部任务栏
+           // ImmersionBar.with(this).navigationBarColor(R.color.chutou_txt).init();// 顶部任务栏
         }
         if (curFragment instanceof FragmentVerify) {
             fragment1.fetchMerchantInfo();

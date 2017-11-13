@@ -204,6 +204,21 @@ public class RequestModelImpl implements IRequestMode {
     }
 
     @Override
+    public Flowable<ResponseBody> QueryBankName(@Query("aid") String aid, @Query("sign") String sign) {
+        return iRequestMode.QueryBankName(aid,sign);
+    }
+
+    @Override
+    public Flowable<ResponseBody> QueryAddCard(@Query("aid") String aid, @Query("sign") String sign, @Query("merchant_id") String merchant_id, @Query("truename") String truename, @Query("id_card") String id_card, @Query("card_account") String card_account, @Query("card_type") int card_type, @Query("bank") String bank, @Query("phone") String phone, @Query("indate") String indate, @Query("cvv2") String cvv2) {
+        return iRequestMode.QueryAddCard(aid, sign, merchant_id, truename, id_card, card_account, card_type, bank, phone, indate, cvv2);
+    }
+
+    @Override
+    public Flowable<ResponseBody> QueryCardPackage(@Query("aid") String aid, @Query("sign") String sign, @Query("merchant_id") String merchant_id) {
+        return iRequestMode.QueryCardPackage(aid, sign, merchant_id);
+    }
+
+    @Override
     public Flowable<ResponseBody> QueryQuickPay(@Query("aid") String aid, @Query("sign") String sign, @Query("merchant_id") String merchant_id, @Query("pay_money") String pay_money, @Query("bank_account") String bank_account, @Query("mobile") String mobile, @Query("name") String name, @Query("id_card") String id_card, @Query("cvv2") String cvv2, @Query("vd") String vd, @Query("trantp") String trantp) {
         return iRequestMode.QueryQuickPay(aid,sign,merchant_id,pay_money,bank_account,mobile,name,id_card,cvv2,vd,trantp);
     }

@@ -23,8 +23,8 @@ android {
         applicationId "com.heinsoft.heo"
         minSdkVersion 17
         targetSdkVersion 17
-        versionCode 23
-        versionName "v1.023"
+        versionCode 24
+        versionName "v1.024"
         multiDexEnabled true
         flavorDimensions "release"
         ndk {

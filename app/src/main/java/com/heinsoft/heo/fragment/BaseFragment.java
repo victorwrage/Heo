@@ -47,11 +47,14 @@ public abstract class BaseFragment extends Fragment {
     protected String[] scopes = new String[]{"交易成功", "交易失败", "已撤销", "已冲正", "待支付"};
 
     protected ArrayList<String> pay_types = new ArrayList<>();
+    protected ArrayList<String> card_types=new ArrayList<>();
     protected final static String SUCCESS = "0";
     protected final static int ERROR_REGISTER=10003;
     protected final static int QUERY_ELSE=1;
 
     protected ArrayAdapter<String> bankAdapter;
+    protected ArrayAdapter<String> accountAdapter;
+    protected ArrayAdapter<String> nameAdapter;
     protected ArrayAdapter<String> proviceAdapter;
     protected ArrayAdapter<String> cityAdapter;
     public IFragmentActivity listener;
@@ -81,6 +84,8 @@ public abstract class BaseFragment extends Fragment {
         pay_types.add("有积分快捷支付T1");
         pay_types.add("无积分快捷支付T0");
         pay_types.add("无积分快捷支付T1");
+        card_types.add("信用卡");
+        card_types.add("借记卡");
         executor = Executors.newSingleThreadExecutor();
     }
 

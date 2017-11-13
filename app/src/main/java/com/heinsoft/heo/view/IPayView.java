@@ -29,6 +29,18 @@ public interface IPayView extends IView{
     /**
      * @param info
      */
+    void ResolveBankName(ResponseBody info);
+    /**
+     * @param info
+     */
+    void ResolveAddCardInfo(ResponseBody info);
+    /**
+     * @param info
+     */
+    void ResolveCardPackageInfo(ResponseBody info);
+    /**
+     * @param info
+     */
     void ResolveQuickPayInfo(ResponseBody info);
     /**
      * @param info

@@ -212,6 +212,16 @@ public interface IRequestMode {
     Flowable<ResponseBody> QueryScoreQuickPayConfirm(@Query("aid") String aid, @Query("sign") String sign, @Query("account") String account, @Query("system_orderId") String system_orderId,@Query("orderId") String orderId ,
                                             @Query("smsCode") String smsCode,@Query("bank_account") String bank_account,@Query("pay_money") String pay_money,@Query("trantp") String trantp,@Query("extact") String extact);
 
+    @GET("index.php?g=Api&m=Bank&a=main")
+    Flowable<ResponseBody> QueryBankName(@Query("aid") String aid,@Query("sign") String sign);
+
+    @GET("index.php?g=Api&m=Pay&a=card_add")
+    Flowable<ResponseBody> QueryAddCard(@Query("aid") String aid,@Query("sign") String sign,@Query("merchant_id") String merchant_id,@Query("truename") String truename,@Query("id_card") String id_card, @Query("card_account") String card_account,
+                                                                                          @Query("card_type") int card_type, @Query("bank") String bank,@Query("phone") String phone,@Query("indate") String indate,@Query("cvv2") String cvv2);
+
+    @GET("index.php?g=Api&m=Pay&a=card_get")
+    Flowable<ResponseBody> QueryCardPackage(@Query("aid") String aid,@Query("sign") String sign,@Query("merchant_id") String merchant_id);
+
     @GET("index.php?g=Api&m=Pay&a=prepay")
     Flowable<ResponseBody> QueryQuickPay(@Query("aid") String aid,@Query("sign") String sign,@Query("merchant_id") String merchant_id,@Query("pay_money") String pay_money,@Query("bank_account") String bank_account,
                                          @Query("mobile") String mobile,@Query("name") String name,@Query("id_card") String id_card,@Query("cvv2") String cvv2,@Query("vd") String vd,@Query("trantp") String trantp);
